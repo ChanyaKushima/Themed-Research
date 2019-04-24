@@ -1,4 +1,4 @@
-﻿DeadlyOnline
+﻿DeadlyOnlineServer
 
 
 winexe
@@ -16,5 +16,5 @@ C:\Users\Alice\Desktop\課題研究\DeadlyOnline\App.xaml
 16994868691
 MainWindow.xaml;
 
-False
+True
 

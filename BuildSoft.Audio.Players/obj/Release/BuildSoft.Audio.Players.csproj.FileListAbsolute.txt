@@ -1,0 +1,7 @@
+C:\Users\Alice\Desktop\App\RPG_GAME\BuildSoft.AudioPlay.Audio\bin\Release\BuildSoft.Audio.Players.dll.config
+C:\Users\Alice\Desktop\App\RPG_GAME\BuildSoft.AudioPlay.Audio\bin\Release\BuildSoft.Audio.Players.dll
+C:\Users\Alice\Desktop\App\RPG_GAME\BuildSoft.AudioPlay.Audio\bin\Release\BuildSoft.Audio.Players.pdb
+C:\Users\Alice\Desktop\App\RPG_GAME\BuildSoft.AudioPlay.Audio\obj\Release\BuildSoft.Audio.Players.csprojAssemblyReference.cache
+C:\Users\Alice\Desktop\App\RPG_GAME\BuildSoft.AudioPlay.Audio\obj\Release\BuildSoft.Audio.Players.csproj.CoreCompileInputs.cache
+C:\Users\Alice\Desktop\App\RPG_GAME\BuildSoft.AudioPlay.Audio\obj\Release\BuildSoft.Audio.Players.dll
+C:\Users\Alice\Desktop\App\RPG_GAME\BuildSoft.AudioPlay.Audio\obj\Release\BuildSoft.Audio.Players.pdb
