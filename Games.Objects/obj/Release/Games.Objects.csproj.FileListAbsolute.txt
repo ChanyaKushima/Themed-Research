@@ -1,0 +1,6 @@
+C:\Users\Alice\Desktop\App\RPG_GAME\Games.Objects\bin\Release\Games.Objects.dll
+C:\Users\Alice\Desktop\App\RPG_GAME\Games.Objects\bin\Release\Games.Objects.pdb
+C:\Users\Alice\Desktop\App\RPG_GAME\Games.Objects\obj\Release\Games.Objects.csproj.CoreCompileInputs.cache
+C:\Users\Alice\Desktop\App\RPG_GAME\Games.Objects\obj\Release\Games.Objects.dll
+C:\Users\Alice\Desktop\App\RPG_GAME\Games.Objects\obj\Release\Games.Objects.pdb
+C:\Users\Alice\Desktop\App\RPG_GAME\Games.Objects\obj\Release\Games.Objects.csprojAssemblyReference.cache
