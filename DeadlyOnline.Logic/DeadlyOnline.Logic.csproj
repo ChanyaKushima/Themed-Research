@@ -44,8 +44,16 @@
     <Compile Include="ActionCommand.cs" />
     <Compile Include="ActionData.cs" />
     <Compile Include="DataFormat.cs" />
+    <Compile Include="Methods.cs" />
+    <Compile Include="PlayerData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Games.Objects\Games.Objects.csproj">
+      <Project>{1817b4f3-d11a-4a2c-90cd-802832ba0737}</Project>
+      <Name>Games.Objects</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

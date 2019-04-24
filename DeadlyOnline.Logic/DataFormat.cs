@@ -1,6 +1,6 @@
 ﻿namespace DeadlyOnline.Logic
 {
-	enum DataFormat
+	public enum DataFormat
 	{
 
 	}

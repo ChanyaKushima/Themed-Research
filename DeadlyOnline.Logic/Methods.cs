@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace DeadlyOnline.Logic
 {
-	public struct ActionData
+	public class Methods
 	{
-		public ActionCommand Command { get; set; }
-		public IEnumerable<string> Arguments { get; set; }
-		public object Data { get; set; }
+		public static void Login(IEnumerable<string> args)
+		{
+			if (true)
+			{
+
+			}
+		}
 	}
 }
