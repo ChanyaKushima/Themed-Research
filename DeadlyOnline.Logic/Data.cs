@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace DeadlyOnline.Logic
 {
-	public struct ActionData
+	public static class Data
 	{
-		public ActionCommand Command { get; set; }
-		public IEnumerable<object> Arguments { get; set; }
-		public object Data { get; set; }
+		
+	}
+
+	public class MapData{
+		public MapID ID{ get; set; }
+		public int HierarchyNo{ get; set; }
+
 	}
 }

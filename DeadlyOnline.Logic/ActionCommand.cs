@@ -6,6 +6,8 @@
 		Login = 1,
 		Logout = 2,
 		DataRequest = 3,
-		MapMove = 4,
+		DataUpdate = 4,
+		MapMove = 10,
 	}
 }
+

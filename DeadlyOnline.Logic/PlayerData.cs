@@ -17,9 +17,19 @@ namespace DeadlyOnline.Logic
 		public bool IsFighting{ get; }
 
 	}
-	public enum MapID{
-		WorldMap=0,
-		Plaza=1,
-
+	public enum MapID
+	{
+		/// <summary>
+		/// ワールドマップ(プレイヤー単体)
+		/// </summary>
+		WorldMap = 0,
+		/// <summary>
+		/// 広場(非戦闘エリア)
+		/// </summary>
+		Plaza = 1,
+		/// <summary>
+		/// 草原の道(戦闘可能エリア)
+		/// </summary>
+		MeadowRoad = 2,
 	}
 }
