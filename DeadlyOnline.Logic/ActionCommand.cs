@@ -8,6 +8,8 @@
 		DataRequest = 3,
 		DataUpdate = 4,
 		MapMove = 10,
+
+		Debug=9999999,
 	}
 }
 

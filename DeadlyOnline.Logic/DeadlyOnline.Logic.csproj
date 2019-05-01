@@ -60,6 +60,7 @@
     <Compile Include="ActionData.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="DataFormat.cs" />
+    <Compile Include="Logic.cs" />
     <Compile Include="Methods.cs" />
     <Compile Include="PlayerData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,6 +70,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="ResultData.cs" />
+    <Compile Include="ThrowHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Games.Objects\Games.Objects.csproj">

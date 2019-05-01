@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A42AA855-495E-41BB-A9B8-9A764DC4989B}</ProjectGuid>
+    <ProjectGuid>{7EAA9DAE-1C91-4FF0-A7ED-B9510CCB7754}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>DeadlyOnline</RootNamespace>
-    <AssemblyName>DeadlyOnlineServer</AssemblyName>
+    <RootNamespace>DeadlyOnline.Client</RootNamespace>
+    <AssemblyName>DeadlyOnline.Client</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -55,7 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="ServerMainWindow.xaml">
+    <Page Include="ClientMainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -63,8 +63,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ServerMainWindow.xaml.cs">
-      <DependentUpon>ServerMainWindow.xaml</DependentUpon>
+    <Compile Include="ClientMainWindow.xaml.cs">
+      <DependentUpon>ClientMainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
