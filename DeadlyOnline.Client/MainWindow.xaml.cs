@@ -32,7 +32,7 @@ namespace DeadlyOnline.Client
 	/// <summary>
 	/// MainWindow.xaml の相互作用ロジック
 	/// </summary>
-	public partial class MainWindow : Window
+	public sealed partial class MainWindow : Window
 	{
 		TcpClient Client;
 		Task CmdAcceptTask;
@@ -40,11 +40,13 @@ namespace DeadlyOnline.Client
 		public MainWindow()
 		{
 			InitializeComponent();
+			ConnectServer();
 		}
 
 		private void ConnectServer()
 		{
 			bool tryToConnect = true;
+
 			while (tryToConnect)
 			{
 				MessageBox.Show("サーバーとの接続を開始します");
@@ -79,18 +81,19 @@ namespace DeadlyOnline.Client
 			BinaryFormatter formatter = new BinaryFormatter();
 			NetworkStream stream = Client.GetStream();
 			
-
 			while (true)
 			{
 				try
 				{
-					var obj=formatter.Deserialize(stream);
+					var obj = formatter.Deserialize(stream);
+
 					if (obj is ActionData ad)
 					{
+						Console.WriteLine($"{ad.Command}  ArgsCount:{ad.Arguments.Count()}");
 						var res = ActionCommandInvoke(ad);
 						formatter.Serialize(stream, res);
 					}
-					else if(obj is ResultData rd)
+					else if (obj is ResultData rd)
 					{
 
 					}
@@ -101,7 +104,7 @@ namespace DeadlyOnline.Client
 				}
 				catch (Exception)
 				{
-
+					Console.WriteLine("aaa");
 					throw;
 				}
 			}

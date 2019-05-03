@@ -1,7 +1,7 @@
 ﻿namespace DeadlyOnline.Logic
 {
-	public enum DataFormat
+	public enum ResultDataFormat
 	{
-
+		None=0,
 	}
 }

@@ -19,3 +19,10 @@ C:\Users\Alice\Desktop\RPG_GAME\BuildSoft.Audio.Players\obj\Debug\BuildSoft.Audi
 C:\Users\Alice\Desktop\RPG_GAME\BuildSoft.Audio.Players\obj\Debug\BuildSoft.Audio.Players.csproj.CoreCompileInputs.cache
 C:\Users\Alice\Desktop\RPG_GAME\BuildSoft.Audio.Players\obj\Debug\BuildSoft.Audio.Players.dll
 C:\Users\Alice\Desktop\RPG_GAME\BuildSoft.Audio.Players\obj\Debug\BuildSoft.Audio.Players.pdb
+C:\Users\Alice\Desktop\課題研究\BuildSoft.Audio.Players\bin\Debug\BuildSoft.Audio.Players.dll.config
+C:\Users\Alice\Desktop\課題研究\BuildSoft.Audio.Players\bin\Debug\BuildSoft.Audio.Players.dll
+C:\Users\Alice\Desktop\課題研究\BuildSoft.Audio.Players\bin\Debug\BuildSoft.Audio.Players.pdb
+C:\Users\Alice\Desktop\課題研究\BuildSoft.Audio.Players\obj\Debug\BuildSoft.Audio.Players.csprojAssemblyReference.cache
+C:\Users\Alice\Desktop\課題研究\BuildSoft.Audio.Players\obj\Debug\BuildSoft.Audio.Players.csproj.CoreCompileInputs.cache
+C:\Users\Alice\Desktop\課題研究\BuildSoft.Audio.Players\obj\Debug\BuildSoft.Audio.Players.dll
+C:\Users\Alice\Desktop\課題研究\BuildSoft.Audio.Players\obj\Debug\BuildSoft.Audio.Players.pdb
