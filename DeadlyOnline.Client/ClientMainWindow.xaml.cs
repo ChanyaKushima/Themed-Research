@@ -26,6 +26,8 @@ using Games.Objects.Visual;
 namespace DeadlyOnline.Client
 {
 	using DeadlyOnline.Logic;
+	using static DeadlyOnline.Logic.Logic;
+	using static DeadlyOnline.Logic.Constants;
 
 	/// <summary>
 	/// MainWindow.xaml の相互作用ロジック
@@ -33,10 +35,43 @@ namespace DeadlyOnline.Client
 	public partial class MainWindow : Window
 	{
 		TcpClient Client;
+		Task CmdAcceptTask;
 
 		public MainWindow()
 		{
 			InitializeComponent();
+		}
+
+		private void ConnectServer()
+		{
+			bool tryToConnect = true;
+			while (tryToConnect)
+			{
+				MessageBox.Show("サーバーとの接続を開始します");
+				try
+				{
+					Client = new TcpClient();
+					Client.Connect(ServerIPEndPoint);
+					tryToConnect = false;
+				}
+				catch (SocketException)
+				{
+					Console.WriteLine($"{DateTime.Now.ToLongTimeString()}--接続失敗");
+					Client = null;
+
+					const string mes = "接続に失敗しました。\nもう一度接続を試みますか？";
+					var res = MessageBox.Show(mes, "接続失敗", MessageBoxButton.YesNo);
+
+					tryToConnect = (res == MessageBoxResult.Yes) ? true : false;
+				}
+			}
+
+			if (Client is null)
+			{
+				return;
+			}
+
+			CmdAcceptTask = Task.Run(CommandAccept);
 		}
 
 		private void CommandAccept()
@@ -49,7 +84,20 @@ namespace DeadlyOnline.Client
 			{
 				try
 				{
-					
+					var obj=formatter.Deserialize(stream);
+					if (obj is ActionData ad)
+					{
+						var res = ActionCommandInvoke(ad);
+						formatter.Serialize(stream, res);
+					}
+					else if(obj is ResultData rd)
+					{
+
+					}
+					else
+					{
+						throw new NotImplementedException();
+					}
 				}
 				catch (Exception)
 				{

@@ -11,7 +11,7 @@ namespace DeadlyOnline.Logic
 {
 	public class PlayerData
 	{
-		public RPGPlayer MainChara { get; }
+		public RPGPlayer Player { get; }
 		public Coordinate MapCoordinate { get; set; }
 		public MapID CurrentMapID{ get; set; }
 		public bool IsFighting{ get; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DeadlyOnline.Logic
 {
-	using CommandFunc = Func<ActionData, ResultData>;
+	public delegate ResultData CommandFunc(ActionData actionData);
 
 	public static partial class Logic
 	{
@@ -106,8 +106,11 @@ namespace DeadlyOnline.Logic
 			{
 				ThrowHelper.ThrowArgumentException($"{nameof(data)}.{nameof(data.Command)}が異常です。");
 			}
+			foreach (var item in data.Arguments)
+			{
+				Console.WriteLine(item);
+			}
 
-			Console.WriteLine();
 			return ResultData.Empty;
 		}
 	}

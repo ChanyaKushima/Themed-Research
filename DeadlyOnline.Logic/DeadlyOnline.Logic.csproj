@@ -58,8 +58,12 @@
   <ItemGroup>
     <Compile Include="ActionCommand.cs" />
     <Compile Include="ActionData.cs" />
+    <Compile Include="Calc.cs" />
+    <Compile Include="ClientData.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="DataFormat.cs" />
+    <Compile Include="General\Logic.cs" />
     <Compile Include="Logic.cs" />
     <Compile Include="Methods.cs" />
     <Compile Include="PlayerData.cs" />
