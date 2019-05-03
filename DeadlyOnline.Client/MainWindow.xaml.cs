@@ -43,7 +43,7 @@ namespace DeadlyOnline.Client
 			ConnectServer();
 		}
 
-		private void ConnectServer()
+		private async void ConnectServer()
 		{
 			bool tryToConnect = true;
 
@@ -53,18 +53,18 @@ namespace DeadlyOnline.Client
 				try
 				{
 					Client = new TcpClient();
-					Client.Connect(ServerIPEndPoint);
+					await Client.ConnectAsync(ServerIPAddress, Port);
 					tryToConnect = false;
 				}
 				catch (SocketException)
 				{
-					Console.WriteLine($"{DateTime.Now.ToLongTimeString()}--接続失敗");
+					Console.WriteLine($"{DateTime.Now.ToLongTimeString()} -- 接続失敗");
 					Client = null;
 
 					const string mes = "接続に失敗しました。\nもう一度接続を試みますか？";
 					var res = MessageBox.Show(mes, "接続失敗", MessageBoxButton.YesNo);
 
-					tryToConnect = (res == MessageBoxResult.Yes) ? true : false;
+					tryToConnect = res == MessageBoxResult.Yes;
 				}
 			}
 

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DeadlyOnline.Logic
 {
-	public delegate ResultData CommandFunc(ActionData actionData);
+	public delegate ResultData CommandFunc(in ActionData actionData);
+	public delegate void ResultFunc(in ResultData resultData);
 
 	public static partial class Logic
 	{
@@ -17,12 +18,17 @@ namespace DeadlyOnline.Logic
 			{ ActionCommand.Logout, Logout },
 			{ ActionCommand.DataRequest, DataRequest },
 			{ ActionCommand.DataUpdate, DataUpdate },
-			{ ActionCommand.MapMove, DataUpdate },
+			{ ActionCommand.MapMove, MapMove },
 
 			{ ActionCommand.Debug, Debug },
 		};
 
-		private static ResultData CreateAccount(ActionData data)
+		private static Dictionary<ResultDataFormat, ResultFunc> ResultDataCmds = new Dictionary<ResultDataFormat, ResultFunc>()
+		{
+			
+		};
+
+		private static ResultData CreateAccount(in ActionData data)
 		{
 			if (data.Command!=ActionCommand.CreateAccount)
 			{
@@ -36,7 +42,7 @@ namespace DeadlyOnline.Logic
 			return ResultData.Empty;
 		}
 
-		private static ResultData Login(ActionData data)
+		private static ResultData Login(in ActionData data)
 		{
 			if (data.Command != ActionCommand.Login)
 			{
@@ -49,7 +55,7 @@ namespace DeadlyOnline.Logic
 			return ResultData.Empty;
 
 		}
-		private static ResultData Logout(ActionData data)
+		private static ResultData Logout(in ActionData data)
 		{
 			if (data.Command != ActionCommand.Logout)
 			{
@@ -62,7 +68,7 @@ namespace DeadlyOnline.Logic
 
 			return ResultData.Empty;
 		}
-		private static ResultData DataRequest(ActionData data)
+		private static ResultData DataRequest(in ActionData data)
 		{
 			if (data.Command != ActionCommand.DataRequest)
 			{
@@ -74,7 +80,7 @@ namespace DeadlyOnline.Logic
 			//
 			return ResultData.Empty;
 		}
-		private static ResultData DataUpdate(ActionData data)
+		private static ResultData DataUpdate(in ActionData data)
 		{
 			if (data.Command != ActionCommand.DataUpdate)
 			{
@@ -87,7 +93,7 @@ namespace DeadlyOnline.Logic
 			return ResultData.Empty;
 		}
 
-		private static ResultData MapMove(ActionData data)
+		private static ResultData MapMove(in ActionData data)
 		{
 			if (data.Command != ActionCommand.MapMove)
 			{
@@ -100,7 +106,7 @@ namespace DeadlyOnline.Logic
 			return ResultData.Empty;
 		}
 
-		private static ResultData Debug(ActionData data)
+		private static ResultData Debug(in ActionData data)
 		{
 			if (data.Command != ActionCommand.Debug)
 			{

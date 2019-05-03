@@ -8,13 +8,24 @@ namespace DeadlyOnline.Logic
 {
 	public static partial class Logic
 	{
-		public static ResultData ActionCommandInvoke(ActionData data)
+		public static ResultData ActionCommandInvoke(ActionData data) =>
+			ActionDataCmds[data.Command].Invoke(data);
+		public static async Task<ResultData> ActionCommandInvokeAsync(ActionData data) =>
+			await Task.Run(() => ActionDataCmds[data.Command].Invoke(data));
+
+		public static void ResultCommandInvoke(ResultData data)
 		{
-			return ActionDataCmds[data.Command].Invoke(data);
+			if (ResultDataCmds.ContainsKey(data.DataFormat))
+			{
+				ResultDataCmds[data.DataFormat].Invoke(data);
+			}
 		}
-		public static async Task<ResultData> ActionCommandInvokeAsync(ActionData data)
+		public static async Task ResultCommandInvokeAsync(ResultData data)
 		{
-			return await Task.Run(() => ActionCommandInvoke(data));
+			if (ResultDataCmds.ContainsKey(data.DataFormat))
+			{
+				await Task.Run(() => ResultDataCmds[data.DataFormat].Invoke(data));
+			}
 		}
 	}
 }

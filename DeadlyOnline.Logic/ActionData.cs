@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace DeadlyOnline.Logic
 {
 	[Serializable]
-	public struct ActionData
+	public readonly struct ActionData
 	{
-		public ActionCommand Command { get; set; }
-		public IEnumerable<object> Arguments { get; set; }
-		public object Data { get; set; }
+		public ActionCommand Command { get; }
+		public IEnumerable<object> Arguments { get; }
+		public object Data { get; }
 
 
 		public ActionData(ActionCommand cmd, IEnumerable<object> args = null, object data = null)

@@ -12,7 +12,8 @@ namespace DeadlyOnline.Logic
 	public static class Constants
 	{
 		public static int Port = 54321;
-		public static IPEndPoint ServerIPEndPoint = new IPEndPoint(IPAddress.Loopback, Port);
+		public static IPAddress ServerIPAddress = IPAddress.Loopback;
+		public static IPEndPoint ServerIPEndPoint = new IPEndPoint(ServerIPAddress, Port);
 		public static int MaxClientsNo = 50;
 	}
 }

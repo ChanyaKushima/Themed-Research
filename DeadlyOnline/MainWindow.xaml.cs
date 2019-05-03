@@ -38,6 +38,7 @@ namespace DeadlyOnline
 	{
 		readonly ClientData[] Clients = new ClientData[MaxClientsNo];
 		readonly List<Task> ReadTasks = new List<Task>();
+		readonly Queue<object> ResultQueue = new Queue<object>();
 		TcpListener Listener;
 		Task ConnectAcceptTask;
 
@@ -74,45 +75,57 @@ namespace DeadlyOnline
 				
 				Clients[i] = new ClientData() { Client = client };
 
-				Task t = Task.Run(() => DataAccept(Clients[i]));
+				Task t = Task.Run(() => DataAccept(Clients[i], i));
 				ReadTasks.Add(t);
 			}
 		}
 
-		private void DataAccept(ClientData clientData)
+		private void DataAccept(ClientData clientData, int no)
 		{
 			BinaryFormatter formatter = new BinaryFormatter();
 			NetworkStream stream = clientData.Client.GetStream();
-			
+
 			while (true)
 			{
 				object obj;
+
 				try
 				{
 					obj = formatter.Deserialize(stream);
+
+					if (obj is ActionData ad)
+					{
+						Console.WriteLine($"{nameof(ActionData)}  {ad.Command}\tArgsCount:{ad.Arguments.Count()}");
+
+						var res = ActionCommandInvoke(ad);
+						formatter.Serialize(stream, res);
+					}
+					else if (obj is ResultData rd)
+					{
+						Console.WriteLine($"{nameof(ResultData)}  {rd.DataFormat}");
+						ResultCommandInvoke(rd);
+						ResultQueue.Enqueue(rd.Data);
+					}
+					else
+					{
+						Console.WriteLine($"{DateTime.Now.ToLongTimeString()} -- 不正な型のインスタンスが送られた");
+						Disconnect(no);
+						throw new NotImplementedException();
+					}
 				}
 				catch (SerializationException e)
 				{
-					Console.WriteLine($"{DateTime.Now.ToLongTimeString()}-- デシリアル化中に例外が発生 {e.Message}");
+					Console.WriteLine($"{DateTime.Now.ToLongTimeString()} -- シリアル化、または逆シリアル化中に例外が発生 {e.Message}");
+					Disconnect(no);
 					throw;
 				}
-
-				if (obj is ActionData ad)
-				{
-					Console.WriteLine($"{ad.Command}  ArgsCount:{ad.Arguments.Count()}");
-					var res = ActionCommandInvoke(ad);
-					formatter.Serialize(stream, res);
-				}
-				else if (obj is ResultData rd)
-				{
-
-				}
-				else
-				{
-					Console.WriteLine();
-					throw new NotImplementedException();
-				}
 			}
+		}
+
+		private void Disconnect(int clientNo)
+		{
+			Clients[clientNo].Client.Close();
+			Clients[clientNo] = null;
 		}
 	}
 }

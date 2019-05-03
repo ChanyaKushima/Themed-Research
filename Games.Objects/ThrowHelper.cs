@@ -25,7 +25,7 @@ namespace Games.Objects
 
 		internal static void ThrowIdNotFoundException(string message)
 		{ 
-			throw new IdNotFoundException(message);
+			throw new IDNotFoundException(message);
 		}
 
 		internal static void ThrowFileNotFoundException(string message)

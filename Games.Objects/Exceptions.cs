@@ -24,11 +24,11 @@ namespace Games.Objects
 	/// IDが見つからなかった時にスローされる例外
 	/// </summary>
 	[Serializable]
-	public class IdNotFoundException : Exception
+	public class IDNotFoundException : Exception
 	{
-		public IdNotFoundException() { }
-		public IdNotFoundException(string message) : base(message) { }
-		public IdNotFoundException(string message, Exception inner) : base(message, inner) { }
-		protected IdNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		public IDNotFoundException() { }
+		public IDNotFoundException(string message) : base(message) { }
+		public IDNotFoundException(string message, Exception inner) : base(message, inner) { }
+		protected IDNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

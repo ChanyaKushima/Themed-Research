@@ -3,10 +3,17 @@
 	using System;
 
 	[Serializable]
-	public struct ResultData{
+	public readonly struct ResultData
+	{
 		public static readonly ResultData Empty = new ResultData();
 
-		public ResultDataFormat DataFormat { get; set; }
-		public object Data{ get; set; }
+		public ResultDataFormat DataFormat { get; }
+		public object Data { get; }
+
+		public ResultData(ResultDataFormat dataFormat, object data = null)
+		{
+			DataFormat = dataFormat;
+			Data = data;
+		}
 	}
 }
