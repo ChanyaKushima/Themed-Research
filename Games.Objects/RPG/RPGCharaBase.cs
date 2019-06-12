@@ -14,15 +14,8 @@
 		}
 
 		public abstract List<FightAction> GetActions();
-		public abstract FightAction SelectedAction { get; set; }
-		public abstract RPGCharaBase TargetChara{ get; set; }
 
 		public override abstract int Attack();
-
-		public void ActionInvoke()
-		{
-			SelectedAction(this, TargetChara);
-		}
 	}
 
 	public delegate void FightAction(RPGCharaBase self, RPGCharaBase target);

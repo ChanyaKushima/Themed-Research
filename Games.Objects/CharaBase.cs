@@ -16,29 +16,39 @@ namespace Games.Objects
 		/// <returns></returns>
 		protected int GetRandValue(int min = 0, int max = 0) => rand.Next(min, max);
 
+        /// <summary>
+        /// 最大レベルの設定。
+        /// <see cref="MaxLevel"/>を含む。
+        /// </summary>
 		public virtual int MaxLevel { get; protected set; } = 100;
+        /// <summary>
+        /// 最低レベルの設定。
+        /// <see cref="MaxLevel"/>を含む。
+        /// </summary>
 		public virtual int MinLevel { get; protected set; } = 1;
 
-
+        /// <summary>
+        /// 名前
+        /// </summary>
 		public virtual string Name { get; }
 
 		private int _m_hp;
 		public int MaxHP
 		{
 			get { return _m_hp; }
-			protected set
-			{
-				int m_hp_tmp = Math.Max(value, 0);
-				if (_m_hp!=m_hp_tmp)
-				{
-					_m_hp = m_hp_tmp;
-					MaxHPChanged?.Invoke(this, new EventArgs());
-				}
-				if (value < HP)
-				{
-					HP = value;
-				}
-			}
+            protected set
+            {
+                int tmp_m_hp = Math.Max(value, 0);
+                if (_m_hp != tmp_m_hp)
+                {
+                    _m_hp = tmp_m_hp;
+                    MaxHPChanged?.Invoke(this, new EventArgs());
+                }
+                if (value < HP)
+                {
+                    HP = value;
+                }
+            }
 		}
 
 		private int _hp;
@@ -47,13 +57,13 @@ namespace Games.Objects
 			get { return _hp; }
 			protected set
 			{
-				int hp_tmp = Calc.FitInRange(value, MaxHP, 0);
-				if (_hp != hp_tmp)
+				int tmp_hp = Calc.FitInRange(value, MaxHP, 0);
+				if (_hp != tmp_hp)
 				{
-					bool recovered = _hp < hp_tmp;
+					bool recovered = _hp < tmp_hp;
 					bool preAlive = IsAlive;
 
-					_hp = hp_tmp;
+					_hp = tmp_hp;
 					HPChanged?.Invoke(this, new EventArgs());
 					
 					if (recovered)
@@ -64,14 +74,14 @@ namespace Games.Objects
 					{
 						Damaged?.Invoke(this, new EventArgs());
 					}
-					if (preAlive && IsDead)
-					{
-						Died?.Invoke(this, new EventArgs());
-					}
-					else if (!preAlive&&IsAlive)
-					{
-						Revived?.Invoke(this, new EventArgs());
-					}
+                    if (preAlive && IsDead)
+                    {
+                        Died?.Invoke(this, new EventArgs());
+                    }
+                    else if (!preAlive && IsAlive)
+                    {
+                        Revived?.Invoke(this, new EventArgs());
+                    }
 				}
 			}
 		}
@@ -82,12 +92,12 @@ namespace Games.Objects
 			get { return _lv; }
 			protected set
 			{
-				int lv_tmp = Calc.FitInRange(value, MaxLevel, MinLevel);
-				if (_lv != lv_tmp)
+				int tmp_lv = Calc.FitInRange(value, MaxLevel, MinLevel);
+				if (_lv != tmp_lv)
 				{
-					bool lvUp = _lv < lv_tmp;
+					bool lvUp = _lv < tmp_lv;
 
-					_lv = lv_tmp;
+					_lv = tmp_lv;
 					LevelChanged?.Invoke(this, new EventArgs());
 
 					if (lvUp)
@@ -110,15 +120,15 @@ namespace Games.Objects
 		public virtual void Recover(int amount) => HP += amount;
 		public int GetEXP() => EXP;
 
-		public event EventHandler MaxHPChanged;
-		public event EventHandler HPChanged;
-		public event EventHandler Recovered;
-		public event EventHandler Damaged;
-		public event EventHandler LevelChanged;
-		public event EventHandler LevelUp;
-		public event EventHandler LevelDown;
-		public event EventHandler Died;
-		public event EventHandler Revived;
+		public virtual event EventHandler MaxHPChanged;
+		public virtual event EventHandler HPChanged;
+        public virtual event EventHandler Recovered;
+        public virtual event EventHandler Damaged;
+        public virtual event EventHandler LevelChanged;
+        public virtual event EventHandler LevelUp;
+        public virtual event EventHandler LevelDown;
+        public virtual event EventHandler Died;
+        public virtual event EventHandler Revived;
 
 		protected CharaBase(string name, int hp)
 		{

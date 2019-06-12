@@ -2,6 +2,6 @@
 {
 	public enum ResultDataFormat
 	{
-		None=0,
+		None = 0,
 	}
 }

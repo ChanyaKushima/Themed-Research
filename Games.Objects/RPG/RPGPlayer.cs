@@ -14,9 +14,6 @@ namespace Games.Objects.RPG
 		protected List<FightCommand> _fightCommands = new List<FightCommand>();
 		public List<FightCommand> FightCommands => _fightCommands;
 
-		public override FightAction SelectedAction { get; set; }
-		public override RPGCharaBase TargetChara { get; set; }
-
 		public virtual int NeedEXP => Level * Level + 10;
 		protected bool CanLevelUp => NeedEXP <= EXP && MaxLevel > Level;
 
@@ -82,21 +79,21 @@ namespace Games.Objects.RPG
 			return rp;
 		}
 
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// レベルアップさせる
-		/// </summary>
-		/// <returns>レベルアップメッセージ</returns>
-		protected string DoLevelUp()
-		{
-			EXP -= NeedEXP;
-			Level++;
-			MaxHP += Level * 3;
-			HP = MaxHP;
+        /// <summary>
+        /// レベルアップさせる
+        /// </summary>
+        /// <returns>レベルアップメッセージ</returns>
+        protected virtual string DoLevelUp()
+        {
+            EXP = Math.Max(EXP - NeedEXP, 0);
+            Level++;
+            MaxHP += Level * 3;
+            HP = MaxHP;
 
-			return $"HPが{Level * 3}上がった";
-		}
+            return $"HPが{Level * 3}上がった";
+        }
 
 		#endregion
 	}

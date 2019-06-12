@@ -10,9 +10,6 @@ namespace Games.Objects.RPG
 
 		protected List<FightAction> _actions = new List<FightAction>();
 		
-		public override FightAction SelectedAction { get; set; }
-		public override RPGCharaBase TargetChara { get; set; }
-
 		#region コンストラクタ・デストラクタ
 
 		public RPGEnemy(string name, int hp, int lv, int exp, string imgPath) :

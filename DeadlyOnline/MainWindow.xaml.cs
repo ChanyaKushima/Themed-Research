@@ -39,8 +39,14 @@ namespace DeadlyOnline
 		readonly ClientData[] Clients = new ClientData[MaxClientsNo];
 		readonly List<Task> ReadTasks = new List<Task>();
 		readonly Queue<object> ResultQueue = new Queue<object>();
+
+		Func<ActionData, ResultData, ResultData> ActionFunc = null;
+		Action<ResultData> ResultFunc = null;
+
 		TcpListener Listener;
 		Task ConnectAcceptTask;
+
+		BinaryFormatter formatter = new BinaryFormatter();
 
 		public MainWindow()
 		{
@@ -82,7 +88,6 @@ namespace DeadlyOnline
 
 		private void DataAccept(ClientData clientData, int no)
 		{
-			BinaryFormatter formatter = new BinaryFormatter();
 			NetworkStream stream = clientData.Client.GetStream();
 
 			while (true)
@@ -95,16 +100,11 @@ namespace DeadlyOnline
 
 					if (obj is ActionData ad)
 					{
-						Console.WriteLine($"{nameof(ActionData)}  {ad.Command}\tArgsCount:{ad.Arguments.Count()}");
-
-						var res = ActionCommandInvoke(ad);
-						formatter.Serialize(stream, res);
+						ActionDataAction(stream, ad);
 					}
 					else if (obj is ResultData rd)
 					{
-						Console.WriteLine($"{nameof(ResultData)}  {rd.DataFormat}");
-						ResultCommandInvoke(rd);
-						ResultQueue.Enqueue(rd.Data);
+						ResultDataAction(rd);
 					}
 					else
 					{
@@ -122,10 +122,55 @@ namespace DeadlyOnline
 			}
 		}
 
+		private void ResultDataAction(ResultData rd)
+		{
+			Console.WriteLine($"{nameof(ResultData)}  {rd.DataFormat}");
+			ResultCommandInvoke(rd);
+
+			if (!(ResultFunc is null))
+			{
+				ResultFunc.Invoke(rd);
+				ResultFunc = null;
+			}
+			ResultQueue.Enqueue(rd.Data);
+		}
+
+		private void ActionDataAction(NetworkStream stream, ActionData ad)
+		{
+			Console.WriteLine($"{nameof(ActionData)}  {ad.Command}\tArgsCount:{ad.Arguments.Count()}");
+
+			var res = ActionCommandInvoke(ad);
+
+			if (!(ActionFunc is null))
+			{
+				res = ActionFunc.Invoke(ad, res);
+				ActionFunc = null;
+			}
+
+			formatter.Serialize(stream, res);
+		}
+
+		/// <summary>
+		/// 指定した番号のクライアントとの接続を切断する
+		/// </summary>
+		/// <param name="clientNo">切断したいクライアントの番号</param>
 		private void Disconnect(int clientNo)
 		{
-			Clients[clientNo].Client.Close();
-			Clients[clientNo] = null;
+			if (!(Clients[clientNo] is null))
+			{
+				Clients[clientNo].Client.Close();
+				Clients[clientNo] = null;
+			}
+		}
+		/// <summary>
+		/// 全てのクライアントとの接続を切断する
+		/// </summary>
+		private void DisconnectAll()
+		{
+			for (int i = 0; i < Clients.Length; i++)
+			{
+				Disconnect(i);
+			}
 		}
 	}
 }
