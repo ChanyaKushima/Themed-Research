@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using System.Threading;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Net;
@@ -37,44 +38,47 @@ namespace DeadlyOnline.Client
 		TcpClient Client;
 		Task CmdAcceptTask;
 
+        CancellationTokenSource CmdAcceptSource;
+
 		public MainWindow()
 		{
 			InitializeComponent();
 			ConnectServer();
 		}
 
-		private async void ConnectServer()
-		{
-			bool tryToConnect = true;
+        private async void ConnectServer()
+        {
+            bool tryToConnect = true;
 
-			while (tryToConnect)
-			{
-				MessageBox.Show("サーバーとの接続を開始します");
-				try
-				{
-					Client = new TcpClient();
-					await Client.ConnectAsync(ServerIPAddress, Port);
-					tryToConnect = false;
-				}
-				catch (SocketException)
-				{
-					Console.WriteLine($"{DateTime.Now.ToLongTimeString()} -- 接続失敗");
-					Client = null;
+            while (tryToConnect)
+            {
+                MessageBox.Show("サーバーとの接続を開始します");
+                try
+                {
+                    Client = new TcpClient();
+                    await Client.ConnectAsync(ServerIPAddress, Port);
+                    tryToConnect = false;
+                }
+                catch (SocketException)
+                {
+                    Console.WriteLine($"{DateTime.Now.ToLongTimeString()} -- 接続失敗");
+                    Client = null;
 
-					const string mes = "接続に失敗しました。\nもう一度接続を試みますか？";
-					var res = MessageBox.Show(mes, "接続失敗", MessageBoxButton.YesNo);
+                    const string mes = "接続に失敗しました。\nもう一度接続を試みますか？";
+                    var res = MessageBox.Show(mes, "接続失敗", MessageBoxButton.YesNo);
 
-					tryToConnect = res == MessageBoxResult.Yes;
-				}
-			}
+                    tryToConnect = res == MessageBoxResult.Yes;
+                }
+            }
 
-			if (Client is null)
-			{
-				return;
-			}
+            if (Client is null)
+            {
+                return;
+            }
 
-			CmdAcceptTask = Task.Run(CommandAccept);
-		}
+            CmdAcceptSource ??= new CancellationTokenSource();
+            CmdAcceptTask = Task.Run(CommandAccept, CmdAcceptSource.Token);
+        }
 
 		private void CommandAccept()
 		{
@@ -83,31 +87,42 @@ namespace DeadlyOnline.Client
 			
 			while (true)
 			{
-				try
-				{
-					var obj = formatter.Deserialize(stream);
+                try
+                {
+                    switch (formatter.Deserialize(stream))
+                    {
+                        case ActionData ad:
 
-					if (obj is ActionData ad)
-					{
-						Console.WriteLine($"{ad.Command}  ArgsCount:{ad.Arguments.Count()}");
-						var res = ActionCommandInvoke(ad);
-						formatter.Serialize(stream, res);
-					}
-					else if (obj is ResultData rd)
-					{
+                            Console.WriteLine($"{ad.Command}  ArgsCount:{ad.Arguments.Count()}");
+                            var res = ActionCommandInvoke(ad);
+                            formatter.Serialize(stream, res);
+                            break;
 
-					}
-					else
-					{
-						throw new NotImplementedException();
-					}
-				}
-				catch (Exception)
-				{
-					Console.WriteLine("aaa");
-					throw;
-				}
+                        case ResultData rd:
+
+                            Console.WriteLine($"{rd.DataFormat}  Type:{rd.Data.GetType()}");
+                            ResultCommandInvoke(rd);
+                            break;
+
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+                catch (NotImplementedException)
+                {
+                    Console.WriteLine("実装の確認");
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"threw {e.GetType()}");
+                    throw;
+                }
 			}
 		}
+
+        private void Disconnect(){
+            
+        }
 	}
 }
