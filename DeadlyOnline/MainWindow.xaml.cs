@@ -47,17 +47,9 @@ namespace DeadlyOnline
 		readonly List<Task> ReadTasks = new List<Task>();
 		readonly Queue<object> ResultQueue = new Queue<object>();
 
-		Func<ActionData, ResultData, ResultData> ActionFunc = null;
-		Action<ResultData> ResultFunc = null;
-
 		TcpListener Listener;
 		Task ConnectAcceptTask;
-
-<<<<<<< HEAD
-		BinaryFormatter formatter = new BinaryFormatter();
-=======
         long DataId = 0;
->>>>>>> b8ad34c7fae022ddaf9743a22845cc3c24722c7f
 
 		public MainWindow()
 		{
@@ -96,45 +88,6 @@ namespace DeadlyOnline
 				Task t = Task.Run(() => AcceptData(Clients[i], i));
 				ReadTasks.Add(t);
 			}
-<<<<<<< HEAD
-		}
-
-		private void DataAccept(ClientData clientData, int no)
-		{
-			NetworkStream stream = clientData.Client.GetStream();
-
-			while (true)
-			{
-				object obj;
-
-				try
-				{
-					obj = formatter.Deserialize(stream);
-
-					if (obj is ActionData ad)
-					{
-						ActionDataAction(stream, ad);
-					}
-					else if (obj is ResultData rd)
-					{
-						ResultDataAction(rd);
-					}
-					else
-					{
-						Console.WriteLine($"{DateTime.Now.ToLongTimeString()} -- 不正な型のインスタンスが送られた");
-						Disconnect(no);
-						throw new NotImplementedException();
-					}
-				}
-				catch (SerializationException e)
-				{
-					Console.WriteLine($"{DateTime.Now.ToLongTimeString()} -- シリアル化、または逆シリアル化中に例外が発生 {e.Message}");
-					Disconnect(no);
-					throw;
-				}
-			}
-		}
-=======
 		}
 
         private void AcceptData(ClientData clientData, int no)
@@ -180,35 +133,6 @@ namespace DeadlyOnline
             var ad = new ActionData(cmd, Interlocked.Increment(ref DataId), args, data);
             ad.Send(client.Stream);
         }
->>>>>>> b8ad34c7fae022ddaf9743a22845cc3c24722c7f
-
-		private void ResultDataAction(ResultData rd)
-		{
-			Console.WriteLine($"{nameof(ResultData)}  {rd.DataFormat}");
-			ResultCommandInvoke(rd);
-
-			if (!(ResultFunc is null))
-			{
-				ResultFunc.Invoke(rd);
-				ResultFunc = null;
-			}
-			ResultQueue.Enqueue(rd.Data);
-		}
-
-		private void ActionDataAction(NetworkStream stream, ActionData ad)
-		{
-			Console.WriteLine($"{nameof(ActionData)}  {ad.Command}\tArgsCount:{ad.Arguments.Count()}");
-
-			var res = ActionCommandInvoke(ad);
-
-			if (!(ActionFunc is null))
-			{
-				res = ActionFunc.Invoke(ad, res);
-				ActionFunc = null;
-			}
-
-			formatter.Serialize(stream, res);
-		}
 
 		/// <summary>
 		/// 指定した番号のクライアントとの接続を切断する
