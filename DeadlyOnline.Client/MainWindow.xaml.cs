@@ -17,6 +17,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Net;
 using System.Net.Sockets;
+using System.Net.Security;
 using System.IO;
 
 using Games.Objects;
@@ -29,6 +30,7 @@ namespace DeadlyOnline.Client
 	using static DeadlyOnline.Logic.Logic;
 	using static DeadlyOnline.Logic.Constants;
 
+
 	/// <summary>
 	/// MainWindow.xaml の相互作用ロジック
 	/// </summary>
@@ -36,6 +38,9 @@ namespace DeadlyOnline.Client
 	{
 		TcpClient Client;
 		Task CmdAcceptTask;
+        Dictionary<long, CommandFunc> CommandDictionary = new Dictionary<long, CommandFunc>();
+
+        long DataId = 0;
 
 		public MainWindow()
 		{
@@ -73,13 +78,13 @@ namespace DeadlyOnline.Client
 				return;
 			}
 
-			CmdAcceptTask = Task.Run(CommandAccept);
+			CmdAcceptTask = Task.Run((Action)CommandAccept);
 		}
 
 		private void CommandAccept()
 		{
 			BinaryFormatter formatter = new BinaryFormatter();
-			NetworkStream stream = Client.GetStream();
+            NetworkStream stream= Client.GetStream();
 			
 			while (true)
 			{
@@ -91,20 +96,21 @@ namespace DeadlyOnline.Client
 					{
 						Console.WriteLine($"{ad.Command}  ArgsCount:{ad.Arguments.Count()}");
 						var res = ActionCommandInvoke(ad);
-						formatter.Serialize(stream, res);
-					}
-					else if (obj is ResultData rd)
-					{
 
+                        if (res.Command != CommandFormat.None)
+                        {
+
+                            formatter.Serialize(stream, res);
+                        }
 					}
 					else
 					{
 						throw new NotImplementedException();
 					}
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					Console.WriteLine("aaa");
+					Console.WriteLine($"例外発生 {ex.GetType()}: {ex.Message} ");
 					throw;
 				}
 			}

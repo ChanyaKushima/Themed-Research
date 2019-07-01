@@ -6,118 +6,95 @@ using System.Threading.Tasks;
 
 namespace DeadlyOnline.Logic
 {
-	public delegate ResultData CommandFunc(in ActionData actionData);
-	public delegate void ResultFunc(in ResultData resultData);
+    public delegate ActionData CommandFunc(in ActionData actionData);
 
-	public static partial class Logic
-	{
-		private static Dictionary<ActionCommand, CommandFunc> ActionDataCmds = new Dictionary<ActionCommand, CommandFunc>()
-		{
-			{ ActionCommand.CreateAccount, CreateAccount },
-			{ ActionCommand.Login, Login },
-			{ ActionCommand.Logout, Logout },
-			{ ActionCommand.DataRequest, DataRequest },
-			{ ActionCommand.DataUpdate, DataUpdate },
-			{ ActionCommand.MapMove, MapMove },
+    public static partial class Logic
+    {
+        private static readonly string FileName = "";
 
-			{ ActionCommand.Debug, Debug },
-		};
+        private static Dictionary<CommandFormat, CommandFunc> ActionDataCmds = new Dictionary<CommandFormat, CommandFunc>()
+        {
+            { CommandFormat.None,EmptyMethod },
+            { CommandFormat.CreateAccount, CreateAccount },
+            { CommandFormat.Login, Login },
+            { CommandFormat.Logout, Logout },
+            { CommandFormat.DataRequest, DataRequest },
+            { CommandFormat.DataUpdate, DataUpdate },
+            { CommandFormat.MapMove, MapMove },
 
-		private static Dictionary<ResultDataFormat, ResultFunc> ResultDataCmds = new Dictionary<ResultDataFormat, ResultFunc>()
-		{
-			
-		};
+            { CommandFormat.Result, EmptyMethod },
 
-		private static ResultData CreateAccount(in ActionData data)
-		{
-			if (data.Command!=ActionCommand.CreateAccount)
-			{
-				ThrowHelper.ThrowArgumentException($"{nameof(data)}.{nameof(data.Command)}が異常です。");
-			}
 
-			//
-			// ______
-			//
+            { CommandFormat.Debug, Debug },
+        };
 
-			return ResultData.Empty;
-		}
+        static Logic()
+        {
+            
+        }
 
-		private static ResultData Login(in ActionData data)
-		{
-			if (data.Command != ActionCommand.Login)
-			{
-				ThrowHelper.ThrowArgumentException($"{nameof(data)}.{nameof(data.Command)}が異常です。");
-			}
+        private static ActionData EmptyMethod(in ActionData actionData) => default;
 
-			//
-			// ______
-			//
-			return ResultData.Empty;
+        private static ActionData CreateAccount(in ActionData data)
+        {
 
-		}
-		private static ResultData Logout(in ActionData data)
-		{
-			if (data.Command != ActionCommand.Logout)
-			{
-				ThrowHelper.ThrowArgumentException($"{nameof(data)}.{nameof(data.Command)}が異常です。");
-			}
+            //
+            // ______
+            //
 
-			//
-			// ______
-			//
+            return default;
+        }
 
-			return ResultData.Empty;
-		}
-		private static ResultData DataRequest(in ActionData data)
-		{
-			if (data.Command != ActionCommand.DataRequest)
-			{
-				ThrowHelper.ThrowArgumentException($"{nameof(data)}.{nameof(data.Command)}が異常です。");
-			}
+        private static ActionData Login(in ActionData data)
+        {
 
-			//
-			// ______
-			//
-			return ResultData.Empty;
-		}
-		private static ResultData DataUpdate(in ActionData data)
-		{
-			if (data.Command != ActionCommand.DataUpdate)
-			{
-				ThrowHelper.ThrowArgumentException($"{nameof(data)}.{nameof(data.Command)}が異常です。");
-			}
+            //
+            // ______
+            //
+            return default;
 
-			//
-			// ______
-			//
-			return ResultData.Empty;
-		}
+        }
+        private static ActionData Logout(in ActionData data)
+        {
 
-		private static ResultData MapMove(in ActionData data)
-		{
-			if (data.Command != ActionCommand.MapMove)
-			{
-				ThrowHelper.ThrowArgumentException($"{nameof(data)}.{nameof(data.Command)}が異常です。");
-			}
+            //
+            // ______
+            //
 
-			//
-			// ______
-			//
-			return ResultData.Empty;
-		}
+            return default;
+        }
+        private static ActionData DataRequest(in ActionData data)
+        {
+            //
+            // ______
+            //
+            return default;
+        }
+        private static ActionData DataUpdate(in ActionData data)
+        {
+            //
+            // ______
+            //
+            return default;
+        }
 
-		private static ResultData Debug(in ActionData data)
-		{
-			if (data.Command != ActionCommand.Debug)
-			{
-				ThrowHelper.ThrowArgumentException($"{nameof(data)}.{nameof(data.Command)}が異常です。");
-			}
-			foreach (var item in data.Arguments)
-			{
-				Console.WriteLine(item);
-			}
+        private static ActionData MapMove(in ActionData data)
+        {
 
-			return ResultData.Empty;
-		}
-	}
+            //
+            // ______
+            //
+            return default;
+        }
+
+        private static ActionData Debug(in ActionData data)
+        {
+            foreach (var item in data.Arguments)
+            {
+                Console.WriteLine(item);
+            }
+
+            return default;
+        }
+    }
 }

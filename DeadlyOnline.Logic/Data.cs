@@ -13,7 +13,7 @@ namespace DeadlyOnline.Logic
 
 	public class MapData{
 		public MapID ID{ get; set; }
-		public int HierarchyNo{ get; set; }
+		public int Hierarchy{ get; set; }
 
 	}
 }

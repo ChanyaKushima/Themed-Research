@@ -36,6 +36,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,6 +45,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -56,13 +58,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionCommand.cs" />
     <Compile Include="ActionData.cs" />
     <Compile Include="Calc.cs" />
     <Compile Include="ClientData.cs" />
+    <Compile Include="CommandFormat.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Data.cs" />
-    <Compile Include="DataFormat.cs" />
     <Compile Include="General\Logic.cs" />
     <Compile Include="Logic.cs" />
     <Compile Include="Methods.cs" />
@@ -73,7 +74,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="ResultData.cs" />
     <Compile Include="ThrowHelper.cs" />
   </ItemGroup>
   <ItemGroup>
