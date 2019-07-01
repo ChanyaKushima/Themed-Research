@@ -13,8 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using System.Net.Security;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -36,7 +38,12 @@ namespace DeadlyOnline
 	/// </summary>
 	public sealed partial class MainWindow : Window
 	{
-		readonly ClientData[] Clients = new ClientData[MaxClientsNo];
+        #region static field(s)
+        static readonly IPEndPoint IPEndPoint = new IPEndPoint(IPAddress.Any, Port);
+        #endregion
+
+
+        readonly ClientData[] Clients = new ClientData[MaxClientsNo];
 		readonly List<Task> ReadTasks = new List<Task>();
 		readonly Queue<object> ResultQueue = new Queue<object>();
 
@@ -46,7 +53,11 @@ namespace DeadlyOnline
 		TcpListener Listener;
 		Task ConnectAcceptTask;
 
+<<<<<<< HEAD
 		BinaryFormatter formatter = new BinaryFormatter();
+=======
+        long DataId = 0;
+>>>>>>> b8ad34c7fae022ddaf9743a22845cc3c24722c7f
 
 		public MainWindow()
 		{
@@ -57,33 +68,35 @@ namespace DeadlyOnline
 		{
 			base.OnInitialized(e);
 
-			Listener = new TcpListener(IPAddress.Any, Port);
+			Listener = new TcpListener(IPEndPoint);
 			Listener.Start();
-			ConnectAcceptTask = Task.Run(ConnectionAccept);
+			ConnectAcceptTask = Task.Run(AcceptConnection);
 		}
 
-		private async Task ConnectionAccept()
+		private async Task AcceptConnection()
 		{
 			TcpClient client;
 
 			while (true)
 			{
-				int i = ArrayEmptyTer(Clients);
+				int i = GetArrayEmptyTerritory(Clients);
 
 				if (i >= Clients.Length) { continue; }
 
 				try { client = await Listener.AcceptTcpClientAsync(); }
 				catch (SocketException e)
 				{
-					Console.WriteLine($"{DateTime.Now.ToLongTimeString()}-- 受付中に例外が発生 {e.Message}");
+					Console.WriteLine($"{DateTime.Now}-- 受付中に例外が発生 {e.Message}");
 					continue;
 				}
 				
 				Clients[i] = new ClientData() { Client = client };
+                SendData(Clients[i], CommandFormat.Debug, new object[] { DateTime.Now, "接続完了" });
 
-				Task t = Task.Run(() => DataAccept(Clients[i], i));
+				Task t = Task.Run(() => AcceptData(Clients[i], i));
 				ReadTasks.Add(t);
 			}
+<<<<<<< HEAD
 		}
 
 		private void DataAccept(ClientData clientData, int no)
@@ -121,6 +134,53 @@ namespace DeadlyOnline
 				}
 			}
 		}
+=======
+		}
+
+        private void AcceptData(ClientData clientData, int no)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            NetworkStream stream = clientData.Stream;
+
+            try
+            {
+                while (true)
+                {
+                    object obj = formatter.Deserialize(stream);
+
+                    if (obj is ActionData ad)
+                    {
+                        Console.WriteLine($"{nameof(ActionData)}  {ad.Command}\tArgsCount:{ad.Arguments.Count()}");
+
+                        var res = ActionCommandInvoke(ad);
+                        formatter.Serialize(stream, res);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{DateTime.Now} -- 不正な型のインスタンスが送られた");
+                        Disconnect(no);
+                        throw new NotImplementedException();
+                    }
+                }
+            }
+            catch (SerializationException ex)
+            {
+                Console.WriteLine($"{DateTime.Now} -- シリアル化、または逆シリアル化中に例外が発生 {ex.Message}");
+                Disconnect(no);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"{DateTime.Now} -- ホストに強制的に切断されました {ex.Message}");
+                Disconnect(no);
+            }
+        }
+
+        private void SendData(ClientData client, CommandFormat cmd, IEnumerable<object> args = null, object data = null)
+        {
+            var ad = new ActionData(cmd, Interlocked.Increment(ref DataId), args, data);
+            ad.Send(client.Stream);
+        }
+>>>>>>> b8ad34c7fae022ddaf9743a22845cc3c24722c7f
 
 		private void ResultDataAction(ResultData rd)
 		{

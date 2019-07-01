@@ -15,7 +15,7 @@ namespace DeadlyOnline.Logic
 	{
 		public TcpClient Client { get; set; }
 		public PlayerData PlayerData{ get; set; }
-		public NetworkStream stream => Client.GetStream();
+		public NetworkStream Stream => Client.GetStream();
 
 		public ClientData()
 		{
