@@ -1,5 +1,8 @@
 ﻿namespace DeadlyOnline.Logic
 {
+    /// <summary>
+    /// マップの識別番号
+    /// </summary>
     public enum MapID
 	{
 		/// <summary>

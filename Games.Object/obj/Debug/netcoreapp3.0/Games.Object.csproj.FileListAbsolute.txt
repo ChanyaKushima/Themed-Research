@@ -36,3 +36,4 @@ C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.O
 C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfo.cs
 C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.dll
 C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.pdb
+C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.csprojAssemblyReference.cache

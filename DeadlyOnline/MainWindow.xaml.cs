@@ -44,8 +44,7 @@ namespace DeadlyOnline
 
 
         readonly ClientData[] Clients = new ClientData[MaxClientsNo];
-		readonly List<Task> ReadTasks = new List<Task>();
-		readonly Queue<object> ResultQueue = new Queue<object>();
+		readonly Task[] AcceptDataTasks = new Task[MaxClientsNo];
 
 		TcpListener Listener;
 		Task ConnectAcceptTask;
@@ -54,6 +53,7 @@ namespace DeadlyOnline
 		public MainWindow()
 		{
 			InitializeComponent();
+            MainWindowObject = this;
 		}
 
 		protected override void OnInitialized(EventArgs e)
@@ -86,7 +86,7 @@ namespace DeadlyOnline
                 SendData(Clients[i], CommandFormat.Debug, new object[] { DateTime.Now, "接続完了" });
 
 				Task t = Task.Run(() => AcceptData(Clients[i], i));
-				ReadTasks.Add(t);
+                AcceptDataTasks[i] = t;
 			}
 		}
 

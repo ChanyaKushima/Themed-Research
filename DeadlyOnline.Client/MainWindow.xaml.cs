@@ -26,26 +26,29 @@ using Games.Object.Visual;
 
 namespace DeadlyOnline.Client
 {
-	using DeadlyOnline.Logic;
-	using static DeadlyOnline.Logic.Logic;
-	using static DeadlyOnline.Logic.Constants;
+    using DeadlyOnline.Logic;
+    using static DeadlyOnline.Logic.Logic;
+    using static DeadlyOnline.Logic.Constants;
 
-	/// <summary>
-	/// MainWindow.xaml の相互作用ロジック
-	/// </summary>
-	public sealed partial class MainWindow : Window
-	{
+    using CommandAction = Action<Logic.ActionData, Logic.ActionData>;
+
+    /// <summary>
+    /// MainWindow.xaml の相互作用ロジック
+    /// </summary>
+    public sealed partial class MainWindow : Window
+    {
         TcpClient Client;
         Task CmdAcceptTask;
-        Dictionary<long, CommandFunc> CommandDictionary = new Dictionary<long, CommandFunc>();
+        Dictionary<long, CommandAction> CommandDictionary = new Dictionary<long, CommandAction>();
 
         CancellationTokenSource CmdAcceptSource;
 
-		public MainWindow()
-		{
-			InitializeComponent();
-			ConnectServer();
-		}
+        public MainWindow()
+        {
+            InitializeComponent();
+            MainWindowObject = this;
+            ConnectServer();
+        }
 
         private async void ConnectServer()
         {
@@ -81,13 +84,13 @@ namespace DeadlyOnline.Client
             CmdAcceptTask = Task.Run(CommandAccept, CmdAcceptSource.Token);
         }
 
-		private void CommandAccept()
-		{
-			BinaryFormatter formatter = new BinaryFormatter();
-			NetworkStream stream = Client.GetStream();
-			
-			while (true)
-			{
+        private void CommandAccept()
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            NetworkStream stream = Client.GetStream();
+
+            while (true)
+            {
                 try
                 {
                     var obj = formatter.Deserialize(stream);
@@ -97,8 +100,13 @@ namespace DeadlyOnline.Client
                         Console.WriteLine($"{ad.Command}  ArgsCount:{ad.Arguments.Count()}");
                         var res = ActionCommandInvoke(ad);
 
+                        if (CommandDictionary.ContainsKey(ad.Id))
+                        {
+                            CommandDictionary[ad.Id].Invoke(ad, res);
+                        }
+
                         if (res.Command != CommandFormat.None)
-                        { 
+                        {
                             formatter.Serialize(stream, res);
                         }
                     }
@@ -113,10 +121,15 @@ namespace DeadlyOnline.Client
                     throw;
                 }
             }
-		}
-
-        private void Disconnect(){
-            
         }
-	}
+
+        private void Disconnect()
+        {
+            if (Client is null)
+            {
+                Client.Close();
+                Client = null;
+            }
+        }
+    }
 }

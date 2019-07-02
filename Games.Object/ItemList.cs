@@ -8,17 +8,26 @@ using System.Diagnostics;
 namespace Games.Object
 {
     [DebuggerDisplay("Count = {Count}")]
-    internal class ItemList<T> : IList<T>, IReadOnlyList<T>
+    public class ItemList<T> : IList<T>, IReadOnlyList<T>
     {
+        private const int MaxArrayLength = 0x7FEFFFFF;
+        private const int DefaultCapacity = 4;
+
+        private readonly static T[] _emptyArray = new T[0];
+
         private T[] _items;
         private int _size;
         private int _version;
-
-        private readonly static T[] _emptyArray = new T[0];
+        internal Func<int, int> CapacityAdder = c => c * 2;
 
         public ItemList()
         {
             _items = _emptyArray;
+        }
+
+        public ItemList(Func<int, int> capacityAdder) : this()
+        {
+            CapacityAdder = capacityAdder;
         }
 
         public ItemList(int capacity)
@@ -29,6 +38,11 @@ namespace Games.Object
             }
 
             _items = (capacity == 0) ? _emptyArray : new T[capacity];
+        }
+
+        public ItemList(int capacity, Func<int, int> capacityAdder) : this(capacity)
+        {
+            CapacityAdder = capacityAdder;
         }
 
         public ItemList(IEnumerable<T> collection)
@@ -67,10 +81,7 @@ namespace Games.Object
 
         public int Capacity
         {
-            get
-            {
-                return _items.Length;
-            }
+            get { return _items.Length; }
             set
             {
                 if (value < _size)
@@ -125,8 +136,46 @@ namespace Games.Object
             _items[_size++] = item;
             _version++;
         }
+        public void AddRange(IEnumerable<T> collection)
+        {
+            if (collection is null)
+            {
+                ThrowHelper.ThrowArgumentNullException();
+            }
 
-        private void EnsureCapacity(int min) => throw new NotImplementedException();
+            if (collection is ICollection<T> c)
+            {
+                int count = c.Count;
+                if (count != 0)
+                {
+                    c.CopyTo(_items, _size);
+                    _size += count;
+                }
+            }
+            else
+            {
+                using IEnumerator<T> en = collection.GetEnumerator();
+                while (en.MoveNext())
+                {
+                    Add(en.Current);
+                }
+            }
+        }
+
+        private void EnsureCapacity(int min)
+        {
+            int newCapacity = _items.Length == 0 ? DefaultCapacity : CapacityAdder(_items.Length);
+            if ((uint)newCapacity > MaxArrayLength)
+            {
+                newCapacity = MaxArrayLength;
+            }
+            else if (newCapacity < min)
+            {
+                newCapacity = min;
+            }
+            Capacity = newCapacity;
+        }
+
         public void Clear()
         {
             if (_size > 0)
@@ -160,18 +209,18 @@ namespace Games.Object
         {
             CopyTo(array, arrayIndex, _size);
         }
-        public void CopyTo(T[] array, int arrayIndex, int length)
+        public void CopyTo(T[] array, int arrayIndex, int count)
         {
             if (array is null)
             {
                 ThrowHelper.ThrowArgumentNullException();
             }
-            if (length > array.Length - arrayIndex)
+            if (count > array.Length - arrayIndex)
             {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < count; i++)
             {
                 array[i + arrayIndex] = _items[i];
             }
@@ -258,12 +307,47 @@ namespace Games.Object
         }
         public bool Remove(T item)
         {
-            throw new NotImplementedException();
+            int index = IndexOf(item);
+            if (index >= 0)
+            {
+                RemoveAt(index);
+                return true;
+            }
+            return false;
         }
 
-        public void RemoveAt(int index) => throw new NotImplementedException();
-        public IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
-        IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
+        public void RemoveAt(int index)
+        {
+            if ((uint)index >= (uint)_size)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException();
+            }
+            _size--;
+
+            if (index < _size)
+            {
+                Array.Copy(_items, index + 1, _items, index, _size - index);
+            }
+            if (index == _size)
+            {
+                _items[_size] = default;
+            }
+            _version++;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            var list = new List<T>(_size);
+            for (int i = 0; i < _size; i++)
+            {
+                list.Add(_items[i]);
+            }
+            return list.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        #region AsSpan methods
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Span<T> AsSpan() => new Span<T>(_items, 0, _size);
@@ -300,5 +384,7 @@ namespace Games.Object
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Span<T> AsSpan(int start, int length) => new Span<T>(_items, start, length);
+
+        #endregion
     }
 }
