@@ -1,0 +1,242 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline\\DeadlyOnline.Server.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj",
+        "projectName": "BuildSoft.Audio.Players",
+        "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj",
+        "packagesPath": "C:\\Users\\Alice\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": [
+            "Microsoft.NETCore.App",
+            "Microsoft.WindowsDesktop.App"
+          ]
+        }
+      }
+    },
+    "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj",
+        "projectName": "DeadlyOnline.Logic",
+        "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj",
+        "packagesPath": "C:\\Users\\Alice\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj": {
+                "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": [
+            "Microsoft.NETCore.App",
+            "Microsoft.WindowsDesktop.App"
+          ]
+        }
+      }
+    },
+    "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline\\DeadlyOnline.Server.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline\\DeadlyOnline.Server.csproj",
+        "projectName": "DeadlyOnline.Server",
+        "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline\\DeadlyOnline.Server.csproj",
+        "packagesPath": "C:\\Users\\Alice\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj": {
+                "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj"
+              },
+              "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj": {
+                "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj"
+              },
+              "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj": {
+                "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": [
+            "Microsoft.NETCore.App",
+            "Microsoft.WindowsDesktop.App"
+          ]
+        }
+      }
+    },
+    "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj",
+        "projectName": "Games.Object",
+        "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj",
+        "packagesPath": "C:\\Users\\Alice\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": [
+            "Microsoft.NETCore.App",
+            "Microsoft.WindowsDesktop.App"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Windows;
+
 namespace DeadlyOnline.Logic
 {
     public delegate ActionData CommandFunc(in ActionData actionData);
-
+    
     public static partial class Logic
     {
+        public static object MainWindowObject= null;
         private static readonly string FileName = "";
 
         private static Dictionary<CommandFormat, CommandFunc> ActionDataCmds = new Dictionary<CommandFormat, CommandFunc>()

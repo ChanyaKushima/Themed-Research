@@ -1,0 +1,61 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.0": {
+      "DeadlyOnline.Server/1.0.0": {
+        "dependencies": {
+          "BuildSoft.Audio.Players": "1.0.0",
+          "DeadlyOnline.Logic": "1.0.0",
+          "Games.Object": "1.0.0"
+        },
+        "runtime": {
+          "DeadlyOnline.Server.dll": {}
+        }
+      },
+      "BuildSoft.Audio.Players/1.0.0": {
+        "runtime": {
+          "BuildSoft.Audio.Players.dll": {}
+        }
+      },
+      "DeadlyOnline.Logic/1.0.0": {
+        "dependencies": {
+          "Games.Object": "1.0.0"
+        },
+        "runtime": {
+          "DeadlyOnline.Logic.dll": {}
+        }
+      },
+      "Games.Object/1.0.0": {
+        "runtime": {
+          "Games.Object.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DeadlyOnline.Server/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BuildSoft.Audio.Players/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DeadlyOnline.Logic/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Games.Object/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

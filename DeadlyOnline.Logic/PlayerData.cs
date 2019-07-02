@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Games.Objects;
-using Games.Objects.RPG;
+using Games.Object;
+using Games.Object.RPG;
 
 namespace DeadlyOnline.Logic
 {

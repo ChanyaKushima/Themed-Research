@@ -22,9 +22,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using Games.Objects;
-using Games.Objects.RPG;
-using Games.Objects.Visual;
+using Games.Object;
+using Games.Object.RPG;
+using Games.Object.Visual;
 
 namespace DeadlyOnline
 {

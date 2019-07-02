@@ -20,9 +20,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 
-using Games.Objects;
-using Games.Objects.RPG;
-using Games.Objects.Visual;
+using Games.Object;
+using Games.Object.RPG;
+using Games.Object.Visual;
 
 namespace DeadlyOnline.Client
 {

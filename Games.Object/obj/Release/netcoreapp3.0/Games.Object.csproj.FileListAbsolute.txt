@@ -1,0 +1,9 @@
+E:\C# SourceCode\Core\Games.Object\bin\Release\netcoreapp3.0\Games.Object.deps.json
+E:\C# SourceCode\Core\Games.Object\bin\Release\netcoreapp3.0\Games.Object.dll
+E:\C# SourceCode\Core\Games.Object\bin\Release\netcoreapp3.0\Games.Object.pdb
+E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.csproj.CoreCompileInputs.cache
+E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.AssemblyInfoInputs.cache
+E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.AssemblyInfo.cs
+E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.dll
+E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.pdb
+E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.csprojAssemblyReference.cache

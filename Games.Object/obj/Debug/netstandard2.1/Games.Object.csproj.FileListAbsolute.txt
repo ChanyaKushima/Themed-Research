@@ -1,0 +1,4 @@
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netstandard2.1\Games.Object.csprojAssemblyReference.cache
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netstandard2.1\Games.Object.csproj.CoreCompileInputs.cache
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netstandard2.1\Games.Object.AssemblyInfoInputs.cache
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netstandard2.1\Games.Object.AssemblyInfo.cs

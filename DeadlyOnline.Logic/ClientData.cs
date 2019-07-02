@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 using System.Net;
 using System.Net.Sockets;
-using Games.Objects;
-using Games.Objects.RPG;
+using Games.Object;
+using Games.Object.RPG;
 
 namespace DeadlyOnline.Logic
 {

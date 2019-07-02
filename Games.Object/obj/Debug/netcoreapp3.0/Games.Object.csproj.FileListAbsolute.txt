@@ -1,0 +1,38 @@
+C:\Users\Alice\Desktop\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.deps.json
+C:\Users\Alice\Desktop\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.dll
+C:\Users\Alice\Desktop\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.pdb
+C:\Users\Alice\Desktop\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.csprojAssemblyReference.cache
+C:\Users\Alice\Desktop\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.csproj.CoreCompileInputs.cache
+C:\Users\Alice\Desktop\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfoInputs.cache
+C:\Users\Alice\Desktop\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfo.cs
+C:\Users\Alice\Desktop\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.dll
+C:\Users\Alice\Desktop\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.pdb
+C:\Users\Alice\Desktop\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.deps.json
+C:\Users\Alice\Desktop\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.dll
+C:\Users\Alice\Desktop\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.pdb
+C:\Users\Alice\Desktop\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.csprojAssemblyReference.cache
+C:\Users\Alice\Desktop\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.csproj.CoreCompileInputs.cache
+C:\Users\Alice\Desktop\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfoInputs.cache
+C:\Users\Alice\Desktop\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfo.cs
+C:\Users\Alice\Desktop\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.dll
+C:\Users\Alice\Desktop\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.pdb
+E:\C# SourceCode\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.deps.json
+E:\C# SourceCode\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.dll
+E:\C# SourceCode\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.pdb
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.csprojAssemblyReference.cache
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.csproj.CoreCompileInputs.cache
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfoInputs.cache
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfo.cs
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.dll
+E:\C# SourceCode\Core\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.pdb
+E:\C# SourceCode\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.exe
+E:\C# SourceCode\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.runtimeconfig.json
+E:\C# SourceCode\Core\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.runtimeconfig.dev.json
+C:\Users\Alice\Desktop\課題研究\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.deps.json
+C:\Users\Alice\Desktop\課題研究\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.dll
+C:\Users\Alice\Desktop\課題研究\Games.Object\bin\Debug\netcoreapp3.0\Games.Object.pdb
+C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.csproj.CoreCompileInputs.cache
+C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfoInputs.cache
+C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.AssemblyInfo.cs
+C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.dll
+C:\Users\Alice\Desktop\課題研究\Games.Object\obj\Debug\netcoreapp3.0\Games.Object.pdb

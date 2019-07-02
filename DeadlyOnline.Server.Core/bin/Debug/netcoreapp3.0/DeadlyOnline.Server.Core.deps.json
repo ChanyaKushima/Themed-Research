@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.0": {
+      "DeadlyOnline.Server.Core/1.0.0": {
+        "runtime": {
+          "DeadlyOnline.Server.Core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DeadlyOnline.Server.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
