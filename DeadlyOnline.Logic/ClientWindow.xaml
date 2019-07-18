@@ -10,6 +10,8 @@
 		ResizeMode="NoResize"
 		WindowStartupLocation="CenterScreen">
 	<Grid>
-		<logic:MapViewer x:Name="MainMapViewer" Height="auto" Width="auto" MapLocation="10,20"/>
+		<logic:MapViewer x:Name="MainMapViewer" Height="auto" Width="auto" MapLocation="10,20">
+
+		</logic:MapViewer>
 	</Grid>
 </Window>

@@ -43,6 +43,8 @@ namespace DeadlyOnline.Client
 
         CancellationTokenSource CmdAcceptSource;
 
+        Timer timer;
+
         public ClientWindow()
         {
             InitializeComponent();
@@ -53,12 +55,20 @@ namespace DeadlyOnline.Client
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    pieces[i, j] = new MapPiece(0, 0, rand.Next(3), false);
+                    pieces[i, j] = new MapPiece(0, 0, rand.Next(3)/ (rand.Next(3)+1), false);
                 }
             }
-            var map = new DebugDetailedMap(new MapData(), pieces);
+
+            timer = new Timer(obj => { Dispatcher.Invoke(() => { MainMapViewer.MapLeft += 1; }); });
+            timer.Change(1, 10);
+
+            var map = new DebugDetailedMap(default, pieces)
+            {
+                PieceSide = 70
+            };
             MainMapViewer.Background = new ImageBrush(new BitmapImage(Calc.ResolveUri("cg06a.jpg")));
             MainMapViewer.Map = map;
+
             
             //ConnectServer();
         }
@@ -94,10 +104,14 @@ namespace DeadlyOnline.Client
             }
 
             CmdAcceptSource ??= new CancellationTokenSource();
-            CmdAcceptTask = Task.Run(CommandAccept, CmdAcceptSource.Token);
+            CmdAcceptTask = Task.Run(AcceptCommand, CmdAcceptSource.Token);
         }
 
-        private void CommandAccept()
+        private void SendCommand(){
+            
+        }
+
+        private void AcceptCommand()
         {
             BinaryFormatter formatter = new BinaryFormatter();
             NetworkStream stream = Client.GetStream();
@@ -106,6 +120,7 @@ namespace DeadlyOnline.Client
             {
                 try
                 {
+
                     var obj = formatter.Deserialize(stream);
 
                     if (obj is ActionData ad)
@@ -120,7 +135,7 @@ namespace DeadlyOnline.Client
 
                         if (res.Command != CommandFormat.None)
                         {
-                            formatter.Serialize(stream, res);
+                            res.Send(stream);
                         }
                     }
                     else

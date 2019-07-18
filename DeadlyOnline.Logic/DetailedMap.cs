@@ -19,7 +19,25 @@ namespace DeadlyOnline.Logic
 
         public const int DefaultPieceSide = 28;
 
-        internal Lazy<ImageSource> Source = null;
+        internal ImageSource Source
+        {
+            get => _sourceLazy?.Value;
+            set
+            {
+                if (value is null)
+                {
+                    _sourceLazy = null;
+                }
+                else
+                {
+                    if (_sourceLazy is null || !_sourceLazy.IsValueCreated || _sourceLazy.Value != value)
+                    {
+                        _sourceLazy = new Lazy<ImageSource>(value);
+                    }
+                }
+            }
+        }
+        private Lazy<ImageSource> _sourceLazy = null;
 
         private double _pieceSide = 28;
 
@@ -32,7 +50,12 @@ namespace DeadlyOnline.Logic
                 {
                     ThrowHelper.ThrowArgumentException();
                 }
-                _pieceSide = value;
+
+                if (value != _pieceSide)
+                {
+                    _pieceSide = value;
+                    _sourceLazy = new Lazy<ImageSource>(GetSource);
+                }
             }
         }
 
@@ -50,14 +73,14 @@ namespace DeadlyOnline.Logic
                         _pieces = null;
                         Width = 0;
                         Height = 0;
-                        Source = null;
+                        _sourceLazy = null;
                     }
                     else
                     {
                         _pieces = value;
                         Width = _pieces.GetLength(0);
                         Height = _pieces.GetLength(1);
-                        Source = (Width != 0 && Height != 0) ? new Lazy<ImageSource>(GetSource) : null;
+                        _sourceLazy = (Width != 0 && Height != 0) ? new Lazy<ImageSource>(GetSource) : null;
                     }
                 }
             }
@@ -69,14 +92,16 @@ namespace DeadlyOnline.Logic
         internal double ActualWidth => Width * _pieceSide;
         internal double ActualHeight => Height * _pieceSide;
 
+        private Size ActualSize => new Size(ActualWidth, ActualHeight);
+
 
         static DetailedMap() => Sources = new List<ImageSource>();
 
         public override void Draw(DrawingContext dc, Rect rect)
         {
-            if (Source != null)
+            if (_sourceLazy != null)
             {
-                dc.DrawImage(Source.Value, rect);
+                dc.DrawImage(_sourceLazy.Value, new Rect(rect.Location, ActualSize));
             }
         }
 
@@ -84,23 +109,17 @@ namespace DeadlyOnline.Logic
         {
             DrawingVisual dv = new DrawingVisual();
             DrawingContext dc = dv.RenderOpen();
-            Size pieceSize = new Size(_pieceSide, _pieceSide);
-            Point location = new Point();
-
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    DrawPiece(dc, new Rect(location, pieceSize), _pieces[x, y]);
-                    location.Y += _pieceSide;
+                    Rect rect = new Rect(x * _pieceSide, y * _pieceSide, _pieceSide, _pieceSide);
+                    DrawPiece(dc, rect, _pieces[x, y]);
                 }
-                location.Y = 0;
-                location.X += _pieceSide;
             }
             dc.Close();
-            var bitmap = new RenderTargetBitmap((int)10, (int)10, 96, 96, PixelFormats.Pbgra32);
+            var bitmap = new RenderTargetBitmap((int)ActualWidth,(int) ActualHeight, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(dv);
-
             return bitmap;
         }
 
