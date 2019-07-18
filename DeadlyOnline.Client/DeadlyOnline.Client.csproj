@@ -4,10 +4,12 @@
 		<TargetFramework>netcoreapp3.0</TargetFramework>
 		<RootNamespace>Core_WPF</RootNamespace>
 		<UseWPF>true</UseWPF>
+		<ApplicationIcon />
+		<StartupObject />
 	</PropertyGroup>
 	<ItemGroup>
-    <ProjectReference Include="..\BuildSoft.Audio.Players\BuildSoft.Audio.Players.csproj"/>
-    <ProjectReference Include="..\DeadlyOnline.Logic\DeadlyOnline.Logic.csproj"/>
-    <ProjectReference Include="..\Games.Object\Games.Object.csproj"/>
+    <ProjectReference Include="..\BuildSoft.Audio.Players\BuildSoft.Audio.Players.csproj" />
+    <ProjectReference Include="..\DeadlyOnline.Logic\DeadlyOnline.Logic.csproj" />
+    <ProjectReference Include="..\Games.Object\Games.Object.csproj" />
   </ItemGroup>
 </Project>

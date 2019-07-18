@@ -35,7 +35,7 @@ namespace DeadlyOnline.Client
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
-    public sealed partial class MainWindow : Window
+    public partial class ClientWindow : Window
     {
         TcpClient Client;
         Task CmdAcceptTask;
@@ -43,11 +43,24 @@ namespace DeadlyOnline.Client
 
         CancellationTokenSource CmdAcceptSource;
 
-        public MainWindow()
+        public ClientWindow()
         {
             InitializeComponent();
             MainWindowObject = this;
-            ConnectServer();
+            MapPiece[,] pieces = new MapPiece[44, 10];
+            Random rand = new Random();
+            for (int i = 0; i < 44; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    pieces[i, j] = new MapPiece(0, 0, rand.Next(3), false);
+                }
+            }
+            var map = new DebugDetailedMap(new MapData(), pieces);
+            MainMapViewer.Background = new ImageBrush(new BitmapImage(Calc.ResolveUri("cg06a.jpg")));
+            MainMapViewer.Map = map;
+            
+            //ConnectServer();
         }
 
         private async void ConnectServer()

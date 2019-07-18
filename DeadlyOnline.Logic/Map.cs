@@ -8,7 +8,7 @@ namespace DeadlyOnline.Logic
 {
     public abstract class Map
     {
-        public MapID MapID { get; protected set; }
-        public abstract void Draw(DrawingContext dc, Size size);
+        public MapData Data { get; protected set; }
+        public abstract void Draw(DrawingContext dc, Rect rect);
     }
 }

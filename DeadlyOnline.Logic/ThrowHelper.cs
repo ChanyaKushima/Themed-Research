@@ -13,6 +13,11 @@ namespace DeadlyOnline.Logic
 		{
 			throw new ArgumentException(message);
 		}
+        
+        internal static void ThrowArgumentException()
+		{
+			throw new ArgumentException();
+		}
 
 		internal static void ThrowNullReferenceException(string message)
 		{

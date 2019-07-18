@@ -6,6 +6,9 @@
 		<UseWPF>true</UseWPF>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="ClientWindow.xaml" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="..\Games.Object\Games.Object.csproj" />
 	</ItemGroup>
 </Project>

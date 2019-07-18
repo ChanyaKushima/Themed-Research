@@ -1,6 +1,7 @@
 ﻿namespace Games.Object
 {
 	using System.Drawing;
+    using System.Diagnostics;
 
 	/// <summary>
 	/// マップの欠片
@@ -10,6 +11,7 @@
 	/// <!-- classに改変しても, コンストラクタで全てのフィールドに初期値を与える様にする -->
 	/// <!-- もしくはファイルパスを引数として, 2次元・3次元配列を返す静的メソッドを定義する -->
 	/// <!-- 後記の場合, このクラスをinternalにする事をお勧めする -->
+    [DebuggerDisplay("Layer = [{Layer[0]}, {Layer[1]}, {Layer[2]}]")]
 	public struct MapPiece
 	{
 		#region 定数
@@ -27,11 +29,11 @@
 		/// <summary>
 		/// レイヤーの数
 		/// </summary>
-		private static readonly int LayerNo = 3;
+		public static readonly int LayerNo = 3;
 
-		#endregion
+        #endregion
 
-		private readonly int[] Layer;
+        public int[] Layer { get; set; }
 		/// <summary>
 		/// <see cref="MapPiece"/>を識別するID文字列。
 		/// 識別する必要がないならば<see langword="null"/>。

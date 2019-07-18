@@ -1,12 +1,15 @@
-﻿<Window x:Class="DeadlyOnline.Client.MainWindow"
+﻿<Window x:Class="DeadlyOnline.Client.ClientWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DeadlyOnline.Client"
+		xmlns:logic="clr-namespace:DeadlyOnline.Logic"
         mc:Ignorable="d"
-        Title="DeadlyOnline" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="DeadlyOnline" Height="700" Width="1200"
+		ResizeMode="NoResize"
+		WindowStartupLocation="CenterScreen">
+	<Grid>
+		<logic:MapViewer x:Name="MainMapViewer" Height="auto" Width="auto" MapLocation="10,20"/>
+	</Grid>
 </Window>

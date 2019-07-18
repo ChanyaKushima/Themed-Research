@@ -12,7 +12,7 @@ namespace DeadlyOnline.Logic
     
     public static partial class Logic
     {
-        public static object MainWindowObject= null;
+        public static Client.ClientWindow MainWindowObject= null;
         private static readonly string FileName = "";
 
         private static Dictionary<CommandFormat, CommandFunc> ActionDataCmds = new Dictionary<CommandFormat, CommandFunc>()

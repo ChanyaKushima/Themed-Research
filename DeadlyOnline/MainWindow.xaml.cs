@@ -53,7 +53,6 @@ namespace DeadlyOnline
 		public MainWindow()
 		{
 			InitializeComponent();
-            MainWindowObject = this;
 		}
 
 		protected override void OnInitialized(EventArgs e)
