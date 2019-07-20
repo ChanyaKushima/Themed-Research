@@ -36,7 +36,7 @@ namespace DeadlyOnline.Logic
         }
         private Lazy<ImageSource> _sourceLazy = null;
 
-        private int _pieceSide;
+        private int _pieceSide = DefaultPieceSide;
 
         private MapPiece[,] _pieces = null;
 
@@ -91,14 +91,19 @@ namespace DeadlyOnline.Logic
 
         private Size ActualSize => new Size(ActualWidth, ActualHeight);
 
+        public DebugDetailedMap()
+        {
 
+        }
 
-        public DebugDetailedMap(MapData data) : this(data, null, DefaultPieceSide)
+        public DebugDetailedMap(MapData data) : this(data, null)
         {
         }
 
-        public DebugDetailedMap(MapData data, MapPiece[,] pieces) : this(data, pieces, DefaultPieceSide)
+        public DebugDetailedMap(MapData data, MapPiece[,] pieces)
         {
+            Data = data;
+            Pieces = pieces;
         }
 
         public DebugDetailedMap(MapData data,MapPiece[,] pieces, int pieceSide)

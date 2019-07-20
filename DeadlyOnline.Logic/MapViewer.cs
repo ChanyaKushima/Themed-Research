@@ -13,7 +13,7 @@ namespace DeadlyOnline.Logic
         private static readonly Type _typeofThis = typeof(MapViewer);
 
         public static readonly DependencyProperty MapProperty =
-            DependencyProperty.Register(nameof(Map), typeof(Map),_typeofThis,
+            DependencyProperty.Register(nameof(Map), typeof(Map), _typeofThis,
                 new FrameworkPropertyMetadata(new EmptyMap(), FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty MapLeftProperty =
@@ -32,7 +32,7 @@ namespace DeadlyOnline.Logic
 
         public Point MapLocation
         {
-            get => new Point(MapLeft,MapTop);
+            get => new Point(MapLeft, MapTop);
             set => (MapLeft, MapTop) = (value.X, value.Y);
         }
 
