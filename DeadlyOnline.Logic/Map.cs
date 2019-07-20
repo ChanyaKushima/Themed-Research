@@ -11,4 +11,12 @@ namespace DeadlyOnline.Logic
         public MapData Data { get; protected set; }
         public abstract void Draw(DrawingContext dc, Rect rect);
     }
+
+    public class EmptyMap : Map
+    {
+        public override void Draw(DrawingContext dc, Rect rect)
+        {
+
+        }
+    }
 }

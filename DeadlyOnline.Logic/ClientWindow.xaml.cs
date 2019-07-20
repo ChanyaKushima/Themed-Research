@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -59,8 +60,14 @@ namespace DeadlyOnline.Client
                 }
             }
 
-            timer = new Timer(obj => { Dispatcher.Invoke(() => { MainMapViewer.MapLeft += 1; }); });
-            timer.Change(1, 10);
+            timer = new Timer(obj => {
+                Dispatcher.Invoke(() =>
+                {
+                    MainMapViewer.MapLeft += 2;
+                });
+            });
+            timer.Change(0, 1000/60);
+            
 
             var map = new DebugDetailedMap(default, pieces)
             {

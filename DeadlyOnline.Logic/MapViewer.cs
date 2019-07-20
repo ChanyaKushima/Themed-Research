@@ -14,7 +14,7 @@ namespace DeadlyOnline.Logic
 
         public static readonly DependencyProperty MapProperty =
             DependencyProperty.Register(nameof(Map), typeof(Map),_typeofThis,
-                new FrameworkPropertyMetadata(new DebugDetailedMap(default), FrameworkPropertyMetadataOptions.AffectsRender));
+                new FrameworkPropertyMetadata(new EmptyMap(), FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty MapLeftProperty =
             DependencyProperty.Register(nameof(MapLeft), typeof(double), _typeofThis,
