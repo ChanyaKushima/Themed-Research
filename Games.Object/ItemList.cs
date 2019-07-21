@@ -180,7 +180,10 @@ namespace Games.Object
         {
             if (_size > 0)
             {
-                Array.Clear(_items, 0, _size);
+                if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                {
+                    Array.Clear(_items, 0, _size);
+                }
                 _size = 0;
             }
             _version++;
@@ -335,15 +338,40 @@ namespace Games.Object
             _version++;
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public void RemoveRange(int index, int count)
         {
-            var list = new List<T>(_size);
-            for (int i = 0; i < _size; i++)
+            if (index < 0)
             {
-                list.Add(_items[i]);
+                ThrowHelper.ThrowIndexOutOfRangeException();
             }
-            return list.GetEnumerator();
+
+            if (count < 0)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException();
+            }
+
+            if (_size - index < count)
+            {
+                ThrowHelper.ThrowArgumentException();
+            }
+
+            if (count > 0)
+            {
+                _size -= count;
+                if (index < _size)
+                {
+                    Array.Copy(_items, index + count, _items, index, _size - index);
+                }
+
+                _version++;
+                if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                {
+                    Array.Clear(_items, _size, count);
+                }
+            }
         }
+
+        public IEnumerator<T> GetEnumerator() => new List<T>(_items).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

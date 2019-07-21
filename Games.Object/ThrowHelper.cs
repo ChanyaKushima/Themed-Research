@@ -16,6 +16,10 @@ namespace Games.Object
         {
             throw new ArgumentNullException();
         }
+        internal static void ThrowArgumentException()
+        {
+            throw new ArgumentException();
+        }
 
         internal static void ThrowArgumentException(string message)
         {
@@ -46,6 +50,13 @@ namespace Games.Object
         {
             throw new ArgumentOutOfRangeException();
         }
+
+        internal static void ThrowIndexOutOfRangeException()
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        
 
         internal static void ThrowInvalidOperationException(string message)
         {

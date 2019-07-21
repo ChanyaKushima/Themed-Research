@@ -25,8 +25,8 @@ namespace Games.Object.Visual
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				int rem = value - value / ShowLine * ShowLine;
-				_selectLine = value >= 0 ? rem : ShowLine + rem;
+				int rem = value - value / DisplayLines * DisplayLines;
+				_selectLine = value >= 0 ? rem : DisplayLines + rem;
 			}
 		}
 
