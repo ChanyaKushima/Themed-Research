@@ -42,7 +42,7 @@ namespace DeadlyOnline.Logic
 
         private int _pieceSide = DefaultPieceSide;
 
-        private MapPiece[][] _pieces = null;
+        private MapPiece[,] _pieces = null;
 
         public int PieceSide
         {
@@ -62,7 +62,7 @@ namespace DeadlyOnline.Logic
             }
         }
 
-        public MapPiece[][] Pieces
+        public MapPiece[,] Pieces
         {
             get => _pieces;
             set
@@ -79,8 +79,8 @@ namespace DeadlyOnline.Logic
                     else
                     {
                         _pieces = value;
-                        Width = _pieces.Length;
-                        Height = _pieces.Select(arr => arr.Length).Max();
+                        Width = _pieces.GetLength(0);
+                        Height = _pieces.GetLength(1);
                         _sourceLazy = (Width != 0 && Height != 0) ? new Lazy<ImageSource>(GetSource) : null;
                     }
                 }
@@ -100,31 +100,22 @@ namespace DeadlyOnline.Logic
 
         }
 
-        public DebugDetailedMap(MapData data) : this(data, (MapPiece[][])null)
+        public DebugDetailedMap(MapData data) : this(data, null)
         {
         }
 
-        public DebugDetailedMap(MapData data, MapPiece[][] pieces)
+
+        public DebugDetailedMap(MapData data, MapPiece[,] pieces)
         {
             Pieces = pieces;
             Data = data;
         }
 
-        public DebugDetailedMap(MapData data,MapPiece[][] pieces, int pieceSide)
+        public DebugDetailedMap(MapData data, MapPiece[,] pieces, int pieceSide)
         {
             Data = data;
             Pieces = pieces;
             _pieceSide = pieceSide;
-        }
-
-        public DebugDetailedMap(MapData data, MapPiece[,] pieces):
-            this(data,Calc.GetJuggedArrayFrom(pieces))
-        {
-        }
-
-        public DebugDetailedMap(MapData data,MapPiece[,] pieces, int pieceSide):
-            this(data, Calc.GetJuggedArrayFrom(pieces),pieceSide)
-        {
         }
 
         public override void Draw(DrawingContext dc, Rect rect)
@@ -144,7 +135,7 @@ namespace DeadlyOnline.Logic
                 for (int y = 0; y < Height; y++)
                 {
                     Rect rect = new Rect(x * _pieceSide, y * _pieceSide, _pieceSide, _pieceSide);
-                    DrawPiece(dc, rect, _pieces[x][y]);
+                    DrawPiece(dc, rect, _pieces[x, y]);
                 }
             }
             dc.Close();
