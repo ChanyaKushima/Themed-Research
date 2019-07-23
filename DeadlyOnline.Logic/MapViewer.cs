@@ -5,10 +5,12 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Markup;
 
 namespace DeadlyOnline.Logic
 {
-    public class MapViewer : Control
+    [ContentProperty("Map")]
+    public class MapViewer : Control, IAddChild
     {
         private static readonly Type _typeofThis = typeof(MapViewer);
 
@@ -52,6 +54,27 @@ namespace DeadlyOnline.Logic
             base.OnRender(dc);
             dc.DrawRectangle(Background, null, new Rect(RenderSize));
             Map?.Draw(dc, new Rect(MapLocation, RenderSize));
+        }
+
+        void IAddChild.AddChild(object value)
+        {
+            Map map = value as Map;
+
+            if (value is null)
+            {
+                ThrowHelper.ThrowArgumentNullException(nameof(value));
+            }
+            if (map is null)
+            {
+                ThrowHelper.ThrowArgumentException();
+            }
+
+            Map = map;
+        }
+
+        void IAddChild.AddText(string text)
+        {
+            throw new NotSupportedException($"{nameof(MapViewer)} is not surported this function.");
         }
     }
 }
