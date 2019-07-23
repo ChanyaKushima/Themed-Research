@@ -10,10 +10,16 @@
 		ResizeMode="NoResize"
 		WindowStartupLocation="CenterScreen">
 	<Grid>
-		<logic:MapViewer x:Name="MainMapViewer"  Height="auto" Width="auto" MapLocation="10,20">
+		<logic:MapViewer x:Name="MainMapViewer"  Height="auto" Width="auto" MapLocation="10,20" MapLeft="12">
 			<logic:MapViewer.Background>
 				<ImageBrush TileMode="Tile" ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg"/>
 			</logic:MapViewer.Background>
+			<logic:MapViewer.Map>
+				<logic:DebugDetailedMap>
+					<logic:DebugDetailedMap.Pieces>
+					</logic:DebugDetailedMap.Pieces>
+				</logic:DebugDetailedMap>
+			</logic:MapViewer.Map>
 		</logic:MapViewer>
 	</Grid>
 </Window>

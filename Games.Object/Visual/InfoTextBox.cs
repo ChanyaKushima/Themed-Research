@@ -37,8 +37,8 @@ namespace Games.Object.Visual
             DependencyProperty.Register(nameof(DisplayLines), typeof(int), _typeofThis,
                 new FrameworkPropertyMetadata(1, FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public static readonly DependencyProperty TextListProperty =
-            DependencyProperty.Register(nameof(TextList), typeof(ItemList<string>), _typeofThis,
+        public static readonly DependencyProperty TextsProperty =
+            DependencyProperty.Register(nameof(Texts), typeof(ItemList<string>), _typeofThis,
                 new FrameworkPropertyMetadata(new ItemList<string>(i => i + 8), FrameworkPropertyMetadataOptions.AffectsRender));
 
         #endregion
@@ -100,18 +100,18 @@ namespace Games.Object.Visual
         public string Text
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (TextList.Count != 0) ? TextList[0] : null;
+            get => (Texts.Count != 0) ? Texts[0] : null;
         }
 
         /// <summary>
         /// 現在表示中の文を取得する。
         /// </summary>
-        public ItemList<string> TextList => (ItemList<string>)GetValue(TextListProperty);
+        public ItemList<string> Texts => (ItemList<string>)GetValue(TextsProperty);
 
         /// <summary>
         /// <see cref="NextText"/>が次に表示する文を持っているかどうかを取得する。
         /// </summary>
-        public bool HasNextText => TextList.Count > DisplayLines;
+        public bool HasNextText => Texts.Count > DisplayLines;
 
         /// <summary>
         /// 文字のHeight
@@ -178,8 +178,8 @@ namespace Games.Object.Visual
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetText(IEnumerable<string> texts)
         {
-            TextList.Clear();
-            TextList.AddRange(texts);
+            Texts.Clear();
+            Texts.AddRange(texts);
             FillInTextblanks();
         }
         /// <summary>
@@ -211,8 +211,8 @@ namespace Games.Object.Visual
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GoToNextText()
         {
-            int len = Math.Min(DisplayLines, TextList.Count);
-            TextList.RemoveRange(0, len);
+            int len = Math.Min(DisplayLines, Texts.Count);
+            Texts.RemoveRange(0, len);
         }
 
         /// <summary>
@@ -231,17 +231,17 @@ namespace Games.Object.Visual
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddText(IEnumerable<string> texts)
         {
-            TextList.AddRange(texts);
+            Texts.AddRange(texts);
             FillInTextblanks();
         }
 
         /// <summary>
-        /// <see cref="TextList"/>プロパティを規定値にリセットする。
+        /// <see cref="Texts"/>プロパティを規定値にリセットする。
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ResetText()
         {
-            TextList.Clear();
+            Texts.Clear();
         }
 
         #endregion
@@ -267,7 +267,7 @@ namespace Games.Object.Visual
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void DrawText(DrawingContext dc)
         {
-            int len = Math.Min(DisplayLines, TextList.Count);
+            int len = Math.Min(DisplayLines, Texts.Count);
             var tf = new Typeface(FontFamily, FontStyle, FontWeight, FontStretch);
             var location = new Point(TextLeft, TextTop - TextLineMargin);
             // テキスト描画
@@ -284,12 +284,12 @@ namespace Games.Object.Visual
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void FillInTextblanks()
         {
-            int cnt = DisplayLines - TextList.Count % DisplayLines;
+            int cnt = DisplayLines - Texts.Count % DisplayLines;
             if (cnt != DisplayLines)
             {
                 for (int i = 0; i < cnt; i++)
                 {
-                    TextList.Add(_newLineString);
+                    Texts.Add(_newLineString);
                 }
             }
         }
@@ -301,7 +301,7 @@ namespace Games.Object.Visual
         private string GetSerialText(int len)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendJoin('\n', TextList.Take(len));
+            sb.AppendJoin('\n', Texts.Take(len));
             return sb.ToString();
         }
 

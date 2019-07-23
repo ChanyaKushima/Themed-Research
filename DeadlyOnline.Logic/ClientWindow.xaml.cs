@@ -17,9 +17,11 @@ using System.Windows.Shapes;
 using System.Threading;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.CompilerServices;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+
 
 using Games.Object;
 using Games.Object.RPG;
@@ -46,6 +48,9 @@ namespace DeadlyOnline.Client
 
         Timer timer;
 
+        FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
+
+
         public ClientWindow()
         {
             InitializeComponent();
@@ -60,13 +65,13 @@ namespace DeadlyOnline.Client
                 }
             }
 
-            timer = new Timer(obj => {
+            timer = new Timer(obj =>
+            {
                 Dispatcher.Invoke(() =>
                 {
                     MainMapViewer.MapLeft += 2;
                 });
-            });
-            timer.Change(0, 1000/60);
+            }, null, 0, 1000 / 60);
             
 
             var map = new DebugDetailedMap(default, pieces)
@@ -78,6 +83,14 @@ namespace DeadlyOnline.Client
 
             
             //ConnectServer();
+        }
+
+        private async Task WriteLog(string message, [CallerMemberName] string name = null, [CallerLineNumber] int line = -1)
+        {
+            string logText = $"{DateTime.Now} {message} -- メンバ名: {name} 行: {line}";
+            byte[] byteData = Encoding.UTF8.GetBytes(logText);
+
+            await logFileStream.WriteAsync(byteData.AsMemory());
         }
 
         private async void ConnectServer()
@@ -127,7 +140,6 @@ namespace DeadlyOnline.Client
             {
                 try
                 {
-
                     var obj = formatter.Deserialize(stream);
 
                     if (obj is ActionData ad)
