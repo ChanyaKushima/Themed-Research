@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,71 +11,104 @@ using System.Windows.Markup;
 namespace DeadlyOnline.Logic
 {
     [ContentProperty("Map")]
-    public class MapViewer : Control, IAddChild
+    public class MapViewer : FrameworkElement, IAddChild
     {
         private static readonly Type _typeofThis = typeof(MapViewer);
 
-        public static readonly DependencyProperty MapProperty =
-            DependencyProperty.Register(nameof(Map), typeof(Map), _typeofThis,
-                new FrameworkPropertyMetadata(new EmptyMap(), FrameworkPropertyMetadataOptions.AffectsRender));
+        /// <see cref="DependencyProperty.AddOwner(Type, PropertyMetadata)"/>にする？ 
+        public static readonly DependencyProperty BackgroundProperty =
+            DependencyProperty.Register(nameof(Background), typeof(Brush), _typeofThis,
+                new FrameworkPropertyMetadata(null,
+                    FrameworkPropertyMetadataOptions.AffectsRender
+                    | FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender));
 
-        public static readonly DependencyProperty MapLeftProperty =
-            DependencyProperty.Register(nameof(MapLeft), typeof(double), _typeofThis,
-                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender));
-        public static readonly DependencyProperty MapTopProperty =
-            DependencyProperty.Register(nameof(MapTop), typeof(double), _typeofThis,
-                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender));
+        public Brush Background
+        {
+            get => (Brush)GetValue(BackgroundProperty);
+            set => SetValue(BackgroundProperty, value);
+        }
+
+        // Add BorderBrush and BorderThickness Property!
+
+
+        private Map _map;
 
         public Map Map
         {
-            get => (Map)GetValue(MapProperty);
-            set => SetValue(MapProperty, value);
-        }
+            get => _map;
+            set
+            {
+                if (_map != value)
+                {
+                    RemoveLogicalChild(_map);
+                    RemoveVisualChild(_map);
+                    _map = value;
+                    AddLogicalChild(value);
+                    AddVisualChild(value);
 
-
-        public Point MapLocation
-        {
-            get => new Point(MapLeft, MapTop);
-            set => (MapLeft, MapTop) = (value.X, value.Y);
+                    InvalidateMeasure();
+                }
+            }
         }
-
-        public double MapLeft
-        {
-            get => (double)GetValue(MapLeftProperty);
-            set => SetValue(MapLeftProperty, value);
-        }
-        public double MapTop
-        {
-            get => (double)GetValue(MapTopProperty);
-            set => SetValue(MapTopProperty, value);
-        }
+        public bool HasMap => !(_map is null);
 
         protected override void OnRender(DrawingContext dc)
         {
-            base.OnRender(dc);
-            dc.DrawRectangle(Background, null, new Rect(RenderSize));
-            Map?.Draw(dc, new Rect(MapLocation, RenderSize));
+            Brush background = Background;
+
+            if (background != null)
+            {
+                dc.DrawRectangle(background, null, new Rect(RenderSize));
+            }
+        }
+
+        protected override int VisualChildrenCount => (_map is null) ? 0 : 1;
+        protected override IEnumerator LogicalChildren =>
+            (_map is null) ? EmptyEnumerator.Instance : new SingleChildEnumerator(_map);
+
+        protected override Visual GetVisualChild(int index)
+        {
+            if (index != 0 || _map is null)
+            {
+                throw new ArgumentOutOfRangeException("index");
+            }
+            return _map;
+        }
+
+        protected override Size MeasureOverride(Size constraint)
+        {
+            Map map = Map;
+            if (map != null)
+            {
+                map.Measure(constraint);
+                return constraint;
+            }
+            return Size.Empty;
+        }
+
+        protected override Size ArrangeOverride(Size arrangeSize)
+        {
+            if (Map != null)
+            {
+                Map.Arrange(new Rect(arrangeSize));
+            }
+            return arrangeSize;
         }
 
         void IAddChild.AddChild(object value)
         {
-            Map map = value as Map;
-
-            if (value is null)
+            if (value is Map map)
             {
-                ThrowHelper.ThrowArgumentNullException(nameof(value));
-            }
-            if (map is null)
-            {
-                ThrowHelper.ThrowArgumentException();
+                Map = map;
+                return;
             }
 
-            Map = map;
+            throw new ArgumentException($"Entered a value which is not {typeof(Map)}.", nameof(value));
         }
 
         void IAddChild.AddText(string text)
         {
-            throw new NotSupportedException($"{nameof(MapViewer)} is not surported this function.");
+            throw new NotSupportedException($"{typeof(MapViewer)} is not surported this function.");
         }
     }
 }
