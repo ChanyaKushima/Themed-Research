@@ -5,21 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DeadlyOnline.Client"
 		xmlns:logic="clr-namespace:DeadlyOnline.Logic"
+		xmlns:visual="clr-namespace:Games.Object.Visual;assembly=Games.Object"
         mc:Ignorable="d"
         Title="DeadlyOnline" Height="700" Width="1200"
 		ResizeMode="NoResize"
-		WindowStartupLocation="CenterScreen">
+		WindowStartupLocation="CenterScreen"
+		SizeToContent="Manual"
+		>
 	<Grid>
-		<logic:MapViewer x:Name="MainMapViewer"  Height="auto" Width="auto" MapLocation="10,20" MapLeft="12">
+		<logic:MapViewer x:Name="MainMapViewer">
 			<logic:MapViewer.Background>
 				<ImageBrush TileMode="Tile" ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg"/>
 			</logic:MapViewer.Background>
-			<logic:MapViewer.Map>
-				<logic:DebugDetailedMap>
-					<logic:DebugDetailedMap.Pieces>
-					</logic:DebugDetailedMap.Pieces>
-				</logic:DebugDetailedMap>
-			</logic:MapViewer.Map>
+			<logic:EmptyMap Margin="161,0,0,113">
+				<logic:EmptyMap.Background>
+					<ImageBrush ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg" Opacity="0.2"/>
+				</logic:EmptyMap.Background>
+			</logic:EmptyMap>
 		</logic:MapViewer>
+		<!--<visual:InfoTextBox Margin="10" ></visual:InfoTextBox>-->
 	</Grid>
 </Window>

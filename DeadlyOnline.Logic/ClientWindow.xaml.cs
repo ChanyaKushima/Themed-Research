@@ -47,8 +47,7 @@ namespace DeadlyOnline.Client
         CancellationTokenSource CmdAcceptSource;
 
         Timer timer;
-
-        FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
+        readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
 
 
         public ClientWindow()
@@ -65,14 +64,7 @@ namespace DeadlyOnline.Client
                 }
             }
 
-            timer = new Timer(obj =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    MainMapViewer.MapLeft += 2;
-                });
-            }, null, 0, 1000 / 60);
-            
+
 
             var map = new DebugDetailedMap(default, pieces)
             {
@@ -81,7 +73,21 @@ namespace DeadlyOnline.Client
             MainMapViewer.Background = new ImageBrush(new BitmapImage(Calc.ResolveUri("cg06a.jpg")));
             MainMapViewer.Map = map;
 
-            
+            timer = new Timer(obj =>
+            {
+                try
+                {
+                    Dispatcher?.Invoke(() =>
+                    {
+
+                    });
+                }
+                catch (Exception)
+                {
+                    timer.Dispose();
+                }
+            }, null, 0, 1000 / 60);
+
             //ConnectServer();
         }
 
