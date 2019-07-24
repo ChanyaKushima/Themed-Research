@@ -5,9 +5,14 @@ namespace DeadlyOnline.Logic
 {
     public class EmptyMap : Map
     {
-        public override void Draw(DrawingContext dc, Rect rect)
+        public EmptyMap()
         {
 
+        }
+
+        protected override void OnRender(DrawingContext dc)
+        {
+            dc.DrawRectangle(Background, null, new Rect(RenderSize));
         }
     }
 }

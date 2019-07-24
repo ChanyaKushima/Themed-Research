@@ -10,9 +10,9 @@ namespace DeadlyOnline.Logic
     {
         public ImageSource Source { get; set; }
 
-        public override void Draw(DrawingContext dc, Rect rect)
+        protected override void OnRender(DrawingContext dc)
         {
-            dc.DrawImage(Source, rect);
+            dc.DrawImage(Source, new Rect(RenderSize));
         }
     }
 }
