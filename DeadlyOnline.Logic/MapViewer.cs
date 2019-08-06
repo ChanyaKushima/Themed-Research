@@ -17,7 +17,7 @@ namespace DeadlyOnline.Logic
 
         /// <see cref="DependencyProperty.AddOwner(Type, PropertyMetadata)"/>にする？ 
         public static readonly DependencyProperty BackgroundProperty =
-            DependencyProperty.Register(nameof(Background), typeof(Brush), _typeofThis,
+            Panel.BackgroundProperty.AddOwner(_typeofThis,
                 new FrameworkPropertyMetadata(null,
                     FrameworkPropertyMetadataOptions.AffectsRender
                     | FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender));
@@ -29,6 +29,8 @@ namespace DeadlyOnline.Logic
         }
 
         // Add BorderBrush and BorderThickness Property!
+
+
 
 
         private Map _map;

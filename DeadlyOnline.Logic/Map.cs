@@ -14,7 +14,7 @@ namespace DeadlyOnline.Logic
     /// <seealso cref="MapViewer"/>に対応している。
     /// </summary>
     [Localizability(LocalizationCategory.None, Readability = Readability.Unreadable)]
-    public abstract class Map : UserControl
+    public abstract class Map : Control
     {
         public static readonly Map Empty = new EmptyMap();
 
