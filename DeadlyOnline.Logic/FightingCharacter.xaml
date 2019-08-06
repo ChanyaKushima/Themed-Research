@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="DeadlyOnline.Logic.FightingCharacter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DeadlyOnline.Logic"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450" MinWidth="200" MinHeight="100">
+    <Grid x:Name="FightCharacterGrid" x:FieldModifier="private" Margin="-1,0,1,0">
+        <Image x:Name="CharaImage" x:FieldModifier="private" Margin="0,0,0,75" Stretch="UniformToFill"/>
+        <Grid Height="75" VerticalAlignment="Bottom">
+            <Rectangle x:Name="LifeMeterBack"
+                       x:FieldModifier="private"
+                       Margin="48,-2,48,38"
+                       StrokeThickness="2"
+                       RenderTransformOrigin="0.5,0.5">
+                <Rectangle.Fill>
+                    <LinearGradientBrush>
+                        <GradientStop Color="Red" Offset="0"/>
+                        <GradientStop Color="#FFA80800" Offset="1"/>
+                        <LinearGradientBrush.Transform >
+                            <SkewTransform AngleX="-35"/>
+                        </LinearGradientBrush.Transform>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+                <Rectangle.Stroke>
+                    <SolidColorBrush Color="White"/>
+                </Rectangle.Stroke>
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <SkewTransform AngleX="35"/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <Rectangle x:Name="LifeMeter"
+                       x:FieldModifier="private"
+                       Margin="50,0,50,40"
+                       RenderTransformOrigin="0.5,0.5">
+                <Rectangle.Fill>
+                    <LinearGradientBrush>
+                        <GradientStop Color="LawnGreen" Offset="0" />
+                        <GradientStop x:Name="LifeMThresholdColored" x:FieldModifier="private" Color="Green" Offset="1"/>
+                        <GradientStop x:Name="LifeMThresholdTrans" x:FieldModifier="private" Color="Transparent" Offset="1" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <SkewTransform AngleX="35"/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <Rectangle x:Name="SPDMeterBack"
+                       x:FieldModifier="private"
+                       Margin="100,35,30.5,25"
+                       Height="15"
+                       RenderTransformOrigin="0.5,0.5">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="White"/>
+                </Rectangle.Fill>
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <SkewTransform AngleX="35"/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <Rectangle x:Name="SPDMeter"
+                       x:FieldModifier="private"
+                       Margin="102,37,32.5,27"
+                       Height="11"
+                       VerticalAlignment="Center"
+                       RenderTransformOrigin="0.5,0.5">
+                <Rectangle.Fill>
+                    <LinearGradientBrush>
+                        <GradientStop x:Name="SPDMThresholdTrans" x:FieldModifier="private" Color="Transparent" Offset="0"/>
+                        <GradientStop x:Name="SPDMThresholdColored" x:FieldModifier="private" Color="LightSkyBlue" Offset="0"/>
+                        <GradientStop Color="DeepSkyBlue" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <SkewTransform AngleX="35"/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+        </Grid>
+    </Grid>
+</UserControl>
