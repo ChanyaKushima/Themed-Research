@@ -13,16 +13,17 @@
 		SizeToContent="Manual"
 		>
 	<Grid>
-		<logic:MapViewer x:Name="MainMapViewer">
-			<logic:MapViewer.Background>
-				<ImageBrush TileMode="Tile" ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg"/>
-			</logic:MapViewer.Background>
-			<logic:EmptyMap Margin="161,0,0,113">
-				<logic:EmptyMap.Background>
-					<ImageBrush ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg" Opacity="0.2"/>
-				</logic:EmptyMap.Background>
-			</logic:EmptyMap>
-		</logic:MapViewer>
-		<!--<visual:InfoTextBox Margin="10" ></visual:InfoTextBox>-->
+        <logic:MapViewer x:Name="MainMapViewer">
+            <logic:MapViewer.Background>
+                <ImageBrush ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg" Stretch="UniformToFill"/>
+            </logic:MapViewer.Background>
+            <logic:DebugDetailedMap x:Name="MainMap" PieceSide="30" Margin="98,64,186,-63.96">
+                <logic:DebugDetailedMap.Background>
+                    <ImageBrush ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg"/>
+                </logic:DebugDetailedMap.Background>
+            </logic:DebugDetailedMap>
+        </logic:MapViewer>
+        <logic:FightingCharacter x:Name="FightingChara" Margin="206,269,570,42.04"/>
+        <!--<visual:InfoTextBox Margin="10" ></visual:InfoTextBox>-->
 	</Grid>
 </Window>

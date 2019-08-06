@@ -11,7 +11,21 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Update="FightingCharacter.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MapField.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="ClientWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="FightingCharacter.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MapField.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

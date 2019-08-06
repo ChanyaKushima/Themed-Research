@@ -15,5 +15,7 @@ namespace DeadlyOnline.Logic
 		public static IPAddress ServerIPAddress = IPAddress.Loopback;
 		public static IPEndPoint ServerIPEndPoint = new IPEndPoint(ServerIPAddress, Port);
 		public static int MaxClientsNo = 50;
+
+        public static int SPDGageMax = 100;
 	}
 }

@@ -12,7 +12,7 @@
 	/// <!-- もしくはファイルパスを引数として, 2次元・3次元配列を返す静的メソッドを定義する -->
 	/// <!-- 後記の場合, このクラスをinternalにする事をお勧めする -->
     [DebuggerDisplay("Layer = [{Layer[0]}, {Layer[1]}, {Layer[2]}]")]
-	public struct MapPiece
+	public class MapPiece
 	{
 		#region 定数
 

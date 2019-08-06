@@ -16,3 +16,7 @@ C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\D
 C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\ClientWindow.baml
 C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\DeadlyOnline.Logic.g.resources
 C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\GeneratedInternalTypeHelper.g.cs
+C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\FightingCharacter.g.cs
+C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\FightingCharacter.baml
+C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\MapField.g.cs
+C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\MapField.baml

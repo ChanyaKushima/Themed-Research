@@ -4,61 +4,6 @@
     "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj",
-        "projectName": "BuildSoft.Audio.Players",
-        "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj",
-        "packagesPath": "C:\\Users\\Alice\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\obj\\",
-        "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
-        "configFilePaths": [
-          "C:\\Users\\Alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "netcoreapp3.0"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "netcoreapp3.0": {
-            "projectReferences": {}
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "netcoreapp3.0": {
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": [
-            "Microsoft.NETCore.App",
-            "Microsoft.WindowsDesktop.App"
-          ]
-        }
-      }
-    },
     "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -87,14 +32,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj": {
-                "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\BuildSoft.Audio.Players\\BuildSoft.Audio.Players.csproj"
-              },
               "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj": {
                 "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj"
-              },
-              "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj": {
-                "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj"
               }
             }
           }
@@ -117,10 +56,17 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "frameworkReferences": [
-            "Microsoft.NETCore.App",
-            "Microsoft.WindowsDesktop.App"
-          ]
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.WindowsDesktop.App.WPF": {
+              "privateAssets": "none"
+            }
+          }
         }
       }
     },
@@ -176,10 +122,14 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "frameworkReferences": [
-            "Microsoft.NETCore.App",
-            "Microsoft.WindowsDesktop.App"
-          ]
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WPF": {
+              "privateAssets": "none"
+            }
+          }
         }
       }
     },
@@ -231,10 +181,14 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "frameworkReferences": [
-            "Microsoft.NETCore.App",
-            "Microsoft.WindowsDesktop.App"
-          ]
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App": {
+              "privateAssets": "none"
+            }
+          }
         }
       }
     }

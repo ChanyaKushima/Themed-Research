@@ -47,56 +47,19 @@ namespace DeadlyOnline.Client
         CancellationTokenSource CmdAcceptSource;
 
         Timer timer;
-        readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
+        //readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
 
 
         public ClientWindow()
         {
             InitializeComponent();
-            MainWindowObject = this;
-            MapPiece[,] pieces = new MapPiece[44, 10];
-            Random rand = new Random();
-            for (int i = 0; i < 44; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    pieces[i, j] = new MapPiece(0, 0, rand.Next(3)/ (rand.Next(3)+1), false);
-                }
-            }
-
-
-
-            var map = new DebugDetailedMap(default, pieces)
-            {
-                PieceSide = 70
-            };
-            MainMapViewer.Background = new ImageBrush(new BitmapImage(Calc.ResolveUri("cg06a.jpg")));
-            MainMapViewer.Map = map;
-
-            timer = new Timer(obj =>
-            {
-                try
-                {
-                    Dispatcher?.Invoke(() =>
-                    {
-
-                    });
-                }
-                catch (Exception)
-                {
-                    timer.Dispose();
-                }
-            }, null, 0, 1000 / 60);
-
-            //ConnectServer();
+            //MainWindowObject = this;
+            LoadGame();
         }
 
-        private async Task WriteLog(string message, [CallerMemberName] string name = null, [CallerLineNumber] int line = -1)
+        private void LoadGame()
         {
-            string logText = $"{DateTime.Now} {message} -- メンバ名: {name} 行: {line}";
-            byte[] byteData = Encoding.UTF8.GetBytes(logText);
-
-            await logFileStream.WriteAsync(byteData.AsMemory());
+            throw new NotImplementedException();
         }
 
         private async void ConnectServer()

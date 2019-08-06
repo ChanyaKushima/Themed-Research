@@ -12,8 +12,7 @@
           "bin/placeholder/BuildSoft.Audio.Players.dll": {}
         },
         "frameworkReferences": [
-          "Microsoft.NETCore.App",
-          "Microsoft.WindowsDesktop.App"
+          "Microsoft.WindowsDesktop.App.WPF"
         ]
       },
       "DeadlyOnline.Logic/1.0.0": {
@@ -29,8 +28,8 @@
           "bin/placeholder/DeadlyOnline.Logic.dll": {}
         },
         "frameworkReferences": [
-          "Microsoft.NETCore.App",
-          "Microsoft.WindowsDesktop.App"
+          "Microsoft.WindowsDesktop.App",
+          "Microsoft.WindowsDesktop.App.WPF"
         ]
       },
       "Games.Object/1.0.0": {
@@ -43,8 +42,7 @@
           "bin/placeholder/Games.Object.dll": {}
         },
         "frameworkReferences": [
-          "Microsoft.NETCore.App",
-          "Microsoft.WindowsDesktop.App"
+          "Microsoft.WindowsDesktop.App.WPF"
         ]
       }
     }
@@ -136,10 +134,17 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "frameworkReferences": [
-          "Microsoft.NETCore.App",
-          "Microsoft.WindowsDesktop.App"
-        ]
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.WindowsDesktop.App": {
+            "privateAssets": "none"
+          },
+          "Microsoft.WindowsDesktop.App.WPF": {
+            "privateAssets": "none"
+          }
+        }
       }
     }
   }
