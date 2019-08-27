@@ -15,7 +15,6 @@ namespace DeadlyOnline.Logic
     {
         private static readonly Type _typeofThis = typeof(MapViewer);
 
-        /// <see cref="DependencyProperty.AddOwner(Type, PropertyMetadata)"/>にする？ 
         public static readonly DependencyProperty BackgroundProperty =
             Panel.BackgroundProperty.AddOwner(_typeofThis,
                 new FrameworkPropertyMetadata(null,

@@ -7,6 +7,10 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="ClientWindow.xaml" />
+	  <None Remove="maid_charachip.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Resource Include="maid_charachip.png" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Games.Object\Games.Object.csproj" />

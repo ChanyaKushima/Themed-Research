@@ -49,16 +49,71 @@ namespace DeadlyOnline.Client
         Timer timer;
         //readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
 
+        Random random = new Random();
 
         public ClientWindow()
         {
             InitializeComponent();
             //MainWindowObject = this;
-            LoadGame();
+            
+            BitmapSource[] walkingImageArray = ChipImage.Read(@"maid_charachip.png", 23, 32);
+            var walkingImageDictionary =
+                new Dictionary<CharacterDirection, ImageSource>(walkingImageArray.Length);
+
+            for (int i = 0; i < walkingImageArray.Length; i++)
+            {
+                walkingImageDictionary[(CharacterDirection)i] = walkingImageArray[i];
+            }
+
+            PlayerData player = new PlayerData("みやび", 10)
+            {
+                WalkingImageSources = walkingImageDictionary
+            };
+           
+            
+
+            Map map = GetRandomDebugDetailedMap(100, 100, new[] { 0, 1, 2 });
+            MainMapField.CurrentMap = map;
+            MainMapField.MainPlayer = player;
+            MainMapField.Focus();
+
+            timer = new Timer(obj =>
+            {
+                try
+                {
+
+                Dispatcher?.Invoke(() =>
+                {
+                    
+                });
+                }
+                catch (Exception)
+                { }
+
+            }, null, 0, 1000);
+
+            //LoadGame();
+        }
+
+        private static DebugDetailedMap GetRandomDebugDetailedMap(int width,int height,int[] upperLayers)
+        {
+            MapPiece[,] mapPieces = new MapPiece[width, height];
+            Random random = new Random();
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    mapPieces[x, y] = new MapPiece(0, 0, upperLayers[random.Next(upperLayers.Length)], true);
+                }
+            }
+
+            return new DebugDetailedMap(MapData.Empty, mapPieces);
         }
 
         private void LoadGame()
         {
+            
             throw new NotImplementedException();
         }
 

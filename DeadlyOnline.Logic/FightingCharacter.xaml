@@ -17,9 +17,6 @@
                     <LinearGradientBrush>
                         <GradientStop Color="Red" Offset="0"/>
                         <GradientStop Color="#FFA80800" Offset="1"/>
-                        <LinearGradientBrush.Transform >
-                            <SkewTransform AngleX="-35"/>
-                        </LinearGradientBrush.Transform>
                     </LinearGradientBrush>
                 </Rectangle.Fill>
                 <Rectangle.Stroke>

@@ -22,8 +22,21 @@ namespace DeadlyOnline.Logic
 
         #region マップ上のデータ
 
-        public Coordinate MapCoordinate { get; set; }
+        public Coordinate MapCoordinate => new Coordinate(MapLeft, MapTop);
+
+        public int MapLeft { get; set; }
+        public int MapTop { get; set; }
+
+        public CharacterDirection MapDirection { get; set; } = CharacterDirection.Down;
+
+
         public MapID CurrentMapID { get; set; }
+
+        // 新しい型の作成を検討
+        public Dictionary<CharacterDirection, ImageSource> WalkingImageSources { get; set; } 
+            = new Dictionary<CharacterDirection, ImageSource>(4);
+
+        public ImageSource WalkingImageSource => WalkingImageSources[MapDirection];
 
         #endregion
 
@@ -34,18 +47,26 @@ namespace DeadlyOnline.Logic
         /// <summary>
         /// キャラの最大レベルを取得する。
         /// </summary>
-        public override int MaxLevel { get => 999; protected set => base.MaxLevel = value; }
+        public override int MaxLevel
+        {
+            get => 999;
+            protected set => throw new NotSupportedException();
+        }
         /// <summary>
         /// キャラの最小レベルを取得する。
         /// </summary>
-        public override int MinLevel { get => 0; protected set => base.MinLevel = value; }
+        public override int MinLevel
+        {
+            get => 0;
+            protected set => throw new NotSupportedException();
+        }
 
         /// <summary>
         /// レベルアップに必要な経験値を取得する。
         /// </summary>
         public int NeedEXP => 0;
 
-        public override ImageSource FightingImage { get ; internal set; }
+        public override ImageSource FightingImageSource { get ; internal set; }
 
         public PlayerData(string name, int maxHP) : base(name, maxHP)
         {

@@ -9,7 +9,7 @@ namespace DeadlyOnline.Logic
         public FightAction SelectedAction { get; set; }
         public CharaBaseData TargetChara { get; set; }
 
-        public abstract ImageSource FightingImage { get; internal set; }
+        public abstract ImageSource FightingImageSource { get; internal set; }
 
         /// <summary>
         /// キャラが生きているかを取得する。

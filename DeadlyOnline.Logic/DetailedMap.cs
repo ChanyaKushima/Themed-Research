@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Runtime.CompilerServices;
 
 using Games.Object;
 
@@ -15,118 +16,173 @@ namespace DeadlyOnline.Logic
     /// </summary>
     public class DetailedMap : Map
     {
-        public static List<ImageSource> Sources { get; }
+        public static List<ImageSource> Sources { get; } = new List<ImageSource>();
+        public const double DefaultPieceSide = 28;
 
-        public const int DefaultPieceSide = 28;
 
-        internal ImageSource Source
+
+        [Localizability(LocalizationCategory.NeverLocalize)]
+        public ImageSource Source
         {
             get => _sourceLazy?.Value;
-            set
-            {
-                if (value is null)
-                {
-                    _sourceLazy = null;
-                }
-                else
-                {
-                    if (_sourceLazy is null || !_sourceLazy.IsValueCreated || _sourceLazy.Value != value)
-                    {
-                        _sourceLazy = new Lazy<ImageSource>(value);
-                    }
-                }
-            }
+            private set => _sourceLazy = (value is null) ? null : new Lazy<ImageSource>(value);
         }
         private Lazy<ImageSource> _sourceLazy = null;
 
-        private double _pieceSide = 28;
+        private static readonly DependencyProperty PiecesProperty =
+            DependencyProperty.Register(nameof(Pieces), typeof(MapPiece[,]), typeof(DetailedMap),
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnPiecesChanged));
 
-        public double PieceSide
+
+        private static readonly DependencyProperty PieceSideProperty =
+            DependencyProperty.Register(nameof(PieceSide), typeof(double), typeof(DetailedMap),
+                new FrameworkPropertyMetadata(DefaultPieceSide, FrameworkPropertyMetadataOptions.AffectsRender, OnPieceSideChanged, PieceSideValue));
+
+        private static object PieceSideValue(DependencyObject d, object value)
         {
-            get => _pieceSide;
-            set
+            double pieceSide = (double)value;
+            if (pieceSide < 0.0)
             {
-                if (value < 0.0)
-                {
-                    ThrowHelper.ThrowArgumentException();
-                }
+                return 0.0;
+            }
+            return value;
+        }
 
-                if (value != _pieceSide)
-                {
-                    _pieceSide = value;
-                    _sourceLazy = new Lazy<ImageSource>(GetSource);
-                }
+        private static void OnPieceSideChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DetailedMap map = d as DetailedMap;
+
+            double newSide = (double)e.NewValue;
+            double oldSide = (double)e.OldValue;
+
+            if (newSide != oldSide)
+            {
+                map.SetNewSourceLazy();
+            }
+        }
+        private static void OnPiecesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DetailedMap map = d as DetailedMap;
+
+            if (e.NewValue is MapPiece[,] newPieces)
+            {
+                map.PiecesWidth = newPieces.GetLength(0);
+                map.PiecesHeight = newPieces.GetLength(1);
+                map.SetNewSourceLazy();
+            }
+            else
+            {
+                map.PiecesWidth = 0;
+                map.PiecesHeight = 0;
+                map._sourceLazy = null;
             }
         }
 
-        private MapPiece[,] _pieces = null;
+        public double PieceSide
+        {
+            get => (double)GetValue(PieceSideProperty);
+            set => SetValue(PieceSideProperty, value);
+        }
 
         public MapPiece[,] Pieces
         {
-            get => _pieces;
-            set
-            {
-                if (_pieces != value)
-                {
-                    if (value is null)
-                    {
-                        _pieces = null;
-                        PiecesWidth = 0;
-                        PiecesHeight = 0;
-                        _sourceLazy = null;
-                    }
-                    else
-                    {
-                        _pieces = value;
-                        PiecesWidth = _pieces.GetLength(0);
-                        PiecesHeight = _pieces.GetLength(1);
-                        _sourceLazy = (PiecesWidth != 0 && PiecesHeight != 0) ? new Lazy<ImageSource>(GetSource) : null;
-                    }
-                }
-            }
+            get => (MapPiece[,])GetValue(PiecesProperty);
+            set => SetValue(PiecesProperty, value);
         }
 
         public int PiecesWidth { get; private set; } = 0;
         public int PiecesHeight { get; private set; } = 0;
 
-        internal double SourceWidth => PiecesWidth * _pieceSide;
-        internal double SourceHeight => PiecesHeight * _pieceSide;
+        private double SourceWidth => PiecesWidth * PieceSide;
+        private double SourceHeight => PiecesHeight * PieceSide;
 
         private Size SourceSize => new Size(SourceWidth, SourceHeight);
 
+        public DetailedMap()
+        {
 
-        static DetailedMap() => Sources = new List<ImageSource>();
+        }
+
+        public DetailedMap(MapData data) : this(data, null)
+        {
+        }
+
+
+        public DetailedMap(MapData data, MapPiece[,] pieces)
+        {
+            Pieces = pieces;
+            Data = data;
+        }
+
+        public DetailedMap(MapData data, MapPiece[,] pieces, int pieceSide)
+        {
+            Data = data;
+            Pieces = pieces;
+            PieceSide = pieceSide;
+        }
+
 
         protected override void OnRender(DrawingContext dc)
         {
             ImageSource source = Source;
             Brush background = Background;
+            Size renderSize = RenderSize;
 
             if (background != null)
             {
-                dc.DrawRectangle(background, null, new Rect(RenderSize));
+                dc.DrawRectangle(background, null, new Rect(renderSize));
             }
             if (source != null)
             {
-                dc.DrawImage(source, new Rect(RenderSize));
+                Size sourceSize = SourceSize;
+
+                double width = Math.Min(renderSize.Width, sourceSize.Width);
+                double height = Math.Min(renderSize.Height, sourceSize.Height);
+
+                ImageSource image = new CroppedBitmap(
+                    (BitmapSource)source,
+                    new Int32Rect(0, 0, (int)width, (int)height));
+                image.Freeze();
+
+                dc.DrawImage(image, new Rect(0, 0, width, height));
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void SetNewSourceLazy()
+        {
+            var sourceLazy = _sourceLazy;
+
+            if (PiecesWidth != 0 && PiecesHeight != 0 && PieceSide != 0)
+            {
+                if (sourceLazy is null || sourceLazy.IsValueCreated)
+                {
+                    _sourceLazy = new Lazy<ImageSource>(GetSource);
+                }
+                return;
+            }
+            _sourceLazy = null;
         }
 
         internal ImageSource GetSource()
         {
             DrawingVisual dv = new DrawingVisual();
             DrawingContext dc = dv.RenderOpen();
+            MapPiece[,] pieces = Pieces;
+            double pieceSide = PieceSide;
+
             for (int x = 0; x < PiecesWidth; x++)
             {
                 for (int y = 0; y < PiecesHeight; y++)
                 {
-                    Rect rect = new Rect(x * _pieceSide, y * _pieceSide, _pieceSide, _pieceSide);
-                    DrawPiece(dc, rect, _pieces[x, y]);
+                    Rect rect = new Rect(x * pieceSide, y * pieceSide, pieceSide, pieceSide);
+                    DrawPiece(dc, rect, pieces[x, y]);
                 }
             }
             dc.Close();
-            var bitmap = new RenderTargetBitmap((int)SourceWidth,(int) SourceHeight, 96, 96, PixelFormats.Pbgra32);
+            var bitmap = new RenderTargetBitmap((int)SourceWidth, (int)SourceHeight, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(dv);
+            bitmap.Freeze();
             return bitmap;
         }
 

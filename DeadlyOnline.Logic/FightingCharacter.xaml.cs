@@ -24,6 +24,12 @@ namespace DeadlyOnline.Logic
             DependencyProperty.Register(nameof(Character), typeof(CharaBaseData), _typeofThis,
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnCharacterChanged));
 
+        private static readonly DependencyProperty UpdaterProperty =
+            DependencyProperty.Register(nameof(Updater), typeof(bool), _typeofThis,
+                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender, OnUpdaterChanged));
+
+        private static void OnUpdaterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+            OnCharacterChanged(d, new DependencyPropertyChangedEventArgs(CharacterProperty, null, d.GetValue(CharacterProperty)));
 
         private static void OnCharacterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -38,17 +44,12 @@ namespace DeadlyOnline.Logic
                 fc.LifeMThresholdTrans.Offset = fc.LifeMThresholdColored.Offset = hpRatio;
                 fc.SPDMThresholdTrans.Offset = fc.SPDMThresholdColored.Offset = 1 - spdGageRatio;
 
-                if (!grid.IsVisible)
-                {
-                    grid.Visibility = Visibility.Visible;
-                }
+                fc.CharaImage.Source = chara.FightingImageSource;
+                grid.Visibility = Visibility.Visible;
             }
             else
             {
-                if (grid.IsVisible)
-                {
-                    grid.Visibility = Visibility.Hidden;
-                }
+                grid.Visibility = Visibility.Hidden;
             }
         }
 
@@ -56,6 +57,11 @@ namespace DeadlyOnline.Logic
         {
             get => (CharaBaseData)GetValue(CharacterProperty);
             set => SetValue(CharacterProperty, value);
+        }
+        private bool Updater
+        {
+            get => (bool)GetValue(UpdaterProperty);
+            set => SetValue(UpdaterProperty, value);
         }
 
         public FightingCharacter()
@@ -66,9 +72,7 @@ namespace DeadlyOnline.Logic
 
         public void RefrectCharacterChange()
         {
-            var tmpChara = Character;
-            Character = null;
-            Character = tmpChara;
+            Updater = !Updater;
         }
     }
 }
