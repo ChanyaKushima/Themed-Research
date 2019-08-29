@@ -72,7 +72,8 @@ namespace DeadlyOnline.Client
            
             
 
-            Map map = GetRandomDebugDetailedMap(100, 100, new[] { 0, 1, 2 });
+            var map = GetRandomDebugDetailedMap(100, 100, new[] { 0, 1, 2 });
+            map.PieceSide = 40;
             MainMapField.CurrentMap = map;
             MainMapField.MainPlayer = player;
             MainMapField.Focus();

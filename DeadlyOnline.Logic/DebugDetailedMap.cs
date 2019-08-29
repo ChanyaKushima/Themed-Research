@@ -152,7 +152,7 @@ namespace DeadlyOnline.Logic
                 double width = widthCandidates.Min();
                 double height = heightCandidates.Min();
 
-                int croppedX = Math.Max(0, -(int)Math.Round( renderingLeft,0, MidpointRounding.ToZero));
+                int croppedX = Math.Max(0, -(int)Math.Round(renderingLeft, 0, MidpointRounding.ToZero));
                 int croppedY = Math.Max(0, -(int)Math.Round(renderingTop, 0, MidpointRounding.ToZero));
 
                 double mapImageLeft = Math.Max(0, renderingLeft);

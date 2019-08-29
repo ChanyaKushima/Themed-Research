@@ -158,33 +158,6 @@ namespace DeadlyOnline.Logic
             return isMoved;
         }
 
-        //private static bool MoveOnMap(DebugDetailedMap map, PlayerData player)
-        //{
-        //    bool isMoved = false;
-
-        //    if (player.MapTop > 0 && IsKeyDown_Up())
-        //    {
-        //        player.MapTop--;
-        //        isMoved = true;
-        //    }
-        //    if (player.MapTop < map.PiecesHeight - 1 && IsKeyDown_Down())
-        //    {
-        //        player.MapTop++;
-        //        isMoved = true;
-        //    }
-        //    if (player.MapLeft > 0 && IsKeyDown_Left())
-        //    {
-        //        player.MapLeft--;
-        //        isMoved = true;
-        //    }
-        //    if (player.MapLeft < map.PiecesWidth - 1 && IsKeyDown_Right())
-        //    {
-        //        player.MapLeft++;
-        //        isMoved = true;
-        //    }
-        //    return isMoved;
-        //}
-
         #endregion
     }
 }
