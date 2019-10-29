@@ -55,7 +55,7 @@ namespace DeadlyOnline.Client
         {
             InitializeComponent();
             //MainWindowObject = this;
-            
+
             BitmapSource[] walkingImageArray = ChipImage.Read(@"maid_charachip.png", 23, 32);
             var walkingImageDictionary =
                 new Dictionary<CharacterDirection, ImageSource>(walkingImageArray.Length);
@@ -69,8 +69,8 @@ namespace DeadlyOnline.Client
             {
                 WalkingImageSources = walkingImageDictionary
             };
-           
-            
+
+
 
             var map = GetRandomDebugDetailedMap(100, 100, new[] { 0, 1, 2 });
             map.PieceSide = 40;
@@ -83,10 +83,7 @@ namespace DeadlyOnline.Client
                 try
                 {
 
-                Dispatcher?.Invoke(() =>
-                {
-                    
-                });
+                    Dispatcher?.Invoke(() => { });
                 }
                 catch (Exception)
                 { }

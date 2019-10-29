@@ -4,17 +4,17 @@
 library
 C#
 .cs
-C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\
 DeadlyOnline.Logic
 none
 false
 TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_0
 
-31800073052
+4-1488725643
 
-341498831274
-193-1089164630
-ClientWindow.xaml;FightingCharacter.xaml;MapField.xaml;
+36-346660196
+200-471084621
+ClientWindow.xaml;FightingCharacter.xaml;FightingField.xaml;MapField.xaml;
 
 False
 

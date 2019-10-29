@@ -3,10 +3,10 @@
     "tfm": "netcoreapp3.0",
     "framework": {
       "name": "Microsoft.WindowsDesktop.App",
-      "version": "3.0.0-preview7-27912-14"
+      "version": "3.0.0"
     },
     "additionalProbingPaths": [
-      "C:\\Users\\Alice\\.nuget\\packages",
+      "C:\\Users\\alice\\.nuget\\packages",
       "C:\\Microsoft\\Xamarin\\NuGet",
       "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
     ],

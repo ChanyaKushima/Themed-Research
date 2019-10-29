@@ -47,6 +47,8 @@ namespace DeadlyOnline.Logic
 
         #endregion
 
+        public event MovedOnMapEventHandler MovedOnMap;
+
         public PlayerData MainPlayer
         {
             get => (PlayerData)GetValue(MainPlayerProperty);
@@ -91,8 +93,14 @@ namespace DeadlyOnline.Logic
 
             if (moved)
             {
+                OnMovedOnMap(new MovedOnMapEventArgs(MainPlayer, CurrentMap));
                 RefrectUIChange();
             }
+        }
+
+        protected virtual void OnMovedOnMap(MovedOnMapEventArgs e)
+        {
+            MovedOnMap?.Invoke(this, e);
         }
 
         private void RefrectUIChange() => 

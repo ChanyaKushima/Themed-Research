@@ -1,24 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj": {}
+    "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj": {
+    "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj",
+        "projectUniqueName": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj",
         "projectName": "DeadlyOnline.Client",
-        "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj",
-        "packagesPath": "C:\\Users\\Alice\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Client\\obj\\",
+        "projectPath": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Client\\DeadlyOnline.Client.csproj",
+        "packagesPath": "C:\\Users\\alice\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Client\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -32,8 +32,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj": {
-                "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj"
+              "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj": {
+                "projectPath": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj"
               }
             }
           }
@@ -67,25 +67,25 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100-preview8-013656\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj": {
+    "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj",
+        "projectUniqueName": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj",
         "projectName": "DeadlyOnline.Logic",
-        "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj",
-        "packagesPath": "C:\\Users\\Alice\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Alice\\Desktop\\課題研究\\DeadlyOnline.Logic\\obj\\",
+        "projectPath": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Logic\\DeadlyOnline.Logic.csproj",
+        "packagesPath": "C:\\Users\\alice\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\DeadlyOnline.Logic\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -99,8 +99,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj": {
-                "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj"
+              "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\Games.Object\\Games.Object.csproj": {
+                "projectPath": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\Games.Object\\Games.Object.csproj"
               }
             }
           }
@@ -134,25 +134,25 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100-preview8-013656\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj": {
+    "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\Games.Object\\Games.Object.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj",
+        "projectUniqueName": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\Games.Object\\Games.Object.csproj",
         "projectName": "Games.Object",
-        "projectPath": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\Games.Object.csproj",
-        "packagesPath": "C:\\Users\\Alice\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Alice\\Desktop\\課題研究\\Games.Object\\obj\\",
+        "projectPath": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\Games.Object\\Games.Object.csproj",
+        "packagesPath": "C:\\Users\\alice\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\alice\\OneDrive\\ドキュメント\\Themed-Research\\Games.Object\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\alice\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -194,7 +194,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100-preview8-013656\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
