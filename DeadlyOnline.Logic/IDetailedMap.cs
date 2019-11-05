@@ -10,6 +10,11 @@ namespace DeadlyOnline.Logic
         double PieceSide { get; set; }
         int PiecesWidth { get; }
         ImageSource Source { get; }
+
+        event PlayerMovedEventHandler PlayerMoved;
+
+        void OnPlayerMoved(PlayerMovedEventArgs e);
+
         void InvokeTerrainEffect(int x, int y);
         void SetRenderingLocationByPieceLocation(int x, int y);
     }

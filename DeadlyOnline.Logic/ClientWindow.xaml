@@ -12,7 +12,7 @@
 		WindowStartupLocation="CenterScreen"
 		SizeToContent="Manual"
 		>
-	<Grid x:Name="MainGrid">
+	<Grid x:Name="MainGrid" FocusVisualStyle="{x:Null}">
         <!--<logic:MapViewer x:Name="MainMapViewer">
             <logic:MapViewer.Background>
                 <ImageBrush ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg" Stretch="UniformToFill"/>

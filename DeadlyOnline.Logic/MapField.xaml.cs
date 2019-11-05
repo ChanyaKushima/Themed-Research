@@ -89,17 +89,21 @@ namespace DeadlyOnline.Logic
         {
             if (!mapViewer.HasMap) { return; }
 
-            bool moved = MovePlayer(MainPlayer);
-
-            if (moved)
+            if (MovePlayer(MainPlayer))
             {
-                OnMovedOnMap(new MovedOnMapEventArgs(MainPlayer, CurrentMap));
-                RefrectUIChange();
+                OnMovedOnMapCore(new MovedOnMapEventArgs(MainPlayer, CurrentMap));
             }
+            RefrectUIChange();
         }
 
         protected virtual void OnMovedOnMap(MovedOnMapEventArgs e)
         {
+            // Empty
+        }
+
+        private void OnMovedOnMapCore(MovedOnMapEventArgs e)
+        {
+            OnMovedOnMap(e);
             MovedOnMap?.Invoke(this, e);
         }
 

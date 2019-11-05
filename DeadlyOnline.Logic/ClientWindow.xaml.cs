@@ -106,7 +106,12 @@ namespace DeadlyOnline.Client
                 }
             }
 
-            return new DebugDetailedMap(MapData.Empty, mapPieces);
+            var map= new DebugDetailedMap(MapData.Empty, mapPieces);
+            map.PlayerMoved += (sender, e) => { 
+                Console.WriteLine("{" + e.X + ", " + e.Y + "}"); 
+            };
+
+            return map;
         }
 
         private void LoadGame()

@@ -10,6 +10,8 @@ namespace DeadlyOnline.Logic
 
         public Map Map { get; set; }
 
+        public MapData MapData => Map.Data;
+
         public MovedOnMapEventArgs(PlayerData player, Map map)
         {
             Player = player;

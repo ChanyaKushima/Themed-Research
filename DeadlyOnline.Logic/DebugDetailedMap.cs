@@ -15,6 +15,8 @@ namespace DeadlyOnline.Logic
     [ContentProperty("Pieces")]
     public class DebugDetailedMap : Map, IDetailedMap
     {
+        #region static members
+
         public const double DefaultPieceSide = 28;
 
         private const double _defaultDpiX = 96;
@@ -74,6 +76,8 @@ namespace DeadlyOnline.Logic
             }
         }
 
+        #endregion
+
         [Localizability(LocalizationCategory.NeverLocalize)]
         public ImageSource Source
         {
@@ -94,16 +98,18 @@ namespace DeadlyOnline.Logic
             set => SetValue(PiecesProperty, value);
         }
 
-        public int PiecesWidth { get; private set; } = 0;
-        public int PiecesHeight { get; private set; } = 0;
+        public int PiecesWidth { get; private set; }
+        public int PiecesHeight { get; private set; }
 
         private double SourceWidth => PiecesWidth * PieceSide;
         private double SourceHeight => PiecesHeight * PieceSide;
 
         private Size SourceSize => new Size(SourceWidth, SourceHeight);
 
-        private int _mainPlayerX=0;
-        private int _mainPlayerY=0;
+        private int _mainPlayerX = 0;
+        private int _mainPlayerY = 0;
+
+        public event PlayerMovedEventHandler PlayerMoved;
 
         // Add Location Properties
 
@@ -235,10 +241,27 @@ namespace DeadlyOnline.Logic
                 ThrowHelper.ThrowArgumentOutOfRengeException(nameof(y));
             }
 
-            _mainPlayerX = x;
-            _mainPlayerY = y;
 
-            UpdateRenderingLocation();
+            if (_mainPlayerX != x || _mainPlayerY != y)
+            {
+                _mainPlayerX = x;
+                _mainPlayerY = y;
+
+                UpdateRenderingLocation();
+                InvokeTerrainEffect(x, y);
+                OnPlayerMovedCore(new PlayerMovedEventArgs(x, y, this));
+            }
+        }
+
+        public virtual void OnPlayerMoved(PlayerMovedEventArgs e)
+        {
+            // Empty
+        }
+
+        private void OnPlayerMovedCore(PlayerMovedEventArgs e)
+        {
+            OnPlayerMoved(e);
+            PlayerMoved?.Invoke(this, e);
         }
 
         private void UpdateRenderingLocation()
