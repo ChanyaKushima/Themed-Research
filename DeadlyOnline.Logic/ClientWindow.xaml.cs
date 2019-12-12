@@ -32,6 +32,7 @@ namespace DeadlyOnline.Client
     using DeadlyOnline.Logic;
     using static DeadlyOnline.Logic.Logic;
     using static DeadlyOnline.Logic.Constants;
+    using static DeadlyOnline.Logic.GameObjectGenerator;
 
     using CommandAction = Action<Logic.ActionData, Logic.ActionData>;
 
@@ -45,79 +46,56 @@ namespace DeadlyOnline.Client
         Dictionary<long, CommandAction> CommandDictionary = new Dictionary<long, CommandAction>();
 
         CancellationTokenSource CmdAcceptSource;
-
+        
         Timer timer;
         //readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
 
         Random random = new Random();
+
+        PlayerData MainPlayer;
+
+        FightingField FightingField;
 
         public ClientWindow()
         {
             InitializeComponent();
             //MainWindowObject = this;
 
-            BitmapSource[] walkingImageArray = ChipImage.Read(@"maid_charachip.png", 23, 32);
-            var walkingImageDictionary =
-                new Dictionary<CharacterDirection, ImageSource>(walkingImageArray.Length);
-
-            for (int i = 0; i < walkingImageArray.Length; i++)
-            {
-                walkingImageDictionary[(CharacterDirection)i] = walkingImageArray[i];
-            }
-
-            PlayerData player = new PlayerData("みやび", 10)
-            {
-                WalkingImageSources = walkingImageDictionary
-            };
-
-
-
-            var map = GetRandomDebugDetailedMap(100, 100, new[] { 0, 1, 2 });
-            map.PieceSide = 40;
-            MainMapField.CurrentMap = map;
-            MainMapField.MainPlayer = player;
-            MainMapField.Focus();
-
-            timer = new Timer(obj =>
-            {
-                try
-                {
-
-                    Dispatcher?.Invoke(() => { });
-                }
-                catch (Exception)
-                { }
-
-            }, null, 0, 1000);
-
-            //LoadGame();
+            LoadGame();
         }
 
-        private static DebugDetailedMap GetRandomDebugDetailedMap(int width,int height,int[] upperLayers)
-        {
-            MapPiece[,] mapPieces = new MapPiece[width, height];
-            Random random = new Random();
 
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    mapPieces[x, y] = new MapPiece(0, 0, upperLayers[random.Next(upperLayers.Length)], true);
-                }
-            }
-
-            var map= new DebugDetailedMap(MapData.Empty, mapPieces);
-            map.PlayerMoved += (sender, e) => { 
-                Console.WriteLine("{" + e.X + ", " + e.Y + "}"); 
-            };
-
-            return map;
-        }
+        
 
         private void LoadGame()
         {
-            
-            throw new NotImplementedException();
+            PlayerData player = CreatePlayer("Mr.Miyabi", maxHp: 10, atk: 1, def: 2, spd: 10, @"maid_charachip.png", @"tvx_actor02B.png");
+
+            MainPlayer = player;
+
+            var map = CreateRandomDebugDetailedMap(50, 50, new[] { 0, 1, 2 });
+            map.PieceSide = 40;
+            map.PlayerMoved += (sender, e) =>
+            {
+                if (MainRandom.Next(0, 9) == 0)
+                {
+                    var enemy = new EnemyData("AAA", 100, new BitmapImage(Calc.ResolveUri(@"enemy\wa_hito_12nekomata.png")));
+                    var fightingField = CreateFightingField(player, enemy, RenderSize);
+                    SwitchField(fightingField);
+                }
+            };
+            MainMapField.CurrentMap = map;
+            MainMapField.MainPlayer = player;
+            MainMapField.Focus();
+        }
+
+
+        
+
+        private void SwitchField(UserControl field)
+        {
+            MainGrid.Children.Clear();
+            MainGrid.Children.Add(field);
         }
 
         private async void ConnectServer()

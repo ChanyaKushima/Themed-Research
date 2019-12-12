@@ -20,5 +20,4 @@ namespace DeadlyOnline.Logic
     }
 
     public delegate void MovedOnMapEventHandler(object sender, MovedOnMapEventArgs e);
-
 }

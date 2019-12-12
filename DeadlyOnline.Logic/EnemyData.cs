@@ -11,24 +11,17 @@ namespace DeadlyOnline.Logic
 
         public EnemyData(string name, int hp, ImageSource fightingImage) : base(name, hp)
         {
-            FightingImageSource = fightingImage;
+            FightingImage = fightingImage;
         }
         public EnemyData(string name, int hp, int lv, ImageSource fightingImage) : base(name, hp, lv)
         {
-            FightingImageSource = fightingImage;
+            FightingImage = fightingImage;
         }
 
-        public override ImageSource FightingImageSource
+        public override ImageSource FightingImage
         {
             get;
             internal set;
-        }
-
-        public override int Attack()
-        {
-            CheckAttackable(SPDGage);
-            SPDGage -= Constants.SPDGageMax;
-            return ATK;
         }
     }
 }

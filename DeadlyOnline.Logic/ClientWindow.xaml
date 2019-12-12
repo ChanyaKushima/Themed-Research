@@ -12,7 +12,7 @@
 		WindowStartupLocation="CenterScreen"
 		SizeToContent="Manual"
 		>
-	<Grid x:Name="MainGrid" FocusVisualStyle="{x:Null}">
+	<Grid x:Name="MainGrid" >
         <!--<logic:MapViewer x:Name="MainMapViewer">
             <logic:MapViewer.Background>
                 <ImageBrush ImageSource="C:\Users\Alice\Desktop\課題研究\DeadlyOnline.Client\bin\Debug\netcoreapp3.0\cg06a.jpg" Stretch="UniformToFill"/>
@@ -25,6 +25,6 @@
         </logic:MapViewer>
         <logic:FightingCharacter x:Name="FightingChara" Margin="206,269,570,42.04"/>
         <visual:InfoTextBox Margin="10" ></visual:InfoTextBox>-->
-        <logic:MapField x:Name="MainMapField"/>
+        <logic:MapField x:Name="MainMapField" FocusVisualStyle="{x:Null}"/>
     </Grid>
 </Window>

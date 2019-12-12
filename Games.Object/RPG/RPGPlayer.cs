@@ -34,7 +34,7 @@ namespace Games.Object.RPG
 
 		public override List<FightAction> GetActions() => FightCommands.Select(fc => fc.Action).ToList();
 		public IEnumerable<string> GetCommandNames() => FightCommands.Select(fc => fc.Name);
-		public override int Attack() => GetRandValue(max: Level << 1) + Level;
+		public int Attack() => GetRandValue(max: Level << 1) + Level;
 		public void SetFightCommands(IEnumerable<FightCommand> fightCmds) => _fightCommands = new List<FightCommand>(fightCmds);
 
 		/// <summary>

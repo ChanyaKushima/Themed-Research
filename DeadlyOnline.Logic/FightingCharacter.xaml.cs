@@ -39,12 +39,15 @@ namespace DeadlyOnline.Logic
             if (e.NewValue is CharaBaseData chara)
             {
                 double hpRatio = (double)chara.HP / (double)chara.MaxHP;
-                double spdGageRatio = (double)chara.SPDGage / (double)Constants.SPDGageMax;
+                double spdGageRatio = (double)chara.SpdGage / (double)CharaBaseData.MaxSpdGage;
 
                 fc.LifeMThresholdTrans.Offset = fc.LifeMThresholdColored.Offset = hpRatio;
                 fc.SPDMThresholdTrans.Offset = fc.SPDMThresholdColored.Offset = 1 - spdGageRatio;
 
-                fc.CharaImage.Source = chara.FightingImageSource;
+                fc.CharaImage.Source = chara.FightingImage;
+
+                fc.SpdGageCounter.Content = chara.SpdCount;
+
                 grid.Visibility = Visibility.Visible;
             }
             else

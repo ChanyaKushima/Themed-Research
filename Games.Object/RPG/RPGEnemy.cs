@@ -39,7 +39,7 @@ namespace Games.Object.RPG
 		public void ActionsAdd(FightAction action) => _actions.Add(action);
 		public void SetActions(IEnumerable<FightAction> actions) => _actions = new List<FightAction>(actions);
 		public override List<FightAction> GetActions() => new List<FightAction>(_actions);
-		public override int Attack() => GetRandValue(max: Level << 1);
+		public int Attack() => GetRandValue(max: Level << 1);
 
 		#endregion
 	}

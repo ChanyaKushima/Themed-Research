@@ -15,7 +15,6 @@
 
 		public abstract List<FightAction> GetActions();
 
-		public override abstract int Attack();
 	}
 
 	public delegate void FightAction(RPGCharaBase self, RPGCharaBase target);

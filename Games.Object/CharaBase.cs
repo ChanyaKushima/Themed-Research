@@ -115,7 +115,7 @@ namespace Games.Object
 
 		public virtual bool IsAlive => _hp > 0;
 		public bool IsDead => !IsAlive;
-		public abstract int Attack();
+		//public abstract int Attack();
 		public virtual void Damage(int amount) => HP -= amount;
 		public virtual void Recover(int amount) => HP += amount;
 		public int GetEXP() => EXP;

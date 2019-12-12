@@ -131,7 +131,7 @@ namespace DeadlyOnline.Logic
             int playerX = player.MapLeft;
             int playerY = player.MapTop;
 
-            if (IsKeyDown_Up())
+            if (UpKeyIsDown())
             {
                 if (playerY > 0)
                 {
@@ -140,7 +140,7 @@ namespace DeadlyOnline.Logic
                 }
                 player.MapDirection = CharacterDirection.Up;
             }
-            if (IsKeyDown_Down())
+            if (DownKeyIsDown())
             {
                 if (playerY < map.PiecesHeight - 1)
                 {
@@ -149,7 +149,7 @@ namespace DeadlyOnline.Logic
                 }
                 player.MapDirection = CharacterDirection.Down;
             }
-            if (IsKeyDown_Left())
+            if (LeftKeyIsDown())
             {
                 if (playerX > 0)
                 {
@@ -158,7 +158,7 @@ namespace DeadlyOnline.Logic
                 }
                 player.MapDirection = CharacterDirection.Left;
             }
-            if (IsKeyDown_Right())
+            if (RightKeyIsDown())
             {
                 if (playerX < map.PiecesWidth - 1)
                 {

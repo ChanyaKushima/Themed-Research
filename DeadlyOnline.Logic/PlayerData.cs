@@ -33,10 +33,10 @@ namespace DeadlyOnline.Logic
         public MapID CurrentMapID { get; set; }
 
         // 新しい型の作成を検討
-        public Dictionary<CharacterDirection, ImageSource> WalkingImageSources { get; set; } 
+        public Dictionary<CharacterDirection, ImageSource> WalkingImages { get; set; } 
             = new Dictionary<CharacterDirection, ImageSource>(4);
 
-        public ImageSource WalkingImageSource => WalkingImageSources[MapDirection];
+        public ImageSource WalkingImageSource => WalkingImages[MapDirection];
 
         #endregion
 
@@ -66,12 +66,11 @@ namespace DeadlyOnline.Logic
         /// </summary>
         public int NeedEXP => 0;
 
-        public override ImageSource FightingImageSource { get ; internal set; }
+        public override ImageSource FightingImage { get ; internal set; }
 
         public PlayerData(string name, int maxHP) : base(name, maxHP)
         {
         }
 
-        public override int Attack() => throw new NotImplementedException();
     }
 }

@@ -10,6 +10,10 @@ namespace Games.Object.Visual
 {
     public class LogTextBox : TextBlock
     {
-        protected override void OnRender(DrawingContext drawingContext) => throw new NotImplementedException();
+        protected override void OnRender(DrawingContext dc)
+        {
+            DrawTextBlock(dc);
+            throw new NotImplementedException();
+        }
     }
 }

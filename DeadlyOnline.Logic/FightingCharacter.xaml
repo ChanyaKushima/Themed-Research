@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:DeadlyOnline.Logic"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450" MinWidth="200" MinHeight="100">
     <Grid x:Name="FightCharacterGrid" x:FieldModifier="private" Margin="-1,0,1,0">
-        <Image x:Name="CharaImage" x:FieldModifier="private" Margin="0,0,0,75" Stretch="UniformToFill"/>
-        <Grid Height="75" VerticalAlignment="Bottom">
+        <Image x:Name="CharaImage" x:FieldModifier="private" Margin="0,0,0,75" Stretch="Uniform"/>
+        <Grid VerticalAlignment="Bottom">
             <Rectangle x:Name="LifeMeterBack"
                        x:FieldModifier="private"
                        Margin="48,-2,48,38"
@@ -79,6 +79,27 @@
                     </TransformGroup>
                 </Rectangle.RenderTransform>
             </Rectangle>
+            <!--<Grid MinHeight="50" MinWidth="50" Panel.ZIndex="0">-->
+            
+            <!--</Grid>-->
+            <Canvas Margin="20,15,225,5">
+                <Ellipse Height="55" Width="55"  Stroke="White">
+                    <Ellipse.Fill>
+                        <LinearGradientBrush EndPoint="1,1" StartPoint="0,0" MappingMode="RelativeToBoundingBox" SpreadMethod="Pad">
+                            <GradientStop Color="#FF1CEAFF"/>
+                            <GradientStop Color="#FF9D51F9" Offset="1"/>
+                            <GradientStop Color="#FF005EBB" Offset="0.935"/>
+                            <GradientStop Color="#FF00D1FF" Offset="0.552"/>
+                        </LinearGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <Label x:Name="SpdGageCounter" 
+                       Height="55" Width="55"
+                       Content="0" FontSize="33" 
+                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                       Foreground="#FF430085"
+                />
+            </Canvas>
         </Grid>
     </Grid>
 </UserControl>

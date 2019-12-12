@@ -6,22 +6,22 @@
     public static class KeyInfo
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsKeyDown_Up() => IsKeyDown(Up1) || IsKeyDown(Up2);
+        public static bool UpKeyIsDown() => IsKeyDown(Up1) || IsKeyDown(Up2);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsKeyDown_Down() => IsKeyDown(Down1) || IsKeyDown(Down2);
+        public static bool DownKeyIsDown() => IsKeyDown(Down1) || IsKeyDown(Down2);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsKeyDown_Left() => IsKeyDown(Left1) || IsKeyDown(Left2);
+        public static bool LeftKeyIsDown() => IsKeyDown(Left1) || IsKeyDown(Left2);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsKeyDown_Right() => IsKeyDown(Right1) || IsKeyDown(Right2);
+        public static bool RightKeyIsDown() => IsKeyDown(Right1) || IsKeyDown(Right2);
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsKeyDown_Select() => IsKeyDown(Select1) || IsKeyDown(Select2);
+        public static bool SelectKeyIsDown() => IsKeyDown(Select1) || IsKeyDown(Select2);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsKeyDown_Cancel() => IsKeyDown(Cancel1) || IsKeyDown(Cancel2);
+        public static bool CancelKeyIsDown() => IsKeyDown(Cancel1) || IsKeyDown(Cancel2);
     }
 }

@@ -12,6 +12,7 @@ namespace DeadlyOnline.Logic
     
     public static partial class Logic
     {
+        public static Random MainRandom { get; } = new Random();
         public static Client.ClientWindow MainWindowObject= null;
         private static readonly string FileName = "";
 

@@ -9,7 +9,7 @@
 		int EXP { get; }
 		bool IsAlive{ get; }
 		bool IsDead{ get; }
-		int Attack();
+		//int Attack();
 		void Damage(int damage);
 		void Recover(int amount);
 	}
