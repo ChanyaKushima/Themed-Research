@@ -92,13 +92,14 @@ namespace DeadlyOnline.Logic
             get
             {
                 BehaviorInfo behavior = SelectedBehavior;
-                return behavior != null && behavior.GageUsage >= SpdGage;
+                return behavior != null && behavior.SpdCountUsage<= SpdCount;
+
             }
         }
 
         protected static void CheckAttackable(CharaBaseData chara)
         {
-            if (chara.CanAttack)
+            if (!chara.CanAttack)
             {
                 throw new System.InvalidOperationException();
             }
@@ -109,6 +110,7 @@ namespace DeadlyOnline.Logic
             var @this = this;
             CheckAttackable(@this);
             BehaviorInfo behavior = @this.SelectedBehavior;
+            behavior.InvokeBehavior(@this, target);
         }
 
         protected CharaBaseData(string name, int hp) : base(name, hp)

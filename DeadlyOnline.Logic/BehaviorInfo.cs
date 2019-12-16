@@ -6,10 +6,11 @@ namespace DeadlyOnline.Logic
 {
     public class BehaviorInfo
     {
-        public Behavior Behavior { protected get; set; }
+        private Behavior Behavior { get; set; }
+        public string Name { get; }
         private int _interval;
 
-        public int GageUsage
+        public int SpdCountUsage
         {
             get { return _interval; }
             set
@@ -22,9 +23,16 @@ namespace DeadlyOnline.Logic
             }
         }
 
+        public BehaviorInfo(Behavior behavior, string name, int gageUsage)
+        {
+            Behavior = behavior;
+            Name = name;
+            SpdCountUsage = gageUsage;
+        }
+
         public void InvokeBehavior(CharaBaseData self, CharaBaseData target)
         {
-            if (_interval < self.SpdCount)
+            if (_interval > self.SpdCount)
             {
                 ThrowHelper.ThrowInvalidOperationException();
             }
@@ -33,7 +41,7 @@ namespace DeadlyOnline.Logic
             if (behavior != null)
             {
                 behavior(self, target);
-                self.SpdCount -= GageUsage;
+                self.SpdCount -= SpdCountUsage;
             }
         }
     }

@@ -70,32 +70,40 @@ namespace DeadlyOnline.Client
         private void LoadGame()
         {
             PlayerData player = CreatePlayer("Mr.Miyabi", maxHp: 10, atk: 1, def: 2, spd: 10, @"maid_charachip.png", @"tvx_actor02B.png");
+            player.SelectedBehavior = new BehaviorInfo((p, e) => e.Damage(p.AttackPower + 1), "通常攻撃", 1);
 
             MainPlayer = player;
 
             var map = CreateRandomDebugDetailedMap(50, 50, new[] { 0, 1, 2 });
             map.PieceSide = 40;
-            map.PlayerMoved += (sender, e) =>
-            {
-                if (MainRandom.Next(0, 9) == 0)
-                {
-                    var enemy = new EnemyData("AAA", 100, new BitmapImage(Calc.ResolveUri(@"enemy\wa_hito_12nekomata.png")));
-                    var fightingField = CreateFightingField(player, enemy, RenderSize);
-                    SwitchField(fightingField);
-                }
-            };
+            map.PlayerMoved +=PlayerMoved;
             MainMapField.CurrentMap = map;
             MainMapField.MainPlayer = player;
             MainMapField.Focus();
         }
 
+        private void PlayerMoved(object sender, PlayerMovedEventArgs e)
+        {
+            if (MainRandom.Next(10) == 0)
+            {
+                var enemy = new EnemyData("AAA", 10, new BitmapImage(Calc.ResolveUri(@"enemy\wa_hito_12nekomata.png")));
+                var fightingField = CreateFightingField(MainPlayer, enemy, RenderSize);
+                fightingField.Closed += BackToMapField;
+                SwitchField(fightingField);
+                FightingField = fightingField;
+            }
+        }
 
-        
+        private void BackToMapField(object sender,EventArgs e)
+        {
+            SwitchField(MainMapField);
+        }
 
         private void SwitchField(UserControl field)
         {
             MainGrid.Children.Clear();
             MainGrid.Children.Add(field);
+            field.Focus();
         }
 
         private async void ConnectServer()

@@ -17,7 +17,7 @@ using System.Linq;
 namespace DeadlyOnline.Logic
 {
     /// <summary>
-    /// UserControl1.xaml の相互作用ロジック
+    /// FightingField.xaml の相互作用ロジック
     /// </summary>
     public partial class FightingField : UserControl
     {
@@ -38,13 +38,14 @@ namespace DeadlyOnline.Logic
         private readonly PlayerData _mainPlayer;
         private CharaBaseData _target;
 
-        private readonly List<PlayerData> _playerList = new List<PlayerData>();
-        private readonly List<EnemyData>  _enemyList  = new List<EnemyData>();
-
         private readonly Dictionary<PlayerData, FightingCharacter> _playerUIs =
             new Dictionary<PlayerData, FightingCharacter>();
         private readonly Dictionary<EnemyData , FightingCharacter> _enemyUIs  = 
             new Dictionary<EnemyData , FightingCharacter>();
+
+        private FightingState _fightingState = FightingState.Fighting;
+
+        private bool selectWatcher = false;
 
         public FightingField(PlayerData mainPlayer,IEnumerable<PlayerData> players, 
                              IEnumerable<EnemyData> enemies,
@@ -121,7 +122,7 @@ namespace DeadlyOnline.Logic
         // すべてのコンストラクタでこいつを用いる
         private FightingField()
         {
-            var interval = new TimeSpan(0, 0, 0, 0, 10);
+            var interval = new TimeSpan(0, 0, 0, 0, 10/*[ms]*/);
             var timer = new DispatcherTimer(interval, DispatcherPriority.Render, TickOneFrame, Dispatcher);
         }
 
@@ -129,53 +130,67 @@ namespace DeadlyOnline.Logic
 
         private void AddCharacterCore(PlayerData[] players)
         {
-            _playerList.AddRange(players);
+            List<PlayerData> playerList = _playerUIs.Keys.ToList();
 
-            UpdateCharacterUILayout(UpdateModes.Player);
+            playerList.AddRange(players);
+
+            UpdateCharacterUILayout(UpdateModes.Player, playerList, null);
         }
 
         private void AddCharacterCore(EnemyData[] enemies)
         {
-            _enemyList.AddRange(enemies);
+            List<EnemyData> enemyList = _enemyUIs.Keys.ToList();
 
-            UpdateCharacterUILayout(UpdateModes.Enemy);
+            enemyList.AddRange(enemies);
+
+            UpdateCharacterUILayout(UpdateModes.Enemy, null, enemyList);
         }
         private void AddCharacterCore(PlayerData[] players, EnemyData[] enemies)
         {
-            _playerList.AddRange(players);
-            _enemyList.AddRange(enemies);
+            List<PlayerData> playerList = _playerUIs.Keys.ToList();
+            List<EnemyData> enemyList = _enemyUIs.Keys.ToList();
 
-            UpdateCharacterUILayout(UpdateModes.All);
+            playerList.AddRange(players);
+            enemyList.AddRange(enemies);
+            
+            UpdateCharacterUILayout(UpdateModes.All, playerList, enemyList);
         }
 
         #region AddCharacterCore Methods at the Single Character
 
         private void AddCharacterCore(PlayerData player)
         {
-            _playerList.Add(player);
+            List<PlayerData> players = _playerUIs.Keys.ToList();
 
-            UpdateCharacterUILayout(UpdateModes.Player);
+            players.Add(player);
+
+            UpdateCharacterUILayout(UpdateModes.Player, players, null);
         }
 
         private void AddCharacterCore(EnemyData enemy)
         {
-            _enemyList.Add(enemy);
+            List<EnemyData> enemies = _enemyUIs.Keys.ToList();
 
-            UpdateCharacterUILayout(UpdateModes.Enemy);
+            enemies.Add(enemy);
+
+            UpdateCharacterUILayout(UpdateModes.Enemy,null,enemies);
         }
         private void AddCharacterCore(PlayerData player, EnemyData enemy)
         {
-            _playerList.Add(player);
-            _enemyList.Add(enemy);
+            List<PlayerData> players = _playerUIs.Keys.ToList();
+            List<EnemyData> enemies = _enemyUIs.Keys.ToList();
 
-            UpdateCharacterUILayout(UpdateModes.All);
+            players.Add(player);
+            enemies.Add(enemy);
+
+            UpdateCharacterUILayout(UpdateModes.All, players, enemies);
         }
 
         #endregion
 
         #endregion
 
-        private void UpdateCharacterUILayout(UpdateModes updateModes)
+        private void UpdateCharacterUILayout(UpdateModes updateModes,List<PlayerData> players,List<EnemyData> enemies)
         {
             double windowWidth = _windowSize.Width;
             double windowHeight = _windowSize.Height;
@@ -205,7 +220,7 @@ namespace DeadlyOnline.Logic
 
                 #endregion
 
-                PlayerData player = _playerList[0];
+                PlayerData player = players[0];
                 FightingCharacter characterUI; 
 
 
@@ -240,7 +255,7 @@ namespace DeadlyOnline.Logic
             }
             if (updateModes.HasFlag(UpdateModes.Enemy))
             {
-                EnemyData enemy = _enemyList[0];
+                EnemyData enemy = enemies[0];
                 FightingCharacter characterUI;
 
                 double enemyTop = windowHeight / 2.0 - _defaultEnemyHeight / 2.0;
@@ -276,17 +291,35 @@ namespace DeadlyOnline.Logic
 
         private void TickOneFrame(object sender,EventArgs e)
         {
-            foreach (var (player, playerUi) in _playerUIs)
+            if (_fightingState == FightingState.Fighting)
             {
-                decimal nextSpdGage = player.SpdGage + player.Speed/10M;
-                player.SpdGage = nextSpdGage;
-                playerUi.RefrectCharacterChange();
+                foreach (var player in _playerUIs.Keys)
+                {
+                    decimal nextSpdGage = player.SpdGage + player.Speed / 10M;
+                    player.SpdGage = nextSpdGage;
+                }
+                foreach (var enemy in _enemyUIs.Keys)
+                {
+                    decimal nextSpdGage = enemy.SpdGage + enemy.Speed / 10M;
+                    enemy.SpdGage = nextSpdGage;
+                }
             }
-            foreach (var (enemy, enemyUi) in _enemyUIs)
+            else
             {
-                decimal nextSpdGage = enemy.SpdGage + enemy.Speed/10M;
-                enemy.SpdGage = nextSpdGage;
-                enemyUi.RefrectCharacterChange();
+                ((DispatcherTimer)sender).Stop();
+            }
+            UpdateDisplay();
+        }
+
+        private void UpdateDisplay()
+        {
+            foreach (var playerUI in _playerUIs.Values)
+            {
+                playerUI.RefrectCharacterChange();
+            }
+            foreach (var enemyUI in _enemyUIs.Values)
+            {
+                enemyUI.RefrectCharacterChange();
             }
         }
 
@@ -294,14 +327,80 @@ namespace DeadlyOnline.Logic
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
+            Console.WriteLine($"{nameof(FightingField)} OnKeyDown");
+
+            if (IsSelectKey(e.Key))
+            {
+                if (selectWatcher)
+                {
+                    return;
+                }
+                // interlock!!
+                selectWatcher = true;
+            }
+
+            switch (_fightingState)
+            {
+                case FightingState.Fighting:
+                    KeyActFighting(e);
+                    break;
+                case FightingState.Win:
+                    KeyActWin(e);
+                    break;
+                case FightingState.Lose:
+                    KeyActLose(e);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            if (selectWatcher && IsSelectKey(e.Key))
+            {
+                selectWatcher = false;
+            }
+        }
+
+        private void KeyActFighting(KeyEventArgs e)
+        {
+            var mainPlayer = _mainPlayer;
+            var target = _target;
 
             switch (e.Key)
             {
                 case Key.Enter:
-                    if (_mainPlayer.CanAttack)
+                    if (mainPlayer.CanAttack)
                     {
-                        _mainPlayer.InvokeBehavior(_target);
+                        mainPlayer.InvokeBehavior(target);
+                    }
+                    if (target.IsDead)
+                    {
+                        switch (target)
+                        {
+                            case PlayerData pl:
+                                CanvasField.Children.Remove(_playerUIs[pl]);
+                                _playerUIs.Remove(pl);
+                                break;
+                            case EnemyData en:
+                                CanvasField.Children.Remove(_enemyUIs[en]);
+                                _enemyUIs.Remove(en);
+                                break;
+                        };
+
+                        if (_enemyUIs.Count != 0)
+                        {
+                            _target = _enemyUIs.Keys.First();
+                        }
+                        else
+                        {
+                            _target = null;
+                            _fightingState = FightingState.Win;
+
+                            FinishAct();
+                            WinAct();
+                        }
                     }
                     break;
                 default:
@@ -309,8 +408,111 @@ namespace DeadlyOnline.Logic
             }
         }
 
+
+        private bool isLockedFinishedEv = false;
+        private bool isLockedLosedEv = false;
+        private bool isLockedWonEv = false;
+        private bool isLockedClosedEv = false;
+
+        private void KeyActWin(KeyEventArgs e)
+        {
+            if (IsSelectKey(e.Key))
+            {
+                Close();
+            }
+        }
+
+
+        private void KeyActLose(KeyEventArgs e)
+        {
+            if (IsSelectKey(e.Key))
+            {
+                Close();
+            }
+        }
+
+        private void WinAct()
+        {
+            if (!isLockedWonEv)
+            {
+                isLockedWonEv = true;
+                var e = new EventArgs();
+                OnWon(e);
+                Won?.Invoke(this, e);
+            }
+        }
+
+        private void FinishAct()
+        {
+            if (!isLockedFinishedEv)
+            {
+                isLockedFinishedEv = true;
+                var e = new EventArgs();
+                OnFinished(e);
+                Finished?.Invoke(this, e);
+            }
+        }
+
+        public void Close()
+        {
+            if (!isLockedClosedEv)
+            {
+                isLockedClosedEv = true;
+                var e = new EventArgs();
+                OnClosed(e);
+                Closed?.Invoke(this, e);
+            }
+        }
+        private static bool IsSelectKey(Key key) => key == KeyConfig.Select1 || key == KeyConfig.Select2;
+
+        protected virtual void OnFinished(EventArgs e)
+        {
+
+        }
+
+        protected virtual void OnWon(EventArgs e)
+        {
+            Label label = new Label() {
+                Content = "You Won!",
+                Foreground = Brushes.Black,
+                FontSize=30,
+            };
+            Canvas.SetLeft(label, 10);
+            Canvas.SetTop(label, 10);
+            CanvasField.Children.Add(label);
+        }
+
+        protected virtual void OnLose(EventArgs e)
+        {
+
+            Label label = new Label()
+            {
+                Content = "You Lose....",
+                Foreground = Brushes.Black,
+                FontSize=30,
+            };
+            Canvas.SetLeft(label, 10);
+            Canvas.SetTop(label, 10);
+            CanvasField.Children.Add(label) ;
+        }
+
+        protected virtual void OnClosed(EventArgs e)
+        {
+            CanvasField.Children.Clear();
+            _playerUIs.Clear();
+            _enemyUIs.Clear();
+        }
+        
+        public event EventHandler Finished;
+        public event EventHandler Won;
+        public event EventHandler Lose;
+        public event EventHandler Closed;
+
         #endregion
 
+        [Flags]
         private enum UpdateModes { None = 0x00, Player = 0x01, Enemy = 0x02, All = 0x03 }
+
+        private enum FightingState { Fighting, Win, Lose }
     }
 }

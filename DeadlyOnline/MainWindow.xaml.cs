@@ -122,7 +122,7 @@ namespace DeadlyOnline
             }
             catch (IOException ex)
             {
-                Console.WriteLine($"{DateTime.Now} -- ホストに強制的に切断されました {ex.Message}");
+                Console.WriteLine($"{DateTime.Now} -- ホストに強制的に切断された {ex.Message}");
                 Disconnect(no);
             }
         }
