@@ -8,7 +8,7 @@ namespace DeadlyOnline.Logic
 {
 	public static partial class Logic
 	{
-		public static ActionData ActionCommandInvoke(ActionData data) =>
+		public static ActionData InvokeActionCommand(ActionData data) =>
 			ActionDataCmds[data.Command].Invoke(data);
 		public static async Task<ActionData> ActionCommandInvokeAsync(ActionData data) =>
 			await Task.Run(() => ActionDataCmds[data.Command].Invoke(data));

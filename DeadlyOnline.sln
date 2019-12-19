@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeadlyOnline.Server", "DeadlyOnline\DeadlyOnline.Server.csproj", "{A42AA855-495E-41BB-A9B8-9A764DC4989B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeadlyOnline.Logic", "DeadlyOnline.Logic\DeadlyOnline.Logic.csproj", "{49FF2FB0-966C-456E-AF34-A33B81285F33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeadlyOnline.Logic", "DeadlyOnline.Logic\DeadlyOnline.Logic.csproj", "{49FF2FB0-966C-456E-AF34-A33B81285F33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildSoft.Audio.Players", "BuildSoft.Audio.Players\BuildSoft.Audio.Players.csproj", "{F2EAFF53-97C0-425A-9F77-5327DD09AFEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildSoft.Audio.Players", "BuildSoft.Audio.Players\BuildSoft.Audio.Players.csproj", "{F2EAFF53-97C0-425A-9F77-5327DD09AFEB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeadlyOnline.Client", "DeadlyOnline.Client\DeadlyOnline.Client.csproj", "{7EAA9DAE-1C91-4FF0-A7ED-B9510CCB7754}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeadlyOnline.Client", "DeadlyOnline.Client\DeadlyOnline.Client.csproj", "{7EAA9DAE-1C91-4FF0-A7ED-B9510CCB7754}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Games.Object", "Games.Object\Games.Object.csproj", "{C2001AC3-FA8C-48C1-8667-12BD3EC44E56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeadlyOnline.Server", "DeadlyOnline.Server\DeadlyOnline.Server.csproj", "{778BF6F3-889B-400E-8A39-496357F0E35A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49FF2FB0-966C-456E-AF34-A33B81285F33} = {49FF2FB0-966C-456E-AF34-A33B81285F33}
+		{C2001AC3-FA8C-48C1-8667-12BD3EC44E56} = {C2001AC3-FA8C-48C1-8667-12BD3EC44E56}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A42AA855-495E-41BB-A9B8-9A764DC4989B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A42AA855-495E-41BB-A9B8-9A764DC4989B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A42AA855-495E-41BB-A9B8-9A764DC4989B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A42AA855-495E-41BB-A9B8-9A764DC4989B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{49FF2FB0-966C-456E-AF34-A33B81285F33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{49FF2FB0-966C-456E-AF34-A33B81285F33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49FF2FB0-966C-456E-AF34-A33B81285F33}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +39,10 @@ Global
 		{C2001AC3-FA8C-48C1-8667-12BD3EC44E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2001AC3-FA8C-48C1-8667-12BD3EC44E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2001AC3-FA8C-48C1-8667-12BD3EC44E56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{778BF6F3-889B-400E-8A39-496357F0E35A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{778BF6F3-889B-400E-8A39-496357F0E35A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{778BF6F3-889B-400E-8A39-496357F0E35A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{778BF6F3-889B-400E-8A39-496357F0E35A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

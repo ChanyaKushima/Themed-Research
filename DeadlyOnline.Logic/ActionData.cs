@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
@@ -31,6 +32,12 @@ namespace DeadlyOnline.Logic
         public void Send(Stream stream)
         {
             _formatter.Serialize(stream, this);
+        }
+
+        public void SendAsync(Stream stream, CancellationToken cancellationToken = default)
+        {
+            var @this = this;
+            Task.Run(() => @this.Send(stream), cancellationToken);
         }
     }
 }

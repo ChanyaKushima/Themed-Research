@@ -17,9 +17,17 @@ namespace DeadlyOnline.Logic
 		public PlayerData PlayerData{ get; set; }
 		public NetworkStream Stream => Client.GetStream();
 
-		public ClientData()
+        public IPAddress LocalIPAddress => ((IPEndPoint)Client.Client.LocalEndPoint).Address;
+        public IPAddress RemoteIPAddress => ((IPEndPoint)Client.Client.RemoteEndPoint).Address;
+		public ClientData(TcpClient client)
 		{
-
+            Client = client;
 		}
+
+        public void Close()
+        {
+            Stream.Close();
+            Client.Close();
+        }
 	}
 }

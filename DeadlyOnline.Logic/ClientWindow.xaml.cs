@@ -46,7 +46,7 @@ namespace DeadlyOnline.Client
         Dictionary<long, CommandAction> CommandDictionary = new Dictionary<long, CommandAction>();
 
         CancellationTokenSource CmdAcceptSource;
-        
+
         Timer timer;
         //readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
 
@@ -55,6 +55,9 @@ namespace DeadlyOnline.Client
         PlayerData MainPlayer;
 
         FightingField FightingField;
+        BinaryFormatter _formatter = new BinaryFormatter();
+
+        ReceiveMode _receiveMode = ReceiveMode.Nomal;
 
         public ClientWindow()
         {
@@ -64,19 +67,16 @@ namespace DeadlyOnline.Client
             LoadGame();
         }
 
-
-        
-
         private void LoadGame()
         {
             PlayerData player = CreatePlayer("Mr.Miyabi", maxHp: 10, atk: 1, def: 2, spd: 10, @"maid_charachip.png", @"tvx_actor02B.png");
-            player.SelectedBehavior = new BehaviorInfo((p, e) => e.Damage(p.AttackPower + 1), "通常攻撃", 1);
+            player.SelectedBehavior = new BehaviorInfo((p, e) => e.Damage(p.AttackPower), "通常攻撃", 1);
 
             MainPlayer = player;
 
             var map = CreateRandomDebugDetailedMap(50, 50, new[] { 0, 1, 2 });
             map.PieceSide = 40;
-            map.PlayerMoved +=PlayerMoved;
+            map.PlayerMoved += PlayerMoved;
             MainMapField.CurrentMap = map;
             MainMapField.MainPlayer = player;
             MainMapField.Focus();
@@ -86,7 +86,7 @@ namespace DeadlyOnline.Client
         {
             if (MainRandom.Next(10) == 0)
             {
-                var enemy = new EnemyData("AAA", 10, new BitmapImage(Calc.ResolveUri(@"enemy\wa_hito_12nekomata.png")));
+                var enemy = new EnemyData("AAA", 5, CreateBitmap(@"enemy\wa_hito_12nekomata.png"));
                 var fightingField = CreateFightingField(MainPlayer, enemy, RenderSize);
                 fightingField.Closed += BackToMapField;
                 SwitchField(fightingField);
@@ -94,7 +94,7 @@ namespace DeadlyOnline.Client
             }
         }
 
-        private void BackToMapField(object sender,EventArgs e)
+        private void BackToMapField(object sender, EventArgs e)
         {
             SwitchField(MainMapField);
         }
@@ -105,6 +105,8 @@ namespace DeadlyOnline.Client
             MainGrid.Children.Add(field);
             field.Focus();
         }
+
+        #region 通信系メソッド
 
         private async void ConnectServer()
         {
@@ -137,43 +139,50 @@ namespace DeadlyOnline.Client
             }
 
             CmdAcceptSource ??= new CancellationTokenSource();
-            CmdAcceptTask = Task.Run(AcceptCommand, CmdAcceptSource.Token);
+            CmdAcceptTask = Task.Run(AcceptCommandAsync, CmdAcceptSource.Token);
         }
 
-        private void SendCommand(){
-            
-        }
-
-        private void AcceptCommand()
+        private void SendCommand(NetworkStream stream, CommandFormat format, long id,
+                                 IEnumerable<object> args = null, object data = null)
         {
-            BinaryFormatter formatter = new BinaryFormatter();
+            _formatter.Serialize(stream, new ActionData(format, id, args, data));
+        }
+
+        private async ValueTask SendCommandAsync(NetworkStream stream, CommandFormat format, long id,
+                                                 IEnumerable<object> args = null, object data = null,
+                                                 CancellationToken cancellationToken = default)
+        {
+            var actionData = new ActionData(format, id, args, data);
+            await Task.Run(() => _formatter.Serialize(stream, actionData), cancellationToken);
+        }
+
+        private ActionData ReceiveCommand(NetworkStream stream, ReceiveMode mode)
+        {
+            while (_receiveMode != mode) { }
+            return (ActionData)_formatter.Deserialize(stream);
+        }
+
+        private async ValueTask<ActionData> ReceiveCommandAsync(NetworkStream stream, ReceiveMode mode,
+                                                                CancellationToken cancellationToken = default)
+        {
+            while (_receiveMode != mode && !cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(1);
+            }
+            CheckCanceled(cancellationToken);
+
+            return await Task.Run(() => (ActionData)_formatter.Deserialize(stream), cancellationToken);
+        }
+
+        private async void AcceptCommandAsync()
+        {
             NetworkStream stream = Client.GetStream();
 
             while (true)
             {
                 try
                 {
-                    var obj = formatter.Deserialize(stream);
-
-                    if (obj is ActionData ad)
-                    {
-                        Console.WriteLine($"{ad.Command}  ArgsCount:{ad.Arguments.Count()}");
-                        var res = ActionCommandInvoke(ad);
-
-                        if (CommandDictionary.ContainsKey(ad.Id))
-                        {
-                            CommandDictionary[ad.Id].Invoke(ad, res);
-                        }
-
-                        if (res.Command != CommandFormat.None)
-                        {
-                            res.Send(stream);
-                        }
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
+                    await ProcessOrderAsync(stream);
                 }
                 catch (Exception ex)
                 {
@@ -183,12 +192,77 @@ namespace DeadlyOnline.Client
             }
         }
 
+        private async ValueTask ProcessOrderAsync(NetworkStream stream, CancellationToken cancellationToken = default)
+        {
+            await WaitForOrderAsync(stream, cancellationToken);
+
+            var actionData = await ReceiveCommandAsync(stream, ReceiveMode.Nomal, cancellationToken);
+
+            Console.WriteLine($"{actionData.Command}  ArgsCount:{actionData.Arguments.Count()}");
+
+            var res = InvokeActionCommand(actionData);
+
+            if (CommandDictionary.ContainsKey(actionData.Id))
+            {
+                CommandDictionary[actionData.Id](actionData, res);
+            }
+
+            if (res.Command != CommandFormat.None)
+            {
+                res.Send(stream);
+            }
+        }
+
+        private async Task WaitForOrderAsync(NetworkStream stream, CancellationToken cancellationToken = default)
+        {
+            while (true)
+            {
+                var buffer = new byte[1];
+
+                if (await stream.ReadAsync(buffer, cancellationToken) == 0)
+                {
+                    throw new EndOfStreamException();
+                }
+
+                CheckCanceled(cancellationToken);
+
+                ReceiveMode mode = (ReceiveMode)buffer[0];
+                _receiveMode = mode;
+
+                if (mode == ReceiveMode.Nomal)
+                {
+                    break;
+                }
+                else if (mode != ReceiveMode.Local)
+                {
+                    throw new SocketException();
+                }
+
+                while (_receiveMode != ReceiveMode.Nomal && !cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(1);
+                }
+
+                CheckCanceled(cancellationToken);
+            }
+        }
+
         private void Disconnect()
         {
-            if (Client is null)
+            if (Client != null)
             {
                 Client.Close();
                 Client = null;
+            }
+        }
+
+        #endregion
+
+        private static void CheckCanceled(CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new TaskCanceledException();
             }
         }
     }

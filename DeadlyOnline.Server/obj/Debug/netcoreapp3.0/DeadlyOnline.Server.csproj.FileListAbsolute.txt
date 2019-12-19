@@ -1,0 +1,16 @@
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\DeadlyOnline.Server.exe
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\DeadlyOnline.Server.deps.json
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\DeadlyOnline.Server.runtimeconfig.json
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\DeadlyOnline.Server.runtimeconfig.dev.json
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\DeadlyOnline.Server.dll
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\DeadlyOnline.Server.pdb
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\DeadlyOnline.Logic.dll
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\Games.Object.dll
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\DeadlyOnline.Logic.pdb
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\bin\Debug\netcoreapp3.0\Games.Object.pdb
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\obj\Debug\netcoreapp3.0\DeadlyOnline.Server.csprojAssemblyReference.cache
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\obj\Debug\netcoreapp3.0\DeadlyOnline.Server.AssemblyInfoInputs.cache
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\obj\Debug\netcoreapp3.0\DeadlyOnline.Server.AssemblyInfo.cs
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\obj\Debug\netcoreapp3.0\DeadlyOnline.Server.csproj.CopyComplete
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\obj\Debug\netcoreapp3.0\DeadlyOnline.Server.dll
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Server\obj\Debug\netcoreapp3.0\DeadlyOnline.Server.pdb

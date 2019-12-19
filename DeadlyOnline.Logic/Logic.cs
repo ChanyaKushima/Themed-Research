@@ -19,18 +19,21 @@ namespace DeadlyOnline.Logic
         private static Dictionary<CommandFormat, CommandFunc> ActionDataCmds = new Dictionary<CommandFormat, CommandFunc>()
         {
             { CommandFormat.None,EmptyMethod },
-            { CommandFormat.CreateAccount, CreateAccount },
-            { CommandFormat.Login, Login },
-            { CommandFormat.Logout, Logout },
-            { CommandFormat.DataRequest, DataRequest },
-            { CommandFormat.DataUpdate, DataUpdate },
-            { CommandFormat.MapMove, MapMove },
+            { CommandFormat.CreateAccount_c, CreateAccount },
+            { CommandFormat.Login_c, Login },
+            { CommandFormat.Logout_c, Logout },
+            { CommandFormat.DataRequest_c, DataRequest },
+            { CommandFormat.DataUpdate_e, DataUpdate },
+            { CommandFormat.MapMove_e, MapMove },
+            { CommandFormat.MapRequest_c,MapRequest },
+            { CommandFormat.MapTransfer_s,MapTransfer },
 
             { CommandFormat.Result, EmptyMethod },
 
 
             { CommandFormat.Debug, Debug },
         };
+
 
         static Logic()
         {
@@ -89,6 +92,17 @@ namespace DeadlyOnline.Logic
             // ______
             //
             return default;
+        }
+
+
+        private static ActionData MapRequest(in ActionData actionData)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static ActionData MapTransfer(in ActionData actionData)
+        {
+            throw new NotImplementedException();
         }
 
         private static ActionData Debug(in ActionData data)

@@ -65,15 +65,7 @@ namespace DeadlyOnline.Logic
 
         public static DebugDetailedMap CreateRandomDebugDetailedMap(int width, int height, int[] upperLayers)
         {
-            MapPiece[,] mapPieces = new MapPiece[width, height];
-
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    mapPieces[x, y] = new MapPiece(0, 0, upperLayers[MainRandom.Next(upperLayers.Length)], true);
-                }
-            }
+            MapPiece[,] mapPieces = CreateRandomMapPieces(width, height, upperLayers);
 
             var map = new DebugDetailedMap(MapData.Empty, mapPieces);
             map.PlayerMoved += (sender, e) =>
@@ -84,6 +76,21 @@ namespace DeadlyOnline.Logic
             };
 
             return map;
+        }
+
+        public static MapPiece[,] CreateRandomMapPieces(int width, int height, int[] upperLayers)
+        {
+            MapPiece[,] mapPieces = new MapPiece[width, height];
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    mapPieces[x, y] = new MapPiece(0, 0, upperLayers[MainRandom.Next(upperLayers.Length)], true);
+                }
+            }
+
+            return mapPieces;
         }
     }
 }
