@@ -34,10 +34,10 @@ namespace DeadlyOnline.Logic
             _formatter.Serialize(stream, this);
         }
 
-        public void SendAsync(Stream stream, CancellationToken cancellationToken = default)
+        public async Task SendAsync(Stream stream, CancellationToken cancellationToken = default)
         {
             var @this = this;
-            Task.Run(() => @this.Send(stream), cancellationToken);
+            await Task.Run(() => @this.Send(stream), cancellationToken);
         }
     }
 }

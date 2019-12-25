@@ -25,26 +25,12 @@ namespace DeadlyOnline.Logic
             int def,
             int spd,
             string walkingImagesPath,
-            string fightingImagePath)
-        {
-            BitmapSource[] walkingImageArray = ChipImage.Read(walkingImagesPath, 23, 32);
-            var walkingImageDictionary =
-                new Dictionary<CharacterDirection, ImageSource>(walkingImageArray.Length);
-
-            for (int i = 0; i < walkingImageArray.Length; i++)
+            string fightingImagePath) => new PlayerData(name, maxHp, walkingImagesPath, fightingImagePath)
             {
-                walkingImageDictionary[(CharacterDirection)i] = walkingImageArray[i];
-            }
-
-            return new PlayerData(name, maxHp)
-            {
-                WalkingImages = walkingImageDictionary,
-                FightingImage =CreateBitmap(fightingImagePath),
                 AttackPower = atk,
                 Defence = def,
                 Speed = spd,
             };
-        }
 
         public static EnemyData CreateEnemy(
             string name,
@@ -53,7 +39,7 @@ namespace DeadlyOnline.Logic
             int atk,
             int def,
             int spd,
-            string fightingImagePath) => new EnemyData(name, maxHp, level, CreateBitmap(fightingImagePath))
+            string fightingImagePath) => new EnemyData(name, maxHp, level, fightingImagePath)
             {
                 AttackPower = atk,
                 Defence = def,

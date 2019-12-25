@@ -67,18 +67,21 @@ namespace DeadlyOnline.Client
             LoadGame();
         }
 
-        private void LoadGame()
+        private async void LoadGame()
         {
-            PlayerData player = CreatePlayer("Mr.Miyabi", maxHp: 10, atk: 1, def: 2, spd: 10, @"maid_charachip.png", @"tvx_actor02B.png");
-            player.SelectedBehavior = new BehaviorInfo((p, e) => e.Damage(p.AttackPower), "通常攻撃", 1);
+            //PlayerData player = CreatePlayer("Mr.Miyabi", maxHp: 10, atk: 1, def: 2, spd: 10, @"maid_charachip.png", @"tvx_actor02B.png");
+            //player.SelectedBehavior = new BehaviorInfo((p, e) => e.Damage(p.AttackPower), "通常攻撃", 1);
 
-            MainPlayer = player;
+            ConnectServer();
 
-            var map = CreateRandomDebugDetailedMap(50, 50, new[] { 0, 1, 2 });
-            map.PieceSide = 40;
+            var (mainPlayer, mapPieces) = await DownloadInitDataAsync(Client);
+
+            MainPlayer = mainPlayer;
+
+            var map = new DebugDetailedMap(MapData.Empty, mapPieces, 40);
             map.PlayerMoved += PlayerMoved;
             MainMapField.CurrentMap = map;
-            MainMapField.MainPlayer = player;
+            MainMapField.MainPlayer = mainPlayer;
             MainMapField.Focus();
         }
 
@@ -86,7 +89,7 @@ namespace DeadlyOnline.Client
         {
             if (MainRandom.Next(10) == 0)
             {
-                var enemy = new EnemyData("AAA", 5, CreateBitmap(@"enemy\wa_hito_12nekomata.png"));
+                var enemy = new EnemyData("AAA", 5, @"enemy\wa_hito_12nekomata.png");
                 var fightingField = CreateFightingField(MainPlayer, enemy, RenderSize);
                 fightingField.Closed += BackToMapField;
                 SwitchField(fightingField);
@@ -142,6 +145,22 @@ namespace DeadlyOnline.Client
             CmdAcceptTask = Task.Run(AcceptCommandAsync, CmdAcceptSource.Token);
         }
 
+        private async Task<(PlayerData, MapPiece[,])> DownloadInitDataAsync(
+            TcpClient client, CancellationToken cancellationToken = default)
+        {
+            var stream = client.GetStream();
+
+            var mainPlayerData = await ReceiveCommandAsync(stream, ReceiveMode.Local, cancellationToken);
+            mainPlayerData.CheckCommand(CommandFormat.MainPlayerDataTransfer_s);
+
+            var mapData = await ReceiveCommandAsync(stream, ReceiveMode.Local, cancellationToken);
+            mapData.CheckCommand(CommandFormat.MapTransfer_s);
+
+            CheckCanceled(cancellationToken);
+
+            return ((PlayerData)mainPlayerData.Data, (MapPiece[,])mapData.Data);
+        }
+
         private void SendCommand(NetworkStream stream, CommandFormat format, long id,
                                  IEnumerable<object> args = null, object data = null)
         {
@@ -159,7 +178,9 @@ namespace DeadlyOnline.Client
         private ActionData ReceiveCommand(NetworkStream stream, ReceiveMode mode)
         {
             while (_receiveMode != mode) { }
-            return (ActionData)_formatter.Deserialize(stream);
+            var res = (ActionData)_formatter.Deserialize(stream);
+            _receiveMode = ReceiveMode.Nomal;
+            return res;
         }
 
         private async ValueTask<ActionData> ReceiveCommandAsync(NetworkStream stream, ReceiveMode mode,
@@ -171,7 +192,11 @@ namespace DeadlyOnline.Client
             }
             CheckCanceled(cancellationToken);
 
-            return await Task.Run(() => (ActionData)_formatter.Deserialize(stream), cancellationToken);
+            var res=await Task.Run(() => (ActionData)_formatter.Deserialize(stream), cancellationToken);
+            
+            _receiveMode = ReceiveMode.Nomal;
+            
+            return res;
         }
 
         private async void AcceptCommandAsync()
@@ -265,5 +290,6 @@ namespace DeadlyOnline.Client
                 throw new TaskCanceledException();
             }
         }
+
     }
 }

@@ -4,11 +4,26 @@ using System.Text;
 
 namespace DeadlyOnline.Logic
 {
+    [Serializable]
     public class BehaviorInfo
     {
-        private Behavior Behavior { get; set; }
+        private Behavior Behavior => BehaviorList.GetBehavior(_behaviorId);
         public string Name { get; }
+
+        private int _behaviorId;
         private int _interval;
+
+        private int BehaviorId
+        {
+            set
+            {
+                if (value < 0 || value >= BehaviorList.behaviorList.Count)
+                {
+                    ThrowHelper.ThrowArgumentOutOfRengeException_value();
+                }
+                _behaviorId = value;
+            }
+        }
 
         public int SpdCountUsage
         {
@@ -23,9 +38,9 @@ namespace DeadlyOnline.Logic
             }
         }
 
-        public BehaviorInfo(Behavior behavior, string name, int gageUsage)
+        public BehaviorInfo(int behaviorId, string name, int gageUsage)
         {
-            Behavior = behavior;
+            BehaviorId = behaviorId;
             Name = name;
             SpdCountUsage = gageUsage;
         }

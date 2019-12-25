@@ -12,6 +12,9 @@
         MapRequest_c=20,
         MapTransfer_s=21,
 
+        MainPlayerDataTransfer_s=31,
+        PlayerDataTransfer_s=41,
+
         Result = 100000,
         Debug = 9999999,
     }

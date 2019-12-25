@@ -20,21 +20,38 @@ namespace DeadlyOnline.Server
 {
     class Program
     {
+        const string VersionName = "Norm";
+
         [STAThread]
         static async Task Main(string[] args)
         {
-            Console.Write("-----------------------------------------------------\n" +
-                          "*                                                   *\n" +
-                          "*    Deadly Online Server For Windows 10            *\n" +
-                          "*                            Version Name 'Norm'    *\n" +
-                          "*                                                   *\n" +
-                          "-----------------------------------------------------\n");
+            WriteFirstMessage();
 
             var server = new Server();
             while (server.IsAlive)
             {
                 await Task.Delay(1);
             }
+        }
+
+        private static void WriteFirstMessage()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.Write("\n\n\n" +
+                          "           DDDDDD            oOOOOo           SSSSSs      \n" +
+                          "          DD    dD         oO     OO         SS    Ss     \n" +
+                          "         DD     DD        OO      OO          SSs         \n" +
+                          "        DD     DD        OO      OO            SSs        \n" +
+                          "       DD    dD          OO    oOO         Ss    SS       \n" +
+                          "      DDDDDDD             OOOOO             SSSSS         \n" +
+                          "\n\n");
+            Console.ResetColor();
+
+            Console.Write($"Welcome to the 'Deadly Online Server', whose version name is '{VersionName}.'\n" +
+                          $"This server can be played 'Deadly Online' up to {Logic.Constants.ClientNumberMax} peoples.\n" +
+                          $"This server will start soon. \n" +
+                          "\n" +
+                          "--------------------------------------------------------------------------------------------\n");
         }
     }
 }

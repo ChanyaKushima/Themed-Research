@@ -5,23 +5,35 @@ using Games.Object.RPG;
 
 namespace DeadlyOnline.Logic
 {
+    [Serializable]
     public class EnemyData : CharaBaseData
     {
         public Dictionary<string, FightAction> Actions { get; set; }
 
-        public EnemyData(string name, int hp, ImageSource fightingImage) : base(name, hp)
+        public EnemyData(string name, int hp, string fightingImagePath) : base(name, hp)
         {
-            FightingImage = fightingImage;
+            _fightingImagePath = fightingImagePath;
         }
-        public EnemyData(string name, int hp, int lv, ImageSource fightingImage) : base(name, hp, lv)
+        public EnemyData(string name, int hp, int lv, string fightingImagePath) : base(name, hp, lv)
         {
-            FightingImage = fightingImage;
+            _fightingImagePath = fightingImagePath;
         }
+
+        private readonly string _fightingImagePath;
+        
+        [NonSerialized]
+        private ImageSource _fightingImage;
 
         public override ImageSource FightingImage
         {
-            get;
-            internal set;
+            get
+            {
+                if (_fightingImage == null)
+                {
+                    _fightingImage = GameObjectGenerator.CreateBitmap(_fightingImagePath);
+                }
+                return _fightingImage;
+            }
         }
     }
 }

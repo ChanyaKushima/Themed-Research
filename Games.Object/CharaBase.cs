@@ -2,11 +2,13 @@
 
 namespace Games.Object
 {
+	[Serializable]
 	public abstract class CharaBase : ICharaBase
 	{
 		/// <summary>
 		/// 直接触れちゃダメ
 		/// </summary>
+		[NonSerialized]
 		private readonly Random rand = new Random();
 		/// <summary>
 		/// ランダムな値を確保する

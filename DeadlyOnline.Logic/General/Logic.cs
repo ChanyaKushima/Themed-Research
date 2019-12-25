@@ -12,5 +12,13 @@ namespace DeadlyOnline.Logic
 			ActionDataCmds[data.Command].Invoke(data);
 		public static async Task<ActionData> ActionCommandInvokeAsync(ActionData data) =>
 			await Task.Run(() => ActionDataCmds[data.Command].Invoke(data));
+
+		public static void CheckCommand(this ActionData actionData,CommandFormat command)
+		{
+			if (actionData.Command!=command)
+			{
+				ThrowHelper.ThrowArgumentException();
+			}
+		}
 	}
 }

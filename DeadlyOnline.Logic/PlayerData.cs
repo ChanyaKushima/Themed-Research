@@ -14,6 +14,14 @@ namespace DeadlyOnline.Logic
     [Serializable]
     public class PlayerData : CharaBaseData
     {
+        [NonSerialized]
+        private ImageSource _fightingImage;
+        [NonSerialized]
+        private Dictionary<CharacterDirection, ImageSource> _walkingImages = null;
+
+        private readonly string _fightingImagePath;
+        private readonly string _walkingImagesPath;
+
         #region 戦闘に関するデータ
 
         public bool IsFighting { get; }
@@ -33,8 +41,24 @@ namespace DeadlyOnline.Logic
         public MapID CurrentMapID { get; set; }
 
         // 新しい型の作成を検討
-        public Dictionary<CharacterDirection, ImageSource> WalkingImages { get; set; } 
-            = new Dictionary<CharacterDirection, ImageSource>(4);
+        public Dictionary<CharacterDirection, ImageSource> WalkingImages
+        {
+            get
+            {
+                if (_walkingImages is null)
+                {
+                    ImageSource[] walkingImageArray = ChipImage.Read(
+                        GameObjectGenerator.CreateBitmap(_walkingImagesPath),
+                        23, 32);
+
+                    int i = 0;
+
+                    _walkingImages = walkingImageArray.ToDictionary(_ => (CharacterDirection)i++);
+                }
+                return _walkingImages;
+            }
+
+        }
 
         public ImageSource WalkingImageSource => WalkingImages[MapDirection];
 
@@ -66,10 +90,22 @@ namespace DeadlyOnline.Logic
         /// </summary>
         public int NeedEXP => 0;
 
-        public override ImageSource FightingImage { get ; internal set; }
-
-        public PlayerData(string name, int maxHP) : base(name, maxHP)
+        public override ImageSource FightingImage
         {
+            get
+            {
+                if (_fightingImage == null)
+                {
+                    _fightingImage = GameObjectGenerator.CreateBitmap(_fightingImagePath);
+                }
+                return _fightingImage;
+            }
+        }
+
+        public PlayerData(string name, int maxHP, string walkingImagesPath, string fightingImagePath) : base(name, maxHP)
+        {
+            _walkingImagesPath = walkingImagesPath;
+            _fightingImagePath = fightingImagePath;
         }
 
     }

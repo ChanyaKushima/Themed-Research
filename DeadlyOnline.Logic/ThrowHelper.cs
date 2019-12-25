@@ -10,11 +10,15 @@ namespace DeadlyOnline.Logic
             throw new ArgumentNullException(paramName);
         }
 
+        internal static void ThrowArgumentNullException_value()
+        {
+            throw new ArgumentNullException("value");
+        }
+
         internal static void ThrowArgumentException(string? message = null)
         {
             throw new ArgumentException(message);
         }
-
 
         internal static void ThrowNullReferenceException(string? message = null)
         {
@@ -29,6 +33,10 @@ namespace DeadlyOnline.Logic
         internal static void ThrowArgumentOutOfRengeException(string paramName)
         {
             throw new ArgumentOutOfRangeException(paramName);
+        }
+        internal static void ThrowArgumentOutOfRengeException_value()
+        {
+            throw new ArgumentOutOfRangeException("value");
         }
 
         internal static void ThrowInvalidOperationException(string? message = null)

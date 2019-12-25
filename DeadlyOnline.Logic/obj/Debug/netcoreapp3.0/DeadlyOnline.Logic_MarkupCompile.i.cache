@@ -12,9 +12,9 @@ TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_0
 
 4-1488725643
 
-41-2075075979
+44643788114
 200-471084621
 ClientWindow.xaml;FightingCharacter.xaml;FightingField.xaml;MapField.xaml;
 
-False
+True
 

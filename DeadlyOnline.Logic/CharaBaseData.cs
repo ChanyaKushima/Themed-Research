@@ -1,20 +1,24 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
 using Games.Object.RPG;
 using Games.Object;
 
 namespace DeadlyOnline.Logic
 {
+    [Serializable]
     public abstract class CharaBaseData : CharaBase
     {
         public static readonly decimal MaxSpdGage = 100;
         public static readonly int MaxSpdCount = 5;
 
+        [NonSerialized]
         private decimal _spdGage;
+        [NonSerialized]
         private int _spdCount;
 
         public BehaviorInfo SelectedBehavior { get; set; }
 
-        public abstract ImageSource FightingImage { get; internal set; }
+        public abstract ImageSource FightingImage { get;  }
 
         /// <summary>
         /// キャラが生きているかを取得する。
@@ -80,10 +84,12 @@ namespace DeadlyOnline.Logic
         ///// <summary>
         ///// キャラのバフを取得する。
         ///// </summary>
+        //[NonSerialized]
         //public CharBuffs Buff { get; private set; }
         ///// <summary>
         ///// キャラのデバフを取得する。
         ///// </summary>
+        //[NonSerialized]
         //public CharDebuffs Debuff { get; private set; }
 
 
@@ -101,7 +107,7 @@ namespace DeadlyOnline.Logic
         {
             if (!chara.CanAttack)
             {
-                throw new System.InvalidOperationException();
+                throw new InvalidOperationException();
             }
         }
 
