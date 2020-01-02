@@ -19,11 +19,11 @@ namespace DeadlyOnline.Server
     using static DeadlyOnline.Logic.Calc;
     using static DeadlyOnline.Logic.Constants;
 
-    class Server {
-
+    internal class Server 
+    {
         #region static field(s)
+        public static readonly string MapFilePath = @"main.deomap";
         private static readonly IPEndPoint IPEndPoint = new IPEndPoint(IPAddress.Any, Port);
-        private static readonly string MapFilePath = @"main.deomap";
         private static readonly ServerProcesser _serverProcesser = new ServerProcesser();
         private static readonly CommandLineProcesser _commandLineProcesser = new CommandLineProcesser();
         #endregion
@@ -95,26 +95,38 @@ namespace DeadlyOnline.Server
         private void LoadMap()
         {
             bool mapFileExists = File.Exists(MapFilePath);
-            var formatter = new BinaryFormatter();
 
             using FileStream stream = new FileStream(MapFilePath, FileMode.OpenOrCreate);
             if (mapFileExists)
             {
+                var formatter = new BinaryFormatter();
+
                 Log.Write("マップファイルのロード開始");
                 _mapPieces = (MapPiece[,])formatter.Deserialize(stream);
                 Log.Write("マップファイルのロード終了");
             }
             else
             {
-                Log.Write("マップ作成開始");
-                var mapPieces = GameObjectGenerator.CreateRandomMapPieces(100, 100, new[] { 0, 1, 2 });
-                Log.Write("マップ作成終了");
-
-                Log.Write("マップファイル作成開始");
-                formatter.Serialize(stream, mapPieces);
-                _mapPieces = mapPieces;
-                Log.Write("マップファイル作成終了");
+                _mapPieces = CreateNewRandomMapFile(stream);
             }
+        }
+
+        public static MapPiece[,] CreateNewRandomMapFile(Stream stream,int width=100,int height=100)
+        {
+            var formatter = new BinaryFormatter();
+
+            Log.Write("ランダムマップ作成開始");
+            var mapPieces = GameObjectGenerator.CreateRandomMapPieces(
+                width, height,
+                Enumerable.Range(0, DebugDetailedMap.Sources.Count).ToArray());
+
+            Log.Write("ランダムマップ作成終了");
+
+            Log.Write("マップファイル作成開始");
+            formatter.Serialize(stream, mapPieces);
+            Log.Write("マップファイル作成終了");
+
+            return mapPieces;
         }
 
         private void AcceptCommandLine()
@@ -124,12 +136,12 @@ namespace DeadlyOnline.Server
                 string commandLineText = Console.ReadLine();
                 string command = commandLineText.Split(' ', '\t').First();
                 string[] options = 
-                    commandLineText.Remove(0, command.Length + 1)
+                    commandLineText.Remove(0, command.Length)
                         .Split(' ', '\t')
-                        .SkipWhile(s => s == string.Empty)
+                        .Where(s => s != "")
                         .ToArray();
 
-                Log.Write("コマンド入力", "\"" + commandLineText + "\"");
+                Log.Debug.Write("コマンド入力", "\"" + commandLineText + "\"");
 
                 _commandLineProcesser.Execute(command, options, this);
             }

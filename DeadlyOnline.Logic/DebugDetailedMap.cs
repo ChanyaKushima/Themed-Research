@@ -22,7 +22,13 @@ namespace DeadlyOnline.Logic
         private const double _defaultDpiY = 96;
 
         public static List<Brush> Sources { get; } = new List<Brush>(){
-            Brushes.Transparent,Brushes.Blue,Brushes.Red,
+            Brushes.Transparent,
+            Brushes.Blue,
+            Brushes.Red,
+            Brushes.LightGreen,
+            Brushes.LightGray,
+            Brushes.Aqua,
+            Brushes.GreenYellow
         };
 
         private static readonly DependencyProperty PiecesProperty =

@@ -10,11 +10,11 @@ none
 false
 TRACE;RELEASE;NETCOREAPP;NETCOREAPP3_0
 
-4-1488725643
+5-1356400311
 
-40-1845335004
+46-990727697
 2001638408387
-ClientWindow.xaml;FightingCharacter.xaml;FightingField.xaml;MapField.xaml;
+ClientWindow.xaml;FightingCharacter.xaml;FightingField.xaml;MapField.xaml;MiniCharacter.xaml;
 
 True
 

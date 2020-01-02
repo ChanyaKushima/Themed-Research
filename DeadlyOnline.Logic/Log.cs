@@ -9,6 +9,11 @@ namespace DeadlyOnline.Logic
     {
         private static TextWriter _out;
 
+        public static string LineEnd => "\r\n$ >> ";
+        public static string LineStart => "\r>>   \b\b";
+        public static string LineRead => "\r$ >> ";
+        public static string LineLog => "\r>> ";
+
         static Log()
         {
             _out = Console.Out;
@@ -28,10 +33,12 @@ namespace DeadlyOnline.Logic
         }
 
         private static string GetFormattedString(string kind, string message, string exceptionMessage)
-            => $"\r>> [{DateTime.Now}] -- {kind}  {message} {exceptionMessage}\n$ >> ";
+            => $"{LineStart}[{DateTime.Now}] -- {kind}  {message} {exceptionMessage}{LineEnd}";
 
         public static void Write(string kind, string message = "", string exceptionMessage = "")
             => Out.Write(GetFormattedString(kind, message, exceptionMessage));
+
+        
 
 
         #region Extention Methods
@@ -46,5 +53,15 @@ namespace DeadlyOnline.Logic
 
 
         #endregion
+
+        public static class Debug
+        {
+            public static void Write(string kind, string message = "", string exceptionMessage = "")
+            {
+#if DEBUG
+                Out.Write(GetFormattedString(kind, message, exceptionMessage));
+#endif
+            }
+        }
     }
 }

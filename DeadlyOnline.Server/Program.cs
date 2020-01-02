@@ -32,6 +32,7 @@ namespace DeadlyOnline.Server
             {
                 await Task.Delay(1);
             }
+            Console.Write("\r                                                        ");
         }
 
         private static void WriteFirstMessage()

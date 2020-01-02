@@ -7,3 +7,11 @@ E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.Assemb
 E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.dll
 E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.pdb
 E:\C# SourceCode\Core\Games.Object\obj\Release\netcoreapp3.0\Games.Object.csprojAssemblyReference.cache
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\Games.Object\bin\Release\netcoreapp3.0\Games.Object.deps.json
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\Games.Object\bin\Release\netcoreapp3.0\Games.Object.dll
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\Games.Object\bin\Release\netcoreapp3.0\Games.Object.pdb
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\Games.Object\obj\Release\netcoreapp3.0\Games.Object.csprojAssemblyReference.cache
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\Games.Object\obj\Release\netcoreapp3.0\Games.Object.AssemblyInfoInputs.cache
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\Games.Object\obj\Release\netcoreapp3.0\Games.Object.AssemblyInfo.cs
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\Games.Object\obj\Release\netcoreapp3.0\Games.Object.dll
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\Games.Object\obj\Release\netcoreapp3.0\Games.Object.pdb
