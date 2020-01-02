@@ -35,7 +35,8 @@ namespace DeadlyOnline.Logic
             if (e.NewValue is PlayerData player)
             {
                 ImageSource playerImage = player.WalkingImageSource;
-                mapField.PlayerImage.Source = playerImage;
+                mapField.MiniChara.Source = playerImage;
+                mapField.MiniChara.CharacterName = player.Name;
 
                 if( mapField.CurrentMap is IDetailedMap detailedMap)
                 {
@@ -65,13 +66,13 @@ namespace DeadlyOnline.Logic
 
         public double MainPlayerWidth
         {
-            get => PlayerImage.Width;
-            set => PlayerImage.Width = value;
+            get => MiniChara.Width;
+            set => MiniChara.Width = value;
         }
         public double MainPlayerHeight
         {
-            get => PlayerImage.Height;
-            set => PlayerImage.Height = value;
+            get => MiniChara.Height;
+            set => MiniChara.Height = value;
         }
 
         public MapField()
@@ -81,8 +82,8 @@ namespace DeadlyOnline.Logic
 
         public void ExpandMainPlayerImage(double rate)
         {
-            PlayerImage.Width *= rate;
-            PlayerImage.Height *= rate;
+            MiniChara.Width *= rate;
+            MiniChara.Height *= rate;
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

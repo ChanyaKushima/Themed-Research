@@ -8,7 +8,7 @@ namespace DeadlyOnline.Logic
     [Serializable]
     public class EnemyData : CharaBaseData
     {
-        public Dictionary<string, FightAction> Actions { get; set; }
+        public List<BehaviorInfo> Behaviors { get; } = new List<BehaviorInfo>();
 
         public EnemyData(string name, int hp, string fightingImagePath) : base(name, hp)
         {

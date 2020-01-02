@@ -1,63 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace DeadlyOnline.Logic
 {
     [Serializable]
-    public class BehaviorInfo
+    public class BehaviorInfo: ISerializable
     {
-        private Behavior Behavior => BehaviorList.GetBehavior(_behaviorId);
+        private readonly Behavior _behavior;
+
         public string Name { get; }
 
-        private int _behaviorId;
-        private int _interval;
+        private readonly int _behaviorId;
 
-        private int BehaviorId
+        public int SpdCountUsage { get; }
+        
+        public BehaviorInfo(int behaviorId)
         {
-            set
+            if (behaviorId < 0 || behaviorId >= BehaviorList.Count)
             {
-                if (value < 0 || value >= BehaviorList.behaviorList.Count)
-                {
-                    ThrowHelper.ThrowArgumentOutOfRengeException_value();
-                }
-                _behaviorId = value;
+                ThrowHelper.ThrowArgumentOutOfRengeException_value();
             }
-        }
+            _behaviorId = behaviorId;
 
-        public int SpdCountUsage
-        {
-            get { return _interval; }
-            set
-            {
-                if (value < 0)
-                {
-                    ThrowHelper.ThrowArgumentException();
-                }
-                _interval = value;
-            }
-        }
-
-        public BehaviorInfo(int behaviorId, string name, int gageUsage)
-        {
-            BehaviorId = behaviorId;
-            Name = name;
-            SpdCountUsage = gageUsage;
+            (_behavior, Name, SpdCountUsage) = BehaviorList.GetCore(behaviorId);
         }
 
         public void InvokeBehavior(CharaBaseData self, CharaBaseData target)
         {
-            if (_interval > self.SpdCount)
+            if (SpdCountUsage > self.SpdCount)
             {
                 ThrowHelper.ThrowInvalidOperationException();
             }
 
-            Behavior behavior = Behavior;
+            Behavior behavior = _behavior;
             if (behavior != null)
             {
                 behavior(self, target);
                 self.SpdCount -= SpdCountUsage;
             }
+        }
+
+        public BehaviorInfo(SerializationInfo info, StreamingContext context)
+        {
+            int id = (int)info.GetValue("id", typeof(int));
+
+            _behaviorId = id;
+
+            (_behavior, Name, SpdCountUsage) = BehaviorList.GetCore(id);
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("id", _behaviorId);
         }
     }
 

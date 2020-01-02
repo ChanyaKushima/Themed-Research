@@ -28,12 +28,66 @@ namespace DeadlyOnline.Logic
             { CommandFormat.MapRequest_c,MapRequest },
             { CommandFormat.MapTransfer_s,MapTransfer },
 
+            { CommandFormat.EnteredPlayerInMap_s, EnteredPlayerInMap },
+            { CommandFormat.LeftPlayerInMap_s, LeftPlayerInMap },
+            { CommandFormat.UpdatePlayerInMap_s, UpdatePlayerInMap },
+
+            { CommandFormat.EnemyDataRequest_c,EnemyDataRequest  },
+            { CommandFormat.EnemyDataTransfer_s, EnemyDataTransfer },
+
             { CommandFormat.Result, EmptyMethod },
 
 
             { CommandFormat.Debug, Debug },
         };
 
+
+        private static ActionData LeftPlayerInMap(in ActionData actionData)
+        {
+            var currentMap = MainWindowObject.CurrentMap;
+            string name = ((PlayerData)actionData.Data).Name;
+
+            if (currentMap is IDetailedMap detailedMap)
+            {
+                detailedMap.Players.RemoveWhere(p => p.Name == name);
+            }
+            return default;
+        }
+
+        private static ActionData EnteredPlayerInMap(in ActionData actionData)
+        {
+            var currentMap = MainWindowObject.CurrentMap;
+            var player = (PlayerData)actionData.Data;
+
+            if (currentMap is IDetailedMap detailedMap)
+            {
+                detailedMap.Players.Add(player);
+            }
+            return default;
+        }
+
+        private static ActionData UpdatePlayerInMap(in ActionData actionData)
+        {
+            var currentMap = MainWindowObject.CurrentMap;
+            var player = (PlayerData)actionData.Data;
+
+            if (currentMap is IDetailedMap detailedMap)
+            {
+                detailedMap.Players.RemoveWhere(p => p.Name == player.Name);
+                detailedMap.Players.Add(player);
+            }
+            return default;
+        }
+
+        private static ActionData EnemyDataRequest(in ActionData actionData)
+        {
+            return new ActionData(CommandFormat.EnemyDataTransfer_s, actionData.Id);
+        }
+
+        private static ActionData EnemyDataTransfer(in ActionData actionData)
+        {
+            throw new NotImplementedException();
+        }
 
         static Logic()
         {
@@ -79,9 +133,23 @@ namespace DeadlyOnline.Logic
         }
         private static ActionData DataUpdate(in ActionData data)
         {
-            //
-            // ______
-            //
+            string paramName = (string)data.Arguments.First();
+
+            if (MainWindowObject is null)
+            {
+                // Server Action
+                Log.Write(nameof(DataUpdate), paramName +" => "+ data.Data.ToString());
+            }
+            else
+            {
+                // Client Action
+                switch (paramName)
+                {
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
             return default;
         }
 

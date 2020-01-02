@@ -36,14 +36,14 @@
 
         public int[] Layer { get; set; }
 		/// <summary>
+		/// 通り抜け出来るか
+		/// </summary>
+		public bool Passable { get; private set; }
+		/// <summary>
 		/// <see cref="MapPiece"/>を識別するID文字列。
 		/// 識別する必要がないならば<see langword="null"/>。
 		/// </summary>
 		public string ID { get; set; }
-		/// <summary>
-		/// 通り抜け出来るか
-		/// </summary>
-		public bool Passable { get; private set; }
 
 		public void ChangeLayer(int no, int data)
 		{

@@ -103,6 +103,12 @@ namespace DeadlyOnline.Logic
             }
         }
 
+        public void ResetSpd()
+        {
+            _spdGage = 0;
+            _spdCount = 0;
+        }
+
         protected static void CheckAttackable(CharaBaseData chara)
         {
             if (!chara.CanAttack)

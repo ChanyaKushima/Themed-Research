@@ -27,19 +27,22 @@ namespace DeadlyOnline.Logic
             }
         }
 
+        private static string GetFormattedString(string kind, string message, string exceptionMessage)
+            => $"\r>> [{DateTime.Now}] -- {kind}  {message} {exceptionMessage}\n$ >> ";
+
         public static void Write(string kind, string message = "", string exceptionMessage = "")
-            => Out.Write($"\r>> [{DateTime.Now}] -- {kind} {message} {exceptionMessage}\n$ >> ");
+            => Out.Write(GetFormattedString(kind, message, exceptionMessage));
 
 
         #region Extention Methods
 
         public static void WriteLog(this Stream outStream, Encoding encoding, string kind,
                                      string message = "", string exceptionMessage = "")
-            => outStream.Write(encoding.GetBytes($"\r>> [{DateTime.Now}] -- {kind} {message} {exceptionMessage}\n$ >> "));
+            => outStream.Write(encoding.GetBytes(GetFormattedString(kind, message, exceptionMessage)));
 
         public static void WriteLog(this TextWriter writer, string kind,
                                      string message = "", string exceptionMessage = "")
-            => writer.Write($"\r>> [{DateTime.Now}] -- {kind} {message} {exceptionMessage}\n$ >> ");
+            => writer.Write(GetFormattedString(kind, message, exceptionMessage));
 
 
         #endregion

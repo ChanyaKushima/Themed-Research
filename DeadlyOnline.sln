@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeadlyOnline.Client", "Dead
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Games.Object", "Games.Object\Games.Object.csproj", "{C2001AC3-FA8C-48C1-8667-12BD3EC44E56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeadlyOnline.Server", "DeadlyOnline.Server\DeadlyOnline.Server.csproj", "{778BF6F3-889B-400E-8A39-496357F0E35A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeadlyOnline.Server", "DeadlyOnline.Server\DeadlyOnline.Server.csproj", "{778BF6F3-889B-400E-8A39-496357F0E35A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{49FF2FB0-966C-456E-AF34-A33B81285F33} = {49FF2FB0-966C-456E-AF34-A33B81285F33}
 		{C2001AC3-FA8C-48C1-8667-12BD3EC44E56} = {C2001AC3-FA8C-48C1-8667-12BD3EC44E56}

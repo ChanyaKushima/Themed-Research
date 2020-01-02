@@ -36,14 +36,15 @@ namespace DeadlyOnline.Server
 
         private static void WriteFirstMessage()
         {
+            Console.Title = "Deadly Online Server version " + VersionName;
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.Write("\n\n\n" +
-                          "           DDDDDD            oOOOOo           SSSSSs      \n" +
-                          "          DD    dD         oO     OO         SS    Ss     \n" +
-                          "         DD     DD        OO      OO          SSs         \n" +
-                          "        DD     DD        OO      OO            SSs        \n" +
-                          "       DD    dD          OO    oOO         Ss    SS       \n" +
-                          "      DDDDDDD             OOOOO             SSSSS         \n" +
+                          "             DDDDDD            oOOOOo            SSSSSs   \n" +
+                          "            DD    dD         oO     OO          SS    Ss  \n" +
+                          "           DD     DD        OO      OO           SSs      \n" +
+                          "          DD     DD        OO      OO             SSs     \n" +
+                          "         DD    dD          OO    oOO         Ss    SS     \n" +
+                          "        DDDDDDD             OOOOO             SSSSS       \n" +
                           "\n\n");
             Console.ResetColor();
 

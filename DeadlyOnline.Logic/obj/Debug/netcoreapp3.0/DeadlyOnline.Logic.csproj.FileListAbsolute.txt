@@ -43,3 +43,5 @@ C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\ob
 C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\DeadlyOnline.Logic.pdb
 C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\FightingField.g.cs
 C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\FightingField.baml
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\MiniCharacter.g.cs
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Debug\netcoreapp3.0\MiniCharacter.baml

@@ -9,7 +9,6 @@
              Focusable="True">
     <Grid>
         <local:MapViewer x:Name="mapViewer" x:FieldModifier="private"/>
-
-        <Image x:Name="PlayerImage" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <local:MiniCharacter x:Name="MiniChara" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>

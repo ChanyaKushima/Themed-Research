@@ -12,7 +12,6 @@ using Games.Object;
 
 namespace DeadlyOnline.Logic
 {
-    [ContentProperty("Pieces")]
     public class DebugDetailedMap : Map, IDetailedMap
     {
         #region static members
@@ -104,11 +103,12 @@ namespace DeadlyOnline.Logic
         private double SourceWidth => PiecesWidth * PieceSide;
         private double SourceHeight => PiecesHeight * PieceSide;
 
-        private Size SourceSize => new Size(SourceWidth, SourceHeight);
-
         private int _mainPlayerX = 0;
         private int _mainPlayerY = 0;
 
+        public HashSet<PlayerData> Players { get; } = new HashSet<PlayerData>();
+        
+        public event PlayerMovingEventHandler PlayerMoving;
         public event PlayerMovedEventHandler PlayerMoved;
 
         // Add Location Properties
@@ -150,26 +150,47 @@ namespace DeadlyOnline.Logic
 
                 double renderingLeft = RenderingLeft;
                 double renderingTop = RenderingTop;
-                Size sourceSize = SourceSize;
 
-                double[] widthCandidates = new[] { renderSize.Width, sourceSize.Width, source.Width + renderingLeft };
-                double[] heightCandidates = new[] { renderSize.Height, sourceSize.Height, source.Height + renderingTop };
+                double[] widthCandidates = 
+                    new[] { renderSize.Width, source.Width, source.Width + renderingLeft };
+                double[] heightCandidates = 
+                    new[] { renderSize.Height, source.Height, source.Height + renderingTop };
 
                 double width = widthCandidates.Min();
                 double height = heightCandidates.Min();
 
-                int croppedX = Math.Max(0, -(int)Math.Round(renderingLeft, 0, MidpointRounding.ToZero));
-                int croppedY = Math.Max(0, -(int)Math.Round(renderingTop, 0, MidpointRounding.ToZero));
+                int croppedX = Math.Max(0, -(int)renderingLeft);
+                int croppedY = Math.Max(0, -(int)renderingTop);
 
                 double mapImageLeft = Math.Max(0, renderingLeft);
                 double mapImageTop = Math.Max(0, renderingTop);
 
-                ImageSource image = new CroppedBitmap(
+                ImageSource mapImage = new CroppedBitmap(
                     (BitmapSource)source,
                     new Int32Rect(croppedX, croppedY, (int)width, (int)height));
-                image.Freeze();
+                mapImage.Freeze();
 
-                dc.DrawImage(image, new Rect(mapImageLeft, mapImageTop, width, height));
+                dc.DrawImage(mapImage, new Rect(mapImageLeft, mapImageTop, width, height));
+
+                int displayedPieceLeft = (int)(croppedX / PieceSide);
+                int displayedPieceTop = (int)(croppedY / PieceSide);
+                int displayedPieceRight = (int)((croppedX + width) / PieceSide) + 1; 
+                int displayedPieceBottom = (int)((croppedX + height) / PieceSide) + 1;
+
+                var drawingTargets = Players
+                    .Where(x => x.MapLeft >= displayedPieceLeft && x.MapLeft <= displayedPieceRight &&
+                                x.MapTop >= displayedPieceTop && x.MapLeft <= displayedPieceBottom);
+                
+                foreach (var target in drawingTargets)
+                {
+                    var image=target.WalkingImageSource;
+                    var drawingAria =
+                        new Rect(target.MapLeft * PieceSide + renderingLeft - image.Width / 2 + PieceSide / 2,
+                                 target.MapTop * PieceSide + renderingTop - image.Height / 2 ,
+                                 image.Width, image.Height);
+                    
+                    dc.DrawImage(image, drawingAria);
+                }
             }
         }
 
@@ -244,12 +265,18 @@ namespace DeadlyOnline.Logic
 
             if (_mainPlayerX != x || _mainPlayerY != y)
             {
-                _mainPlayerX = x;
-                _mainPlayerY = y;
+                var movingEvArgs = new PlayerMovingEventArgs(x, y, this);
+                OnPlayerMovingCore(movingEvArgs);
 
-                UpdateRenderingLocation();
-                InvokeTerrainEffect(x, y);
-                OnPlayerMovedCore(new PlayerMovedEventArgs(x, y, this));
+                if (!movingEvArgs.Cancel)
+                {
+                    _mainPlayerX = x;
+                    _mainPlayerY = y;
+
+                    UpdateRenderingLocation();
+                    InvokeTerrainEffect(x, y);
+                    OnPlayerMovedCore(new PlayerMovedEventArgs(x, y, this));
+                }
             }
         }
 
@@ -263,6 +290,18 @@ namespace DeadlyOnline.Logic
             OnPlayerMoved(e);
             PlayerMoved?.Invoke(this, e);
         }
+
+        public virtual void OnPlayerMoving(PlayerMovingEventArgs e)
+        {
+            // Empty
+        }
+
+        private void OnPlayerMovingCore(PlayerMovingEventArgs e)
+        {
+            OnPlayerMoving(e);
+            PlayerMoving?.Invoke(this, e);
+        }
+
 
         private void UpdateRenderingLocation()
         {

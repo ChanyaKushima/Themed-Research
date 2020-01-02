@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="DeadlyOnline.Logic.MiniCharacter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DeadlyOnline.Logic"
+             mc:Ignorable="d">
+    <Grid>
+        <Image x:Name="CharacterImage" Stretch="None" Margin="0,20"></Image>
+        <Label x:Name="NameLabel" Panel.ZIndex="1" HorizontalContentAlignment="Center" Foreground="{Binding TextForeground}"/>
+
+        <Label x:Name="BackTextLabel"
+               Content="{Binding ElementName=NameLabel, Path=Content}"
+               HorizontalContentAlignment="Center"
+               RenderTransformOrigin="0.5,0.5"
+               Foreground="White">
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform X="1"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <Label Content="{Binding ElementName=NameLabel, Path=Content}"
+               HorizontalContentAlignment="Center"
+               RenderTransformOrigin="0.5,0.5"
+               Foreground="{Binding ElementName=BackTextLabel, Path=Foreground}">
+
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform X="-1"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <Label Content="{Binding ElementName=NameLabel, Path=Content}"
+               HorizontalContentAlignment="Center"
+               RenderTransformOrigin="0.5,0.5"
+               Foreground="{Binding ElementName=BackTextLabel, Path=Foreground}">
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="1"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <Label Content="{Binding ElementName=NameLabel, Path=Content}"
+               HorizontalContentAlignment="Center"
+               RenderTransformOrigin="0.5,0.5"
+               Foreground="{Binding ElementName=BackTextLabel, Path=Foreground}">
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-1"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+    </Grid>
+</UserControl>

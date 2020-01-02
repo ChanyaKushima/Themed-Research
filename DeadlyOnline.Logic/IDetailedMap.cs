@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Collections.Generic;
+using System.Windows.Media;
 using Games.Object;
 
 namespace DeadlyOnline.Logic
@@ -10,6 +11,8 @@ namespace DeadlyOnline.Logic
         double PieceSide { get; set; }
         int PiecesWidth { get; }
         ImageSource Source { get; }
+        HashSet<PlayerData> Players { get; }
+
 
         event PlayerMovedEventHandler PlayerMoved;
 

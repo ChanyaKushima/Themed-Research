@@ -107,6 +107,5 @@ namespace DeadlyOnline.Logic
             _walkingImagesPath = walkingImagesPath;
             _fightingImagePath = fightingImagePath;
         }
-
     }
 }

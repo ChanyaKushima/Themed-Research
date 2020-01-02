@@ -41,23 +41,32 @@ namespace DeadlyOnline.Client
     /// </summary>
     public partial class ClientWindow : Window
     {
-        TcpClient Client;
-        Task CmdAcceptTask;
-        Dictionary<long, CommandAction> CommandDictionary = new Dictionary<long, CommandAction>();
+        internal TcpClient Client;
+        internal Task CmdAcceptTask;
+        internal readonly Dictionary<long, CommandAction> CommandDictionary = new Dictionary<long, CommandAction>();
 
-        CancellationTokenSource CmdAcceptSource;
+        internal CancellationTokenSource CmdAcceptCancellationTokenSource;
 
-        Timer timer;
-        //readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
+        internal readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
 
-        Random random = new Random();
+        private readonly Random random = new Random();
 
-        PlayerData MainPlayer;
+        internal PlayerData MainPlayer;
 
-        FightingField FightingField;
-        BinaryFormatter _formatter = new BinaryFormatter();
+        internal FightingField FightingField;
+        internal MapField MainMapField;
 
-        ReceiveMode _receiveMode = ReceiveMode.Nomal;
+        internal Map CurrentMap
+        {
+            get => MainMapField.CurrentMap;
+            set => MainMapField.CurrentMap = value;
+        }
+
+        private readonly BinaryFormatter _formatter = new BinaryFormatter();
+
+        internal ReceiveMode _receiveMode = ReceiveMode.Nomal;
+
+        internal bool _canMoveOnMap = false;
 
         public ClientWindow()
         {
@@ -69,27 +78,42 @@ namespace DeadlyOnline.Client
 
         private async void LoadGame()
         {
-            //PlayerData player = CreatePlayer("Mr.Miyabi", maxHp: 10, atk: 1, def: 2, spd: 10, @"maid_charachip.png", @"tvx_actor02B.png");
-            //player.SelectedBehavior = new BehaviorInfo((p, e) => e.Damage(p.AttackPower), "通常攻撃", 1);
-
-            ConnectServer();
+            await ConnectServer();
 
             var (mainPlayer, mapPieces) = await DownloadInitDataAsync(Client);
 
             MainPlayer = mainPlayer;
 
             var map = new DebugDetailedMap(MapData.Empty, mapPieces, 40);
-            map.PlayerMoved += PlayerMoved;
-            MainMapField.CurrentMap = map;
-            MainMapField.MainPlayer = mainPlayer;
-            MainMapField.Focus();
+            map.PlayerMoving += PlayerMoving;
+
+            var mapField = new MapField
+            {
+                CurrentMap = map,
+                MainPlayer = mainPlayer
+            };
+            SwitchField(mapField);
+
+            MainMapField = mapField;
+            _canMoveOnMap = true;
         }
 
-        private void PlayerMoved(object sender, PlayerMovedEventArgs e)
+        private async void PlayerMoving(object sender, PlayerMovingEventArgs e)
         {
-            if (MainRandom.Next(10) == 0)
+            e.Cancel = !_canMoveOnMap;
+
+            if (_canMoveOnMap && MainRandom.Next(30) == 0)
             {
-                var enemy = new EnemyData("AAA", 5, @"enemy\wa_hito_12nekomata.png");
+                _canMoveOnMap = false;
+
+                long id = 1;
+                var sendData = new ActionData(CommandFormat.EnemyDataRequest_c, id);
+
+                var resultData = await TransferCommandAsync(Client.GetStream(), sendData, ReceiveMode.Local);
+                resultData.CheckCommand(CommandFormat.EnemyDataTransfer_s);
+
+                var enemy = (EnemyData)resultData.Data;
+
                 var fightingField = CreateFightingField(MainPlayer, enemy, RenderSize);
                 fightingField.Closed += BackToMapField;
                 SwitchField(fightingField);
@@ -99,6 +123,8 @@ namespace DeadlyOnline.Client
 
         private void BackToMapField(object sender, EventArgs e)
         {
+            MainPlayer.ResetSpd();
+            _canMoveOnMap = true;
             SwitchField(MainMapField);
         }
 
@@ -111,13 +137,12 @@ namespace DeadlyOnline.Client
 
         #region 通信系メソッド
 
-        private async void ConnectServer()
+        private async Task ConnectServer()
         {
             bool tryToConnect = true;
 
             while (tryToConnect)
             {
-                MessageBox.Show("サーバーとの接続を開始します");
                 try
                 {
                     Client = new TcpClient();
@@ -141,8 +166,21 @@ namespace DeadlyOnline.Client
                 return;
             }
 
-            CmdAcceptSource ??= new CancellationTokenSource();
-            CmdAcceptTask = Task.Run(AcceptCommandAsync, CmdAcceptSource.Token);
+            CmdAcceptCancellationTokenSource ??= new CancellationTokenSource();
+            CmdAcceptTask = Task.Run(AcceptCommandAsync, CmdAcceptCancellationTokenSource.Token);
+        }
+
+        private (PlayerData, MapPiece[,]) DownloadInitData(TcpClient client)
+        {
+            var stream = client.GetStream();
+
+            var mainPlayerData = ReceiveCommand(stream, ReceiveMode.Local);
+            mainPlayerData.CheckCommand(CommandFormat.MainPlayerDataTransfer_s);
+
+            var mapData = ReceiveCommand(stream, ReceiveMode.Local);
+            mapData.CheckCommand(CommandFormat.MapTransfer_s);
+
+            return ((PlayerData)mainPlayerData.Data, (MapPiece[,])mapData.Data);
         }
 
         private async Task<(PlayerData, MapPiece[,])> DownloadInitDataAsync(
@@ -161,26 +199,46 @@ namespace DeadlyOnline.Client
             return ((PlayerData)mainPlayerData.Data, (MapPiece[,])mapData.Data);
         }
 
+        private void SendCommand(NetworkStream stream, ActionData sendData)
+        {
+            lock (_formatter)
+            {
+                _formatter.Serialize(stream, sendData);
+            }
+        } 
         private void SendCommand(NetworkStream stream, CommandFormat format, long id,
                                  IEnumerable<object> args = null, object data = null)
         {
-            _formatter.Serialize(stream, new ActionData(format, id, args, data));
+            lock (_formatter)
+            {
+                _formatter.Serialize(stream, new ActionData(format, id, args, data));
+            }
         }
 
-        private async ValueTask SendCommandAsync(NetworkStream stream, CommandFormat format, long id,
-                                                 IEnumerable<object> args = null, object data = null,
-                                                 CancellationToken cancellationToken = default)
+        private async Task SendCommandAsync(NetworkStream stream, CommandFormat format, long id,
+                                            IEnumerable<object> args = null, object data = null,
+                                            CancellationToken cancellationToken = default)
         {
-            var actionData = new ActionData(format, id, args, data);
-            await Task.Run(() => _formatter.Serialize(stream, actionData), cancellationToken);
+            await SendCommandAsync(stream, new ActionData(format, id, args, data), cancellationToken);
         }
+
+        private async Task SendCommandAsync(NetworkStream stream, ActionData sendData,
+                                            CancellationToken cancellationToken = default)
+        {
+            await Task.Run(() => SendCommand(stream, sendData), cancellationToken);
+        }
+
+
 
         private ActionData ReceiveCommand(NetworkStream stream, ReceiveMode mode)
         {
             while (_receiveMode != mode) { }
-            var res = (ActionData)_formatter.Deserialize(stream);
-            _receiveMode = ReceiveMode.Nomal;
-            return res;
+            lock (_formatter)
+            {
+                var res = (ActionData)_formatter.Deserialize(stream);
+                _receiveMode = ReceiveMode.Nomal;
+                return res;
+            }
         }
 
         private async ValueTask<ActionData> ReceiveCommandAsync(NetworkStream stream, ReceiveMode mode,
@@ -192,11 +250,30 @@ namespace DeadlyOnline.Client
             }
             CheckCanceled(cancellationToken);
 
-            var res=await Task.Run(() => (ActionData)_formatter.Deserialize(stream), cancellationToken);
-            
+            var res = await Task.Run(() =>
+            {
+                lock (_formatter)
+                {
+                    return (ActionData)_formatter.Deserialize(stream);
+                }
+            }, cancellationToken);
+
             _receiveMode = ReceiveMode.Nomal;
-            
+
             return res;
+        }
+
+        private ActionData TransferCommand(NetworkStream stream, ActionData sendData, ReceiveMode mode)
+        {
+            SendCommand(stream, sendData);
+            return ReceiveCommand(stream, mode);
+        }
+
+        private async Task<ActionData> TransferCommandAsync(NetworkStream stream, ActionData sendData, ReceiveMode mode,
+                                                            CancellationToken cancellationToken = default)
+        {
+            await SendCommandAsync(stream, sendData, cancellationToken);
+            return await ReceiveCommandAsync(stream, mode, cancellationToken);
         }
 
         private async void AcceptCommandAsync()
@@ -212,7 +289,7 @@ namespace DeadlyOnline.Client
                 catch (Exception ex)
                 {
                     Console.WriteLine($"例外発生 {ex.GetType()}: {ex.Message} ");
-                    throw;
+                    Environment.Exit(-1);
                 }
             }
         }
@@ -234,11 +311,11 @@ namespace DeadlyOnline.Client
 
             if (res.Command != CommandFormat.None)
             {
-                res.Send(stream);
+                await SendCommandAsync(stream, res);
             }
         }
 
-        private async Task WaitForOrderAsync(NetworkStream stream, CancellationToken cancellationToken = default)
+        private async ValueTask WaitForOrderAsync(NetworkStream stream, CancellationToken cancellationToken = default)
         {
             while (true)
             {
@@ -258,7 +335,8 @@ namespace DeadlyOnline.Client
                 {
                     break;
                 }
-                else if (mode != ReceiveMode.Local)
+
+                if (mode != ReceiveMode.Local)
                 {
                     throw new SocketException();
                 }
@@ -290,6 +368,5 @@ namespace DeadlyOnline.Client
                 throw new TaskCanceledException();
             }
         }
-
     }
 }

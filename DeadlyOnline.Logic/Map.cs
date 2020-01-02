@@ -21,7 +21,6 @@ namespace DeadlyOnline.Logic
 
         private static readonly Type _typeofThis = typeof(Map);
 
-
         // Using a DependencyProperty as the backing store for MapLeft.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RenderingLeftProperty =
             DependencyProperty.Register(nameof(RenderingLeft), typeof(double), _typeofThis,

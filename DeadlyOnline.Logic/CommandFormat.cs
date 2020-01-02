@@ -9,11 +9,18 @@
         DataRequest_c = 4,
         DataUpdate_e = 5,
         MapMove_e = 10,
-        MapRequest_c=20,
-        MapTransfer_s=21,
 
-        MainPlayerDataTransfer_s=31,
-        PlayerDataTransfer_s=41,
+        MapRequest_c = 20,
+        MapTransfer_s = 21,
+
+        EnteredPlayerInMap_s = 23,
+        LeftPlayerInMap_s = 24,
+        UpdatePlayerInMap_s = 25,
+
+        MainPlayerDataTransfer_s = 31,
+        PlayerDataTransfer_s = 41,
+        EnemyDataRequest_c = 51,
+        EnemyDataTransfer_s = 52,
 
         Result = 100000,
         Debug = 9999999,

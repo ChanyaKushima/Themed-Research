@@ -11,8 +11,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-
 using System.Linq;
+
+using static DeadlyOnline.Logic.KeyInfo;
 
 namespace DeadlyOnline.Logic
 {
@@ -120,7 +121,7 @@ namespace DeadlyOnline.Logic
         }
 
         // すべてのコンストラクタでこいつを用いる
-        private FightingField()
+        private FightingField() : base()
         {
             var interval = new TimeSpan(0, 0, 0, 0, 10/*[ms]*/);
             var timer = new DispatcherTimer(interval, DispatcherPriority.Render, TickOneFrame, Dispatcher);
@@ -327,7 +328,7 @@ namespace DeadlyOnline.Logic
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            Console.WriteLine($"{nameof(FightingField)} OnKeyDown");
+            Console.WriteLine($"{nameof(FightingField)} OnKeyDown called key: {e.Key}");
 
             if (IsSelectKey(e.Key))
             {
@@ -409,10 +410,10 @@ namespace DeadlyOnline.Logic
         }
 
 
-        private bool isLockedFinishedEv = false;
-        private bool isLockedLosedEv = false;
-        private bool isLockedWonEv = false;
-        private bool isLockedClosedEv = false;
+        private bool _isLockedFinishedEv = false;
+        private bool _isLockedLosedEv = false;
+        private bool _isLockedWonEv = false;
+        private bool _isLockedClosedEv = false;
 
         private void KeyActWin(KeyEventArgs e)
         {
@@ -433,9 +434,9 @@ namespace DeadlyOnline.Logic
 
         private void WinAct()
         {
-            if (!isLockedWonEv)
+            if (!_isLockedWonEv)
             {
-                isLockedWonEv = true;
+                _isLockedWonEv = true;
                 var e = new EventArgs();
                 OnWon(e);
                 Won?.Invoke(this, e);
@@ -444,9 +445,9 @@ namespace DeadlyOnline.Logic
 
         private void FinishAct()
         {
-            if (!isLockedFinishedEv)
+            if (!_isLockedFinishedEv)
             {
-                isLockedFinishedEv = true;
+                _isLockedFinishedEv = true;
                 var e = new EventArgs();
                 OnFinished(e);
                 Finished?.Invoke(this, e);
@@ -455,19 +456,19 @@ namespace DeadlyOnline.Logic
 
         public void Close()
         {
-            if (!isLockedClosedEv)
+            if (!_isLockedClosedEv)
             {
-                isLockedClosedEv = true;
+                _isLockedClosedEv = true;
                 var e = new EventArgs();
                 OnClosed(e);
                 Closed?.Invoke(this, e);
             }
         }
-        private static bool IsSelectKey(Key key) => key == KeyConfig.Select1 || key == KeyConfig.Select2;
 
         protected virtual void OnFinished(EventArgs e)
         {
-
+            _playerUIs.Keys.Select(p => p.SpdCount = 0);
+            _playerUIs.Keys.Select(p => p.SpdGage = 0);
         }
 
         protected virtual void OnWon(EventArgs e)
@@ -484,7 +485,6 @@ namespace DeadlyOnline.Logic
 
         protected virtual void OnLose(EventArgs e)
         {
-
             Label label = new Label()
             {
                 Content = "You Lose....",

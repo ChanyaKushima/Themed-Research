@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +24,8 @@ namespace DeadlyOnline.Server
         #region static field(s)
         private static readonly IPEndPoint IPEndPoint = new IPEndPoint(IPAddress.Any, Port);
         private static readonly string MapFilePath = @"main.deomap";
+        private static readonly ServerProcesser _serverProcesser = new ServerProcesser();
+        private static readonly CommandLineProcesser _commandLineProcesser = new CommandLineProcesser();
         #endregion
 
         #region Game Objects
@@ -35,12 +36,11 @@ namespace DeadlyOnline.Server
         private readonly Forwarder[] _forwarders = new Forwarder[ClientNumberMax];
         private readonly Task[] _acceptDataTasks = new Task[ClientNumberMax];
 
-        private readonly Processer _processer = new Processer();
         
         private TcpListener _listener;
         private Task _connectAcceptTask;
+        private Task _commandAcceptTask;
         private CancellationTokenSource _cancellationTokenSource;
-        private long _dataId = 0;
 
         private BinaryFormatter _formatter;
 
@@ -62,7 +62,6 @@ namespace DeadlyOnline.Server
         private bool Init()
         {
             IsAlive = true;
-            _formatter = new BinaryFormatter();
             _cancellationTokenSource = new CancellationTokenSource();
 
             try
@@ -81,6 +80,7 @@ namespace DeadlyOnline.Server
                 Log.Write("ポート開放完了", $"Port:{IPEndPoint.Port}");
                 
                 _connectAcceptTask = Task.Run(AcceptConnection, _cancellationTokenSource.Token);
+                _commandAcceptTask = Task.Run(AcceptCommandLine, _cancellationTokenSource.Token);
                 Log.Write("通信開始");
             }
             catch (Exception)
@@ -91,14 +91,17 @@ namespace DeadlyOnline.Server
             return IsAlive;
         }
 
+
         private void LoadMap()
         {
             bool mapFileExists = File.Exists(MapFilePath);
+            var formatter = new BinaryFormatter();
+
             using FileStream stream = new FileStream(MapFilePath, FileMode.OpenOrCreate);
             if (mapFileExists)
             {
                 Log.Write("マップファイルのロード開始");
-                _mapPieces = (MapPiece[,])_formatter.Deserialize(stream);
+                _mapPieces = (MapPiece[,])formatter.Deserialize(stream);
                 Log.Write("マップファイルのロード終了");
             }
             else
@@ -108,15 +111,32 @@ namespace DeadlyOnline.Server
                 Log.Write("マップ作成終了");
 
                 Log.Write("マップファイル作成開始");
-                _formatter.Serialize(stream, mapPieces);
+                formatter.Serialize(stream, mapPieces);
                 _mapPieces = mapPieces;
                 Log.Write("マップファイル作成終了");
             }
         }
 
+        private void AcceptCommandLine()
+        {
+            while (true)
+            {
+                string commandLineText = Console.ReadLine();
+                string command = commandLineText.Split(' ', '\t').First();
+                string[] options = 
+                    commandLineText.Remove(0, command.Length + 1)
+                        .Split(' ', '\t')
+                        .SkipWhile(s => s == string.Empty)
+                        .ToArray();
+
+                Log.Write("コマンド入力", "\"" + commandLineText + "\"");
+
+                _commandLineProcesser.Execute(command, options, this);
+            }
+        }
+
         private async Task AcceptConnection()
         {
-
             while (true)
             {
                 ClientData client;
@@ -165,7 +185,7 @@ namespace DeadlyOnline.Server
                 @"maid_charachip.png",
                 @"tvx_actor02B.png");
 
-            player.SelectedBehavior = new BehaviorInfo(0, "通常攻撃", 1);
+            player.SelectedBehavior = new BehaviorInfo(0);
 
             try
             {
@@ -194,22 +214,22 @@ namespace DeadlyOnline.Server
 
         private void AcceptData(int no)
         {
-            NetworkStream stream = _clients[no].Stream;
+            Forwarder forwarder = _forwarders[no];
 
             try
             {
                 while (true)
                 {
-                    object obj = _formatter.Deserialize(stream);
+                    object obj = forwarder.ReceiveCommand();
 
                     switch (obj)
                     {
                         case ActionData ad:
-                            ExecuteCommand(stream, ad);
+                            ExecuteCommand(forwarder, ad);
                             break;
 
                         default:
-                            Log.Write("通信エラー", $"不正なインスタンスを受信した id: {no}");
+                            Log.Write("通信エラー", $"不正なインスタンスを受信した ID: {no}");
                             Disconnect(no);
 #if DEBUG
                             throw new NotImplementedException();
@@ -221,28 +241,28 @@ namespace DeadlyOnline.Server
             }
             catch (SerializationException ex)
             {
-                Log.Write("通信エラー", $"シリアル化, または逆シリアル化中に例外が発生 id: {no}", ex.Message);
+                Log.Write("通信エラー", $"シリアル化, または逆シリアル化中に例外が発生 ID: {no}", ex.Message);
                 Disconnect(no);
             }
             catch (IOException ex)
             {
-                Log.Write("通信エラー", $"ホストに強制的に切断された id: {no}", ex.Message);
+                Log.Write("通信エラー", $"ホストに強制的に切断された ID: {no}", ex.Message);
                 Disconnect(no);
             }
             catch (Exception ex)
             {
-                Log.Write("通信エラー", $"原因不明 id: {no}", ex.Message);
+                Log.Write("通信エラー", $"原因不明 ID: {no}", ex.Message);
             }
         }
 
-        private void ExecuteCommand(NetworkStream stream, ActionData ad)
+        private void ExecuteCommand(Forwarder forwarder, ActionData ad)
         {
-            Console.WriteLine($"{nameof(ActionData)}  {ad.Command}\tArgsCount:{ad.Arguments.Count()}");
+            ActionData res = _serverProcesser.Remake(InvokeActionCommand(ad), this);
 
-            ActionData res = _processer.Remake(InvokeActionCommand(ad), this);
             if (res.Command != CommandFormat.None)
             {
-                _formatter.Serialize(stream, res);
+                Log.Write("データ送信", $"{res.Command} ArgsCount:{res.Arguments?.Count() ?? 0}");
+                forwarder.SendCommand(ReceiveMode.Local, res);
             }
         }
 
@@ -252,7 +272,7 @@ namespace DeadlyOnline.Server
         /// 指定した番号のクライアントとの接続を切断する
         /// </summary>
         /// <param name="clientNo">切断したいクライアントの番号</param>
-        private void Disconnect(int clientNo)
+        public bool Disconnect(int clientNo)
         {
             var client = _clients[clientNo];
             if (client != null)
@@ -260,11 +280,12 @@ namespace DeadlyOnline.Server
                 client.Close();
                 _clients[clientNo] = null;
             }
+            return client != null;
         }
         /// <summary>
         /// 全てのクライアントとの接続を切断する
         /// </summary>
-        private void DisconnectAll()
+        public void DisconnectAll()
         {
             for (int i = 0; i < _clients.Length; i++)
             {
@@ -272,7 +293,7 @@ namespace DeadlyOnline.Server
             }
         }
 
-        private void Close()
+        public void Close()
         {
             try
             {
@@ -283,57 +304,6 @@ namespace DeadlyOnline.Server
             {
                 IsAlive = false;
             }
-        }
-
-    }
-
-    class Forwarder
-    {
-        private static long _id = 0;
-        private static BinaryFormatter _formatter = new BinaryFormatter();
-
-        private NetworkStream _stream;
-
-        public Forwarder(NetworkStream networkStream)
-        {
-            _stream = networkStream;
-        }
-
-        public ActionData ReceiveCommand()
-        {
-            return (ActionData)_formatter.Deserialize(_stream);
-        }
-
-        public async Task<ActionData> ReceiveCommandAsync()
-        {
-            return await Task.Run(ReceiveCommand);
-        }
-
-
-        public void SendCommand(ReceiveMode mode, CommandFormat cmd, IEnumerable<object> args = null, object data = null)
-        {
-            SendCommand(mode, new ActionData(cmd, Interlocked.Increment(ref _id), args, data));
-        }
-        public void SendCommand(ReceiveMode mode, ActionData actionData)
-        {
-            _stream.WriteByte((byte)mode);
-            actionData.Send(_stream);
-        }
-
-        public async Task SendCommandAsync(ReceiveMode mode, CommandFormat cmd, IEnumerable<object> args = null,
-                                            object data = null, CancellationToken cancellationToken = default)
-        {
-            await SendCommandAsync(
-                mode, 
-                new ActionData(cmd, Interlocked.Increment(ref _id), args, data), 
-                cancellationToken);
-        }
-
-        public async Task SendCommandAsync(ReceiveMode mode, ActionData actionData,
-                                            CancellationToken cancellationToken = default)
-        {
-            await _stream.WriteAsync(new byte[1] { (byte)mode },cancellationToken);
-            await actionData.SendAsync(_stream, cancellationToken);
         }
     }
 }
