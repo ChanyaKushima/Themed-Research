@@ -13,21 +13,35 @@ namespace DeadlyOnline.Logic
 {
 	public class ClientData
 	{
-		public TcpClient Client { get; set; }
-		public PlayerData PlayerData{ get; set; }
-		public NetworkStream Stream => Client.GetStream();
+		#region Caches
+		private NetworkStream _stream;
 
-        public IPAddress LocalIPAddress => ((IPEndPoint)Client.Client.LocalEndPoint).Address;
-        public IPAddress RemoteIPAddress => ((IPEndPoint)Client.Client.RemoteEndPoint).Address;
-		public ClientData(TcpClient client)
+		private IPAddress _localIPAddress;
+		private IPAddress _remoteIPAddress;
+		#endregion
+
+		public TcpClient Client { get; }
+		public PlayerData PlayerData { get; set; }
+		public NetworkStream Stream => _stream ?? (_stream = Client.GetStream());
+
+		public string PlayerID => PlayerData?.ID;
+		public int ID { get; }
+
+		public IPAddress LocalIPAddress
+			=> _localIPAddress ?? (_localIPAddress = ((IPEndPoint)Client.Client.LocalEndPoint).Address);
+		public IPAddress RemoteIPAddress
+			=> _remoteIPAddress ?? (_remoteIPAddress = ((IPEndPoint)Client.Client.RemoteEndPoint).Address);
+
+		public ClientData(TcpClient client, int id)
 		{
-            Client = client;
+			Client = client;
+			ID = id;
 		}
 
-        public void Close()
-        {
-            Stream.Close();
-            Client.Close();
-        }
+		public void Close()
+		{
+			_stream?.Close();
+			Client.Close();
+		}
 	}
 }

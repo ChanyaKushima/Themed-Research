@@ -1,0 +1,49 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.0": {
+      "DeadlyOnline.Client/1.0.0": {
+        "dependencies": {
+          "DeadlyOnline.Logic": "1.0.0"
+        },
+        "runtime": {
+          "DeadlyOnline.Client.dll": {}
+        }
+      },
+      "DeadlyOnline.Logic/1.0.0": {
+        "dependencies": {
+          "Games.Object": "1.0.0"
+        },
+        "runtime": {
+          "DeadlyOnline.Logic.dll": {}
+        }
+      },
+      "Games.Object/1.0.0": {
+        "runtime": {
+          "Games.Object.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DeadlyOnline.Client/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DeadlyOnline.Logic/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Games.Object/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

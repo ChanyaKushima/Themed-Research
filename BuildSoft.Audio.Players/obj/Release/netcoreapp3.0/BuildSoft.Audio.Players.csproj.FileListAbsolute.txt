@@ -1,0 +1,9 @@
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\bin\Release\netcoreapp3.0\BuildSoft.Audio.Players.dll.config
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\bin\Release\netcoreapp3.0\BuildSoft.Audio.Players.deps.json
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\bin\Release\netcoreapp3.0\BuildSoft.Audio.Players.dll
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\bin\Release\netcoreapp3.0\BuildSoft.Audio.Players.pdb
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\obj\Release\netcoreapp3.0\BuildSoft.Audio.Players.csprojAssemblyReference.cache
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\obj\Release\netcoreapp3.0\BuildSoft.Audio.Players.AssemblyInfoInputs.cache
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\obj\Release\netcoreapp3.0\BuildSoft.Audio.Players.AssemblyInfo.cs
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\obj\Release\netcoreapp3.0\BuildSoft.Audio.Players.dll
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\BuildSoft.Audio.Players\obj\Release\netcoreapp3.0\BuildSoft.Audio.Players.pdb

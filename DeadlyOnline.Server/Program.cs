@@ -37,7 +37,7 @@ namespace DeadlyOnline.Server
 
         private static void WriteFirstMessage()
         {
-            Console.Title = "Deadly Online Server version " + VersionName;
+            Console.Title = "Deadly Online Server ver. " + VersionName;
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.Write("\n\n\n" +
                           "             DDDDDD            oOOOOo            SSSSSs   \n" +

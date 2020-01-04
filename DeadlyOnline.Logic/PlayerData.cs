@@ -18,9 +18,10 @@ namespace DeadlyOnline.Logic
         private ImageSource _fightingImage;
         [NonSerialized]
         private Dictionary<CharacterDirection, ImageSource> _walkingImages = null;
-
         private readonly string _fightingImagePath;
         private readonly string _walkingImagesPath;
+
+        private string _id;
 
         #region 戦闘に関するデータ
 
@@ -35,7 +36,7 @@ namespace DeadlyOnline.Logic
         public int MapLeft { get; set; }
         public int MapTop { get; set; }
 
-        public CharacterDirection MapDirection { get; set; } = CharacterDirection.Down;
+        public CharacterDirection CharacterDirection { get; set; } = CharacterDirection.Down;
 
 
         public MapID CurrentMapID { get; set; }
@@ -60,13 +61,26 @@ namespace DeadlyOnline.Logic
 
         }
 
-        public ImageSource WalkingImageSource => WalkingImages[MapDirection];
+        public ImageSource WalkingImageSource => WalkingImages[CharacterDirection];
 
         #endregion
 
         #region ステータス
 
         #endregion
+
+        public string ID
+        {
+            get => _id;
+            set
+            {
+                if (_id != null)
+                {
+                    ThrowHelper.ThrowInvalidOperationException("ID は既に設定されています!");
+                }
+                _id = value;
+            }
+        }
 
         /// <summary>
         /// キャラの最大レベルを取得する。

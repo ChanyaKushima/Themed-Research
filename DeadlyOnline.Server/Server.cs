@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,6 +20,7 @@ namespace DeadlyOnline.Server
     using static DeadlyOnline.Logic.Logic;
     using static DeadlyOnline.Logic.Calc;
     using static DeadlyOnline.Logic.Constants;
+    using System.Globalization;
 
     internal class Server 
     {
@@ -39,10 +42,14 @@ namespace DeadlyOnline.Server
         
         private TcpListener _listener;
         private Task _connectAcceptTask;
-        private Task _commandAcceptTask;
+        private Task _commandLineAcceptTask;
         private CancellationTokenSource _cancellationTokenSource;
 
-        private BinaryFormatter _formatter;
+        #region Events
+        //private event LoggedInEventHandler LoggedIn;
+        //private event ConnectedEventHandler Connected;
+        //private event DisconnectedEventHandler Disconnected;
+        #endregion
 
         public bool IsAlive { get; private set; } = true;
 
@@ -80,7 +87,7 @@ namespace DeadlyOnline.Server
                 Log.Write("ポート開放完了", $"Port:{IPEndPoint.Port}");
                 
                 _connectAcceptTask = Task.Run(AcceptConnection, _cancellationTokenSource.Token);
-                _commandAcceptTask = Task.Run(AcceptCommandLine, _cancellationTokenSource.Token);
+                _commandLineAcceptTask = Task.Run(AcceptCommandLine, _cancellationTokenSource.Token);
                 Log.Write("通信開始");
             }
             catch (Exception)
@@ -111,20 +118,28 @@ namespace DeadlyOnline.Server
             }
         }
 
-        public static MapPiece[,] CreateNewRandomMapFile(Stream stream,int width=100,int height=100)
+        public static MapPiece[,] CreateNewRandomMapFile(FileStream fileStream, int width = 100, int height = 100)
         {
             var formatter = new BinaryFormatter();
 
-            Log.Write("ランダムマップ作成開始");
+            Log.Write("ランダムマップ作成開始", $"width: {width}, height: {height}");
             var mapPieces = GameObjectGenerator.CreateRandomMapPieces(
                 width, height,
                 Enumerable.Range(0, DebugDetailedMap.Sources.Count).ToArray());
-
             Log.Write("ランダムマップ作成終了");
 
-            Log.Write("マップファイル作成開始");
-            formatter.Serialize(stream, mapPieces);
-            Log.Write("マップファイル作成終了");
+            string filePath = fileStream.Name;
+            
+            if (fileStream.CanWrite)
+            {
+                Log.Write("マップファイル作成開始", $"file path: {filePath}");
+                formatter.Serialize(fileStream, mapPieces);
+                Log.Write("マップファイル作成終了");
+            }
+            else
+            {
+                Log.Write("エラー", $"file path: {filePath} に書き込めませんでした。");
+            }
 
             return mapPieces;
         }
@@ -133,18 +148,90 @@ namespace DeadlyOnline.Server
         {
             while (true)
             {
-                string commandLineText = Console.ReadLine();
-                string command = commandLineText.Split(' ', '\t').First();
-                string[] options = 
-                    commandLineText.Remove(0, command.Length)
-                        .Split(' ', '\t')
-                        .Where(s => s != "")
-                        .ToArray();
+                string commandLineText = ReadCommandLine();
+                var tmpSplitedTexts = commandLineText.Split(' ', '\t').Where(s => s != "");
+                string command = tmpSplitedTexts.FirstOrDefault();
+                string[] options = tmpSplitedTexts.Skip(1).ToArray();
 
                 Log.Debug.Write("コマンド入力", "\"" + commandLineText + "\"");
 
                 _commandLineProcesser.Execute(command, options, this);
             }
+        }
+
+        private static string ReadCommandLine()
+        {
+            var builder = new StringBuilder();
+            var charWidthList = new List<int>();
+
+            while (true)
+            {
+                var input = Console.ReadKey(intercept: true);
+                if (input.Key == ConsoleKey.Tab && builder.Length > 0)
+                {
+                    var currentInput = builder.ToString();
+                    var matches =
+                        CommandLineProcesser.CommandCollection
+                            .Where(str => str.StartsWith(currentInput, true, CultureInfo.InvariantCulture));
+                    int matchesCount = matches.Count();
+
+                    if (matchesCount == 0)
+                    {
+                        // Empty ...
+                    }
+                    else if (matchesCount == 1)
+                    {
+                        var match = matches.First();
+                        builder.Clear();
+
+                        builder.Append(match);
+                        charWidthList.AddRange(Enumerable.Repeat(1, match.Length - currentInput.Length));
+                        Console.Write(Log.LineRead + match);
+                    }
+                    else
+                    {
+                        builder.Clear();
+                        charWidthList.Clear();
+
+                        Console.WriteLine();
+
+                        Console.Write(Log.NewLine);
+                        foreach (var item in matches)
+                        {
+                            Log.WriteHelp(item);
+                        }
+                        Console.Write(Log.NewLine);
+                    }
+                }
+                else
+                {
+                    if (input.Key == ConsoleKey.Enter)
+                    {
+                        break;
+                    }
+
+                    var keyChar = input.KeyChar;
+
+                    if (input.Key == ConsoleKey.Backspace && builder.Length > 0)
+                    {
+                        var lastCharIndex = builder.Length - 1;
+                        builder.Length--;
+
+                        Console.Write(charWidthList[lastCharIndex] == 1 ? "\b \b" : "\b\b  \b\b");
+                        charWidthList.RemoveAt(lastCharIndex);
+                    }
+                    else if (!char.IsControl(keyChar))
+                    {
+                        var tmpCursorLeft = Console.CursorLeft;
+                        builder.Append(keyChar);
+                        Console.Write(keyChar);
+                        charWidthList.Add(Console.CursorLeft - tmpCursorLeft);
+                    }
+                }
+            }
+            Console.WriteLine();
+
+            return builder.ToString();
         }
 
         private async Task AcceptConnection()
@@ -154,18 +241,20 @@ namespace DeadlyOnline.Server
                 ClientData client;
                 Forwarder forwarder;
 
-                int i = GetArrayEmptyTerritory(_clients);
+                int id = GetArrayEmptyTerritory(_clients);
 
-                if (i >= _clients.Length)
+                if (id >= _clients.Length)
                 {
                     await Task.Delay(1);
                     continue;
                 }
 
-                Log.Write("接続待機", $"ID: {i}");
+                Log.Write("接続待機", $"ID: {id}");
                 try
                 {
-                    client = new ClientData(await _listener.AcceptTcpClientAsync());
+                    var tcpClient = await _listener.AcceptTcpClientAsync();
+                    OnConnected(new ConnectedEventArgs(tcpClient, id));
+                    client = new ClientData(tcpClient, id);
                     forwarder = new Forwarder(client.Stream);
                 }
                 catch (SocketException e)
@@ -174,22 +263,25 @@ namespace DeadlyOnline.Server
                     continue;
                 }
 
-                _clients[i] = client;
-                _forwarders[i] = forwarder;
-                Log.Write("接続完了", $"IPAddress: {_clients[i].RemoteIPAddress}, ID: {i}");
+                Log.Write("接続完了", $"ID: {id}");
 
+                Log.Write("初期データ送信開始", $"ID: {id}");
+                UploadInitData(client, forwarder, id.ToString());
+                Log.Write("初期データ送信終了", $"ID: {id}");
+                _clients[id] = client;
+                _forwarders[id] = forwarder;
 
-                UploadInitData(forwarder);
+                OnLoggedIn(new LoggedInEventArgs(client, id));
 
-                Log.Write("データ送受信開始", $"IPAddress: {_clients[i].RemoteIPAddress}, ID: {i}");
-                _acceptDataTasks[i] = Task.Run(() => AcceptData(i));
+                Log.Write("データ送受信開始", $"ID: {id}");
+                _acceptDataTasks[id] = Task.Run(() => AcceptActionData(id));
             }
         }
 
-        private void UploadInitData(Forwarder forwarder)
+        private void UploadInitData(ClientData client,Forwarder forwarder,string id)
         {
             PlayerData player = GameObjectGenerator.CreatePlayer(
-                "Mr.Miyabi",
+                "Mr.Miyabi" + id,
                 maxHp: 10,
                 atk: 1,
                 def: 2,
@@ -197,17 +289,17 @@ namespace DeadlyOnline.Server
                 @"maid_charachip.png",
                 @"tvx_actor02B.png");
 
-            player.SelectedBehavior = new BehaviorInfo(0);
+            player.SelectedBehavior = new BehaviorInfo(behaviorID: 0);
+            player.ID = id;
 
             try
             {
                 Log.Write("プレイヤーデータ送信開始");
 
-
-
                 forwarder.SendCommand(ReceiveMode.Local,
                                       CommandFormat.MainPlayerDataTransfer_s,
                                       data: player);
+                client.PlayerData = player;
 
                 Log.Write("プレイヤーデータ送信終了");
 
@@ -216,6 +308,7 @@ namespace DeadlyOnline.Server
                 forwarder.SendCommand(ReceiveMode.Local,
                                       CommandFormat.MapTransfer_s,
                                       data: _mapPieces);
+
                 Log.Write("マップデータ送信終了");
             }
             catch (Exception ex)
@@ -224,61 +317,55 @@ namespace DeadlyOnline.Server
             }
         }
 
-        private void AcceptData(int no)
+        private void AcceptActionData(int id)
         {
-            Forwarder forwarder = _forwarders[no];
-
+            Forwarder forwarder = _forwarders[id];
             try
             {
                 while (true)
                 {
-                    object obj = forwarder.ReceiveCommand();
+                    var receivedData = forwarder.ReceiveCommand();
+                    var args = receivedData.Arguments;
+                    Log.Write(
+                        "データ受信", 
+                        $"{receivedData.Command} " +
+                        $"ArgsCount: {args?.Count() ?? 0} " +
+                        $"Args: {string.Join('|', args ?? Enumerable.Empty<object>())}");
 
-                    switch (obj)
-                    {
-                        case ActionData ad:
-                            ExecuteCommand(forwarder, ad);
-                            break;
-
-                        default:
-                            Log.Write("通信エラー", $"不正なインスタンスを受信した ID: {no}");
-                            Disconnect(no);
-#if DEBUG
-                            throw new NotImplementedException();
-#else
-                            break;
-#endif
-                    }
+                    ExecuteReceivedCommand(id, receivedData);
                 }
             }
             catch (SerializationException ex)
             {
-                Log.Write("通信エラー", $"シリアル化, または逆シリアル化中に例外が発生 ID: {no}", ex.Message);
-                Disconnect(no);
+                Log.Write("通信エラー", $"シリアル化, または逆シリアル化中に例外が発生 ID: {id}", ex.Message);
+                Disconnect(id);
             }
             catch (IOException ex)
             {
-                Log.Write("通信エラー", $"ホストに強制的に切断された ID: {no}", ex.Message);
-                Disconnect(no);
+                if (_clients[id] != null)
+                {
+                    Log.Write("通信エラー", $"ホストに強制的に切断された ID: {id}", ex.Message);
+                    Disconnect(id);
+                }
             }
             catch (Exception ex)
             {
-                Log.Write("通信エラー", $"原因不明 ID: {no}", ex.Message);
+                Log.Write("通信エラー", $"原因不明 ID: {id}", ex.Message);
             }
         }
 
-        private void ExecuteCommand(Forwarder forwarder, ActionData ad)
+        private void ExecuteReceivedCommand(int id, ActionData ad)
         {
-            ActionData res = _serverProcesser.Remake(InvokeActionCommand(ad), this);
+            ClientData client = _clients[id];
+            Forwarder forwarder = _forwarders[id];
+
+            ActionData res = _serverProcesser.Execute(InvokeActionCommand(ad), client, this);
 
             if (res.Command != CommandFormat.None)
             {
-                Log.Write("データ送信", $"{res.Command} ArgsCount:{res.Arguments?.Count() ?? 0}");
                 forwarder.SendCommand(ReceiveMode.Local, res);
             }
         }
-
-
 
         /// <summary>
         /// 指定した番号のクライアントとの接続を切断する
@@ -289,11 +376,15 @@ namespace DeadlyOnline.Server
             var client = _clients[clientNo];
             if (client != null)
             {
-                client.Close();
                 _clients[clientNo] = null;
+                _forwarders[clientNo] = null;
+                client.Close();
+                OnDisconnected(new DisconnectedEventArgs(client, clientNo));
             }
+
             return client != null;
         }
+
         /// <summary>
         /// 全てのクライアントとの接続を切断する
         /// </summary>
@@ -317,5 +408,63 @@ namespace DeadlyOnline.Server
                 IsAlive = false;
             }
         }
+
+        #region Event Handlers
+
+        private void OnDisconnected(DisconnectedEventArgs e)
+        {
+            Log.Write("切断通知", $"ID: {e.ID} を切断しました。");
+
+            _forwarders.SendCommandAll(
+                /*inParallel:*/true, 
+                ReceiveMode.Nomal,
+                CommandFormat.LeftPlayerInMap_s,
+                data: e.Client.PlayerID);
+        }
+
+        private void OnConnected(ConnectedEventArgs e)
+        {
+            Log.Write("接続通知", $"ID: {e.ID} と接続しました。");
+        }
+
+        private void OnLoggedIn(LoggedInEventArgs e)
+        {
+            var client = e.Client;
+            Log.Write(
+                "ログイン通知",
+                $"ID: {e.ID}, " +
+                $"Player ID: {client.PlayerID}, " +
+                $"Local IP: {client.LocalIPAddress}, " +
+                $"Remote IP: {client.RemoteIPAddress}, " +
+                $"Is Loopback: {IPAddress.IsLoopback(client.LocalIPAddress)}");
+
+            var forwarder = _forwarders[e.ID];
+            foreach (var player in _clients.Where(c => c != null && c != client).Select(c => c.PlayerData))
+            {
+                forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EnteredPlayerInMap_s, data: player);   
+            }
+
+            _forwarders
+                .Where(f => f != null && f != forwarder)
+                .SendCommandAll(
+                    /*inParallel:*/ true,
+                    ReceiveMode.Nomal,
+                    CommandFormat.EnteredPlayerInMap_s,
+                    data: client.PlayerData);
+        }
+
+        internal void OnPlayerMoved(PlayerMovedEventArgs e)
+        {
+            _clients
+                .Where(c => c != null && c.PlayerID != e.Player.ID)
+                .Select(c => _forwarders[c.ID])
+                .SendCommandAll(
+                    /*inParallel:*/ true,
+                    ReceiveMode.Nomal,
+                    CommandFormat.PlayerMoved_e,
+                    args: new object[] { e.X, e.Y, e.Player.CharacterDirection, e.Player.ID, });
+        }
+
+        #endregion
     }
 }

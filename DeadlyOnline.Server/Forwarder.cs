@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 using System.Threading;
 using System.Net.Sockets;
@@ -10,12 +11,14 @@ namespace DeadlyOnline.Server
 {
     using DeadlyOnline.Logic;
 
-    class Forwarder
+    internal class Forwarder
     {
         private static long _id = 0;
-        private static BinaryFormatter _formatter = new BinaryFormatter();
+        private static readonly BinaryFormatter _formatter = new BinaryFormatter();
 
         private readonly NetworkStream _stream;
+
+        public static long CreateNewID() => Interlocked.Increment(ref _id);
 
         public Forwarder(NetworkStream networkStream)
         {
@@ -35,12 +38,16 @@ namespace DeadlyOnline.Server
 
         public void SendCommand(ReceiveMode mode, CommandFormat cmd, IEnumerable<object> args = null, object data = null)
         {
-            SendCommand(mode, new ActionData(cmd, Interlocked.Increment(ref _id), args, data));
+            SendCommand(mode, new ActionData(cmd, CreateNewID(), args, data));
         }
-        public void SendCommand(ReceiveMode mode, ActionData actionData)
+        public void SendCommand(ReceiveMode mode, ActionData sendData)
         {
+            Log.Write("データ送信", 
+                $"{sendData.Command} " +
+                $"ArgsCount: {sendData.Arguments?.Count() ?? 0} " +
+                $"Args: { string.Join('|', sendData.Arguments ?? Enumerable.Empty<object>())} ");
             _stream.WriteByte((byte)mode);
-            actionData.Send(_stream);
+            sendData.Send(_stream);
         }
 
         public async Task SendCommandAsync(ReceiveMode mode, CommandFormat cmd, IEnumerable<object> args = null,
@@ -48,15 +55,16 @@ namespace DeadlyOnline.Server
         {
             await SendCommandAsync(
                 mode, 
-                new ActionData(cmd, Interlocked.Increment(ref _id), args, data), 
+                new ActionData(cmd, CreateNewID(), args, data), 
                 cancellationToken);
         }
 
-        public async Task SendCommandAsync(ReceiveMode mode, ActionData actionData,
+        public async Task SendCommandAsync(ReceiveMode mode, ActionData sendData,
                                             CancellationToken cancellationToken = default)
         {
+            Log.Write("データ送信", $"{sendData.Command} ArgsCount:{sendData.Arguments?.Count() ?? 0}");
             await _stream.WriteAsync(new byte[1] { (byte)mode }, cancellationToken);
-            await actionData.SendAsync(_stream, cancellationToken);
+            await sendData.SendAsync(_stream, cancellationToken);
         }
     }
 }

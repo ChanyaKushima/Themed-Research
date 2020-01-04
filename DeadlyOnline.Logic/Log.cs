@@ -9,10 +9,12 @@ namespace DeadlyOnline.Logic
     {
         private static TextWriter _out;
 
-        public static string LineEnd => "\r\n$ >> ";
-        public static string LineStart => "\r>>   \b\b";
+        public static string LineEnd => "\r\n" + LineRead;
+        public static string LineStart => LineLog;
         public static string LineRead => "\r$ >> ";
-        public static string LineLog => "\r>> ";
+        public static string LineLog => "\r>>  \b";
+
+        public static string NewLine => LineStart + LineEnd;
 
         static Log()
         {
@@ -38,7 +40,14 @@ namespace DeadlyOnline.Logic
         public static void Write(string kind, string message = "", string exceptionMessage = "")
             => Out.Write(GetFormattedString(kind, message, exceptionMessage));
 
-        
+        public static void WriteNewLine() => Out.Write(NewLine);
+
+        public static void WriteHelp(string helpMessage)
+            => Out.Write(LineStart + helpMessage + LineEnd);
+
+        public static void WriteHelp(params string[] helpMessages) 
+            => Out.Write(LineStart + string.Join(NewLine, helpMessages) + LineEnd);
+
 
 
         #region Extention Methods

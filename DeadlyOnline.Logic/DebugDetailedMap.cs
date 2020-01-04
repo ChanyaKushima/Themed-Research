@@ -157,10 +157,10 @@ namespace DeadlyOnline.Logic
                 double renderingLeft = RenderingLeft;
                 double renderingTop = RenderingTop;
 
-                double[] widthCandidates = 
-                    new[] { renderSize.Width, source.Width, source.Width + renderingLeft };
+                double[] widthCandidates  = 
+                    new[] { renderSize.Width , source.Width , source.Width  + renderingLeft };
                 double[] heightCandidates = 
-                    new[] { renderSize.Height, source.Height, source.Height + renderingTop };
+                    new[] { renderSize.Height, source.Height, source.Height + renderingTop  };
 
                 double width = widthCandidates.Min();
                 double height = heightCandidates.Min();
@@ -169,7 +169,7 @@ namespace DeadlyOnline.Logic
                 int croppedY = Math.Max(0, -(int)renderingTop);
 
                 double mapImageLeft = Math.Max(0, renderingLeft);
-                double mapImageTop = Math.Max(0, renderingTop);
+                double mapImageTop  = Math.Max(0, renderingTop);
 
                 ImageSource mapImage = new CroppedBitmap(
                     (BitmapSource)source,
@@ -178,14 +178,14 @@ namespace DeadlyOnline.Logic
 
                 dc.DrawImage(mapImage, new Rect(mapImageLeft, mapImageTop, width, height));
 
-                int displayedPieceLeft = (int)(croppedX / PieceSide);
-                int displayedPieceTop = (int)(croppedY / PieceSide);
-                int displayedPieceRight = (int)((croppedX + width) / PieceSide) + 1; 
-                int displayedPieceBottom = (int)((croppedX + height) / PieceSide) + 1;
+                int displayedPiecesLeft   = (int)(croppedX / PieceSide);
+                int displayedPiecesTop    = (int)(croppedY / PieceSide);
+                int displayedPiecesRight  = (int)((croppedX + width) / PieceSide) + 1; 
+                int displayedPiecesBottom = (int)((croppedY + height) / PieceSide) + 1;
 
                 var drawingTargets = Players
-                    .Where(x => x.MapLeft >= displayedPieceLeft && x.MapLeft <= displayedPieceRight &&
-                                x.MapTop >= displayedPieceTop && x.MapLeft <= displayedPieceBottom);
+                    .Where(x => x.MapLeft >= displayedPiecesLeft && x.MapLeft <= displayedPiecesRight &&
+                                x.MapTop >= displayedPiecesTop && x.MapTop <= displayedPiecesBottom);
                 
                 foreach (var target in drawingTargets)
                 {
@@ -281,7 +281,7 @@ namespace DeadlyOnline.Logic
 
                     UpdateRenderingLocation();
                     InvokeTerrainEffect(x, y);
-                    OnPlayerMovedCore(new PlayerMovedEventArgs(x, y, this));
+                    OnPlayerMovedCore(new PlayerMovedEventArgs(null, x, y, this));
                 }
             }
         }

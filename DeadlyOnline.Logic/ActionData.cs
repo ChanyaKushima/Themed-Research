@@ -15,10 +15,10 @@ namespace DeadlyOnline.Logic
         public static readonly ActionData Empty = new ActionData();
         private static readonly BinaryFormatter _formatter = new BinaryFormatter();
 
-		public CommandFormat Command { get; }
-		public IEnumerable<object> Arguments { get; }
-		public object Data { get; }
-        public long Id { get; }
+		public readonly CommandFormat Command { get; }
+		public readonly IEnumerable<object> Arguments { get; }
+		public readonly object Data { get; }
+        public readonly long ID { get; }
 
 
         public ActionData(CommandFormat cmd, long id, IEnumerable<object> args = null, object data = null)
@@ -26,7 +26,7 @@ namespace DeadlyOnline.Logic
             Command = cmd;
             Arguments = args;
             Data = data;
-            Id = id;
+            ID = id;
         }
 
         public void Send(Stream stream)

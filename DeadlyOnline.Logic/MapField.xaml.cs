@@ -139,7 +139,7 @@ namespace DeadlyOnline.Logic
                     player.MapTop--;
                     isMoved = true;
                 }
-                player.MapDirection = CharacterDirection.Up;
+                player.CharacterDirection = CharacterDirection.Up;
             }
             if (DownKeyIsDown())
             {
@@ -148,7 +148,7 @@ namespace DeadlyOnline.Logic
                     player.MapTop++;
                     isMoved = true;
                 }
-                player.MapDirection = CharacterDirection.Down;
+                player.CharacterDirection = CharacterDirection.Down;
             }
             if (LeftKeyIsDown())
             {
@@ -157,7 +157,7 @@ namespace DeadlyOnline.Logic
                     player.MapLeft--;
                     isMoved = true;
                 }
-                player.MapDirection = CharacterDirection.Left;
+                player.CharacterDirection = CharacterDirection.Left;
             }
             if (RightKeyIsDown())
             {
@@ -166,7 +166,7 @@ namespace DeadlyOnline.Logic
                     player.MapLeft++;
                     isMoved = true;
                 }
-                player.MapDirection = CharacterDirection.Right;
+                player.CharacterDirection = CharacterDirection.Right;
             }
             return isMoved;
         }

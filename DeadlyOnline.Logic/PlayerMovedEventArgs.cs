@@ -6,21 +6,24 @@ using Games.Object;
 
 namespace DeadlyOnline.Logic
 {
-    public class PlayerMovedEventArgs:EventArgs
+    public class PlayerMovedEventArgs : EventArgs
     {
-        public int X { get;  }
-        public int Y { get;  }
+        public PlayerData Player { get; }
 
-        public IDetailedMap Map { get;  }
+        public int X { get; }
+        public int Y { get; }
+
+        public IDetailedMap Map { get; }
 
         public MapPiece MapPiece { get; }
 
-        public PlayerMovedEventArgs(int x, int y, IDetailedMap map)
+        public PlayerMovedEventArgs(PlayerData player, int x, int y,IDetailedMap map = null)
         {
+            Player = player;
             X = x;
             Y = y;
             Map = map;
-            MapPiece = map.Pieces[x, y];
+            MapPiece = map?.Pieces[x, y];
         }
     }
 

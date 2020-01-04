@@ -46,9 +46,8 @@ namespace Games.Object
 			this.Y = Y;
 		}
 
+		public void Deconstruct(out int x, out int y) => (x, y) = (X, Y);
 
-
-		public static implicit operator (int, int) (Coordinate c) => (c.X, c.Y);
 		public static implicit operator Coordinate((int X, int Y) t) => new Coordinate(t.X, t.Y);
 
 		public static bool operator ==(Coordinate l, Coordinate r) => l.Equals(r);

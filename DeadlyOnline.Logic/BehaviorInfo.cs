@@ -12,19 +12,19 @@ namespace DeadlyOnline.Logic
 
         public string Name { get; }
 
-        private readonly int _behaviorId;
+        private readonly int _behaviorID;
 
         public int SpdCountUsage { get; }
         
-        public BehaviorInfo(int behaviorId)
+        public BehaviorInfo(int behaviorID)
         {
-            if (behaviorId < 0 || behaviorId >= BehaviorList.Count)
+            if (behaviorID < 0 || behaviorID >= BehaviorList.Count)
             {
                 ThrowHelper.ThrowArgumentOutOfRengeException_value();
             }
-            _behaviorId = behaviorId;
+            _behaviorID = behaviorID;
 
-            (_behavior, Name, SpdCountUsage) = BehaviorList.GetCore(behaviorId);
+            (_behavior, Name, SpdCountUsage) = BehaviorList.GetCore(behaviorID);
         }
 
         public void InvokeBehavior(CharaBaseData self, CharaBaseData target)
@@ -46,14 +46,14 @@ namespace DeadlyOnline.Logic
         {
             int id = (int)info.GetValue("id", typeof(int));
 
-            _behaviorId = id;
+            _behaviorID = id;
 
             (_behavior, Name, SpdCountUsage) = BehaviorList.GetCore(id);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("id", _behaviorId);
+            info.AddValue("id", _behaviorID);
         }
     }
 
