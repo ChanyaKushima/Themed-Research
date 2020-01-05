@@ -42,10 +42,10 @@ namespace DeadlyOnline.Client
     public partial class ClientWindow : Window
     {
         internal TcpClient Client;
-        internal Task CmdAcceptTask;
+        internal Task CommandAcceptTask;
         internal readonly Dictionary<long, CommandAction> CommandDictionary = new Dictionary<long, CommandAction>();
 
-        internal CancellationTokenSource CmdAcceptCancellationTokenSource;
+        internal CancellationTokenSource CommandAcceptCancellationTokenSource;
 
         //internal readonly FileStream logFileStream = new FileStream("clientAction.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
 
@@ -161,30 +161,32 @@ namespace DeadlyOnline.Client
             {
                 try
                 {
-                    Client = new TcpClient();
-                    await Client.ConnectAsync(ServerIPAddress, Port);
+                    var client = new TcpClient();
+                    await client.ConnectAsync(ServerIPAddress, Port);
                     tryToConnect = false;
+                    Client = client;
                 }
                 catch (SocketException)
                 {
                     Console.WriteLine($"{DateTime.Now.ToLongTimeString()} -- 接続失敗");
                     Client = null;
 
-                    const string mes = "接続に失敗しました。\nもう一度接続を試みますか？";
-                    var res = MessageBox.Show(mes, "接続失敗", MessageBoxButton.YesNo);
+                    var res = MessageBox.Show(
+                        "接続に失敗しました。\nもう一度接続を試みますか？",
+                        "接続失敗",
+                        MessageBoxButton.YesNo) ;
 
                     tryToConnect = res == MessageBoxResult.Yes;
                 }
             }
 
-            if (Client == null)
+            if (Client != null)
             {
-                return false;
+                CommandAcceptCancellationTokenSource ??= new CancellationTokenSource();
+                CommandAcceptTask = Task.Run(AcceptCommandAsync, CommandAcceptCancellationTokenSource.Token);
             }
-            CmdAcceptCancellationTokenSource ??= new CancellationTokenSource();
-            CmdAcceptTask = Task.Run(AcceptCommandAsync, CmdAcceptCancellationTokenSource.Token);
 
-            return true;
+            return Client != null;
         }
         private (PlayerData, MapPiece[,]) DownloadInitData(TcpClient client)
         {

@@ -20,7 +20,6 @@ namespace DeadlyOnline.Server
     using static DeadlyOnline.Logic.Logic;
     using static DeadlyOnline.Logic.Calc;
     using static DeadlyOnline.Logic.Constants;
-    using System.Globalization;
 
     internal class Server 
     {
@@ -35,7 +34,7 @@ namespace DeadlyOnline.Server
         internal MapPiece[,] _mapPieces;
         #endregion
 
-        private readonly ClientData[] _clients = new ClientData[ClientNumberMax];
+        internal readonly ClientData[] _clients   = new ClientData[ClientNumberMax];
         private readonly Forwarder[] _forwarders = new Forwarder[ClientNumberMax];
         private readonly Task[] _acceptDataTasks = new Task[ClientNumberMax];
 
@@ -148,91 +147,32 @@ namespace DeadlyOnline.Server
         {
             while (true)
             {
-                string commandLineText = ReadCommandLine();
-                var tmpSplitedTexts = commandLineText.Split(' ', '\t').Where(s => s != "");
+                string commandLineText;
+                try
+                {
+                    commandLineText = CommandLine.ReadLine();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                var tmpSplitedTexts = commandLineText.Split(' ').Where(s => s != "");
                 string command = tmpSplitedTexts.FirstOrDefault();
                 string[] options = tmpSplitedTexts.Skip(1).ToArray();
 
                 Log.Debug.Write("コマンド入力", "\"" + commandLineText + "\"");
-
-                _commandLineProcesser.Execute(command, options, this);
+                try
+                {
+                    _commandLineProcesser.Execute(command, options, this);
+                }
+                catch (Exception ex)
+                {
+                    Log.Write("コマンド実行時エラー", "コマンド実行中にエラーが発生しました。", ex.Message);
+                }
             }
         }
 
-        private static string ReadCommandLine()
-        {
-            var builder = new StringBuilder();
-            var charWidthList = new List<int>();
 
-            while (true)
-            {
-                var input = Console.ReadKey(intercept: true);
-                if (input.Key == ConsoleKey.Tab && builder.Length > 0)
-                {
-                    var currentInput = builder.ToString();
-                    var matches =
-                        CommandLineProcesser.CommandCollection
-                            .Where(str => str.StartsWith(currentInput, true, CultureInfo.InvariantCulture));
-                    int matchesCount = matches.Count();
-
-                    if (matchesCount == 0)
-                    {
-                        // Empty ...
-                    }
-                    else if (matchesCount == 1)
-                    {
-                        var match = matches.First();
-                        builder.Clear();
-
-                        builder.Append(match);
-                        charWidthList.AddRange(Enumerable.Repeat(1, match.Length - currentInput.Length));
-                        Console.Write(Log.LineRead + match);
-                    }
-                    else
-                    {
-                        builder.Clear();
-                        charWidthList.Clear();
-
-                        Console.WriteLine();
-
-                        Console.Write(Log.NewLine);
-                        foreach (var item in matches)
-                        {
-                            Log.WriteHelp(item);
-                        }
-                        Console.Write(Log.NewLine);
-                    }
-                }
-                else
-                {
-                    if (input.Key == ConsoleKey.Enter)
-                    {
-                        break;
-                    }
-
-                    var keyChar = input.KeyChar;
-
-                    if (input.Key == ConsoleKey.Backspace && builder.Length > 0)
-                    {
-                        var lastCharIndex = builder.Length - 1;
-                        builder.Length--;
-
-                        Console.Write(charWidthList[lastCharIndex] == 1 ? "\b \b" : "\b\b  \b\b");
-                        charWidthList.RemoveAt(lastCharIndex);
-                    }
-                    else if (!char.IsControl(keyChar))
-                    {
-                        var tmpCursorLeft = Console.CursorLeft;
-                        builder.Append(keyChar);
-                        Console.Write(keyChar);
-                        charWidthList.Add(Console.CursorLeft - tmpCursorLeft);
-                    }
-                }
-            }
-            Console.WriteLine();
-
-            return builder.ToString();
-        }
 
         private async Task AcceptConnection()
         {
@@ -305,9 +245,12 @@ namespace DeadlyOnline.Server
 
                 Log.Write("マップデータ送信開始");
 
-                forwarder.SendCommand(ReceiveMode.Local,
-                                      CommandFormat.MapTransfer_s,
-                                      data: _mapPieces);
+                lock (_mapPieces)
+                {
+                    forwarder.SendCommand(ReceiveMode.Local,
+                                          CommandFormat.MapTransfer_s,
+                                          data: _mapPieces);
+                }
 
                 Log.Write("マップデータ送信終了");
             }

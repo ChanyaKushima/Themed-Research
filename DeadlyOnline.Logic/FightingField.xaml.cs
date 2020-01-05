@@ -46,6 +46,8 @@ namespace DeadlyOnline.Logic
 
         private FightingState _fightingState = FightingState.Fighting;
 
+        private DispatcherTimer _timer;
+
         private bool selectWatcher = false;
 
         public FightingField(PlayerData mainPlayer,IEnumerable<PlayerData> players, 
@@ -124,7 +126,7 @@ namespace DeadlyOnline.Logic
         private FightingField() : base()
         {
             var interval = new TimeSpan(0, 0, 0, 0, 10/*[ms]*/);
-            var timer = new DispatcherTimer(interval, DispatcherPriority.Render, TickOneFrame, Dispatcher);
+            _timer = new DispatcherTimer(interval, DispatcherPriority.Render, TickOneFrame, Dispatcher);
         }
 
         #region AddCharacterCore
@@ -307,6 +309,7 @@ namespace DeadlyOnline.Logic
             }
             else
             {
+                
                 ((DispatcherTimer)sender).Stop();
             }
             UpdateDisplay();
@@ -467,8 +470,7 @@ namespace DeadlyOnline.Logic
 
         protected virtual void OnFinished(EventArgs e)
         {
-            _playerUIs.Keys.Select(p => p.SpdCount = 0);
-            _playerUIs.Keys.Select(p => p.SpdGage = 0);
+
         }
 
         protected virtual void OnWon(EventArgs e)

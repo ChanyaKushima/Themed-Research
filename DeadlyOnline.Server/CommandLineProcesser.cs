@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.IO;
 using DeadlyOnline.Logic;
+using System.Threading;
 #nullable enable
 
 namespace DeadlyOnline.Server
@@ -25,6 +26,7 @@ namespace DeadlyOnline.Server
             { "commandlist", WriteCommandList  },
             { "clst"       , WriteCommandList  },
             { "cl"         , WriteCommandList  },
+            { "serverstate", WriteState        },
             { "disconnect" , ExecuteDisconnect },
             { "discon"     , ExecuteDisconnect },
             { "dc"         , ExecuteDisconnect },
@@ -36,13 +38,54 @@ namespace DeadlyOnline.Server
             { "create"     , ExecuteCreate     },
         };
 
+        private static readonly IReadOnlyDictionary<string, Func<Server, string>> ServerStateDictionary = new Dictionary<string, Func<Server, string>>()
+        {
+            { "clients", s => string.Join(Log.NewLine, s._clients.Select((c,i) => c == null ? $"No. {i}  Empty" : $"No. {i}  ID: {c.ID}, Player ID: {c.PlayerID}")) },
+            { "mapsize", s => $"Map Size: ({s._mapPieces.GetLength(0)}, {s._mapPieces.GetLength(1)})"},
+        };
+
+        private static void WriteState(string[] options, int optionCount, Server server)
+        {
+            bool incorrectSyntax = false;
+
+            if (optionCount == 1)
+            {
+                var option = options.First();
+                if (IsHelpOption(option))
+                {
+                    Log.WriteHelp(
+                        "サーバの状態を表示します。",
+                        "構文:  serverstate [{name}|-?] " ,
+                        "    {name}: 表示するパラメータ名");
+                }
+                else if (ServerStateDictionary.ContainsKey(option))
+                {
+                    var res = ServerStateDictionary[option].Invoke(server);
+                    Log.WriteHelp(res);
+                }
+                else
+                {
+                    incorrectSyntax = true;
+                }
+            }
+            else
+            {
+                incorrectSyntax = true;
+            }
+
+            if (incorrectSyntax)
+            {
+                WriteSyntaxErrorMessage();
+            }
+        }
+
         private static void WriteCommandList(string[] options, int optionCount, Server server)
         {
             if (optionCount == 0)
             {
                 foreach (var command in CommandCollection.OrderBy(str => str))
                 {
-                    WriteHelp(command);
+                    Log.WriteHelp(command);
                 }
             }
             else if (optionCount == 1)
@@ -51,12 +94,11 @@ namespace DeadlyOnline.Server
 
                 if (IsHelpOption(firstOption))
                 {
-                    WriteHelp(
+                    Log.WriteHelp(
                         "コマンド一覧を表示します。",
                         "構文:  commandlist [{cmdname}|-?]",
                         "    {cmdname}    {cmdname} を含むコマンドを検索する",
-                        "    -?           ヘルプを表示する。"
-                        );
+                        "    -?           ヘルプを表示する。");
 
                     return;
                 }
@@ -73,17 +115,17 @@ namespace DeadlyOnline.Server
 
                     foreach (var command in commands1.Concat(commands2))
                     {
-                        WriteHelp(command);
+                        Log.WriteHelp(command);
                         count++;
                     }
 
                     if (count == 0)
                     {
-                        WriteHelp("検索結果: 見つかりませんでした");
+                        Log.WriteHelp("検索結果: 見つかりませんでした");
                     }
                     else
                     {
-                        WriteHelp($"検索結果: 該当 {count}コマンド");
+                        Log.WriteHelp($"検索結果: 該当 {count}コマンド");
                     }
                 }
             }
@@ -119,7 +161,7 @@ namespace DeadlyOnline.Server
 
             Log.Debug.Write("入力確認", $"command: {command}, options: {string.Join('|', options)}, options count: {optionCount}"); ;
 
-            Log.WriteNewLine();
+            Log.WriteNewLogLine();
 
             if (CommandDictionary.ContainsKey(command))
             {
@@ -132,7 +174,7 @@ namespace DeadlyOnline.Server
 
             if (command != "clear")
             {
-                Log.WriteNewLine();
+                Log.WriteNewReadLine();
             }
         }
 
@@ -145,7 +187,7 @@ namespace DeadlyOnline.Server
                 
                 if (optionCount == 1 && IsHelpOption(firstOption))
                 {
-                    WriteHelp(
+                    Log.WriteHelp(
                         "構文:  create {element} {options ...}",
                         "    このコマンドは複合コマンドです。create と {element} を繋いだコマンドを呼び出します。",
                         "        例:  create map -w 10 -h 40",
@@ -177,7 +219,7 @@ namespace DeadlyOnline.Server
             }
             else if (optionCount == 1 && IsHelpOption(options.First()))
             {
-                WriteHelp("構文:  clear", "    画面を消去する");
+                Log.WriteHelp("構文:  clear", "    画面を消去する");
             }
             else
             {
@@ -195,6 +237,7 @@ namespace DeadlyOnline.Server
         {
             const int defaultWidth = 100;
             const int defaultHeight = 100;
+            const int maxSquare = 300 * 300;
 
             int width = 0;
             int height = 0;
@@ -204,11 +247,12 @@ namespace DeadlyOnline.Server
 
             if (optionCount == 1 && IsHelpOption(options.First()))
             {
-                WriteHelp(
+                Log.WriteHelp(
                     "構文:  createmap [-w {width}] [-h {height}] [-?]",
                     "    -w {width}   生成するマップの横幅を {height} にする。",
                     "    -h {height}  生成するマップの高さを {height} にする。",
-                    "    -?           ヘルプを表示する。                      " );
+                    "    -?           ヘルプを表示する。                      ",
+                    "注意:  マップを生成する時は切断された状態でなければいけません");
 
                 return;
             }
@@ -295,8 +339,37 @@ namespace DeadlyOnline.Server
                     outFile = Server.MapFilePath;
                 }
 
-                using FileStream stream = new FileStream(outFile, FileMode.OpenOrCreate);
-                server._mapPieces = Server.CreateNewRandomMapFile(stream, width, height);
+                if (width * height > maxSquare)
+                {
+                    Log.Write("マップ作成失敗", $"{maxSquare}以上の面積を持ったマップは作成できません!");
+                    return;
+                }
+                
+                var mapPieces = server._mapPieces;
+
+                if (Monitor.TryEnter(mapPieces))
+                {
+                    try
+                    {
+                        if (server._clients.Any(c => c != null))
+                        {
+                            Log.Write("マップ作成失敗", "接続されています。disconnect -a を用いて全ての接続を切断してください。");
+                        }
+                        else
+                        {
+                            using FileStream stream = new FileStream(outFile, FileMode.OpenOrCreate);
+                            server._mapPieces = Server.CreateNewRandomMapFile(stream, width, height);
+                        }
+                    }
+                    finally
+                    {
+                        Monitor.Exit(mapPieces);
+                    }
+                }
+                else
+                {
+                    Log.Write("マップ作成失敗", "現在, マップが使用されています。");
+                }
             }
         }
 
@@ -338,7 +411,7 @@ namespace DeadlyOnline.Server
                     case "/?" when optionCount == 1:
                     case "-help" when optionCount == 1:
                     case "/help" when optionCount == 1:
-                        WriteHelp(
+                        Log.WriteHelp(
                             "構文:  disconnect [-a|-i {id}|-?]      ",
                             "    -a       全ての通信を切断する。       ",
                             "    -i {id}  ID が {id} の通信を切断する。",
@@ -377,14 +450,6 @@ namespace DeadlyOnline.Server
                 return false;
             }
             return true;
-        }
-
-        private static void WriteHelp(params string[] helpMessages)
-        {
-            string ls = Log.LineStart;
-            string le = Log.LineEnd;
-
-            Console.Write(ls + string.Join(le + ls, helpMessages) + le);
         }
 
         private static bool CanUseAsFileName(string name) => !_incorrectNaming.IsMatch(name);

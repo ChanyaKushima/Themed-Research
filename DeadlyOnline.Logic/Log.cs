@@ -14,7 +14,9 @@ namespace DeadlyOnline.Logic
         public static string LineRead => "\r$ >> ";
         public static string LineLog => "\r>>  \b";
 
-        public static string NewLine => LineStart + LineEnd;
+        public static string NewLine => LineEnd + LineStart;
+        public static string NewLogLine => LineLog + "\r\n" + LineLog;
+        public static string NewReadLine => LineLog + LineEnd;
 
         static Log()
         {
@@ -35,18 +37,25 @@ namespace DeadlyOnline.Logic
         }
 
         private static string GetFormattedString(string kind, string message, string exceptionMessage)
-            => $"{LineStart}[{DateTime.Now}] -- {kind}  {message} {exceptionMessage}{LineEnd}";
+            => LineStart
+            + $"[{DateTime.Now}] -- {kind}  {message} "
+#if DEBUG
+            + exceptionMessage
+#endif
+            + LineEnd;
 
         public static void Write(string kind, string message = "", string exceptionMessage = "")
             => Out.Write(GetFormattedString(kind, message, exceptionMessage));
 
         public static void WriteNewLine() => Out.Write(NewLine);
+        public static void WriteNewLogLine()  => Out.Write(NewLogLine);
+        public static void WriteNewReadLine() => Out.Write(NewReadLine);
 
         public static void WriteHelp(string helpMessage)
             => Out.Write(LineStart + helpMessage + LineEnd);
 
-        public static void WriteHelp(params string[] helpMessages) 
-            => Out.Write(LineStart + string.Join(NewLine, helpMessages) + LineEnd);
+        public static void WriteHelp(params string[] helpMessages)
+            => Out.Write(LineStart + string.Join(LineEnd + LineStart, helpMessages) + LineEnd);
 
 
 
