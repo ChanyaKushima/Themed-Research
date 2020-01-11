@@ -33,7 +33,7 @@ namespace DeadlyOnline.Logic
         /// <returns>
         /// <paramref name="min"/>~<paramref name="max"/>の範囲内に丸められた<paramref name="value"/>
         /// </returns>
-        internal static T FitInRange<T>(T value, in T max, in T min) where T : IComparable, IComparable<T>
+        public static T FitInRange<T>(T value, in T max, in T min) where T : IComparable, IComparable<T>
         {
             if (max.CompareTo(min) < 0)
             {

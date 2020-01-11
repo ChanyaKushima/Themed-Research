@@ -15,7 +15,7 @@ namespace DeadlyOnline.Server
         {
             var builder = new StringBuilder();
             int startLeft = Console.CursorLeft;
-            int startTop = Console.CursorLeft;
+            int startTop = Console.CursorTop;
             int currentIndex = 0;
             int historyCount = _commandLineHistories.Count;
             int referencedHistoryIndex = historyCount;
@@ -60,12 +60,12 @@ namespace DeadlyOnline.Server
 
                         Console.WriteLine();
 
-                        Console.Write(Log.NewLine);
+                        Console.Write(Log.NewLogLine);
                         foreach (var item in matches)
                         {
                             Log.WriteHelp(item);
                         }
-                        Console.Write(Log.NewLine);
+                        Console.Write(Log.NewReadLine);
                     }
                 }
                 else

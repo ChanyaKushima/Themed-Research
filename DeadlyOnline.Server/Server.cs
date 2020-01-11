@@ -24,7 +24,9 @@ namespace DeadlyOnline.Server
     internal class Server 
     {
         #region static field(s)
-        public static readonly string MapFilePath = @"main.deomap";
+        internal static string MapFilePath = @"main.deomap";
+        internal static double EncountRate = 1.0/*[%]*/;
+        internal static readonly string SystemFilePath = @"sys.deo";
         private static readonly IPEndPoint IPEndPoint = new IPEndPoint(IPAddress.Any, Port);
         private static readonly ServerProcesser _serverProcesser = new ServerProcesser();
         private static readonly CommandLineProcesser _commandLineProcesser = new CommandLineProcesser();
@@ -34,7 +36,7 @@ namespace DeadlyOnline.Server
         internal MapPiece[,] _mapPieces;
         #endregion
 
-        internal readonly ClientData[] _clients   = new ClientData[ClientNumberMax];
+        internal readonly ClientData[] Clients = new ClientData[ClientNumberMax];
         private readonly Forwarder[] _forwarders = new Forwarder[ClientNumberMax];
         private readonly Task[] _acceptDataTasks = new Task[ClientNumberMax];
 
@@ -51,6 +53,41 @@ namespace DeadlyOnline.Server
         #endregion
 
         public bool IsAlive { get; private set; } = true;
+
+        static Server()
+        {
+            if (!File.Exists(SystemFilePath))
+            {
+                File.Create(SystemFilePath).Close();
+                return;
+            }
+
+            using StreamReader reader = new StreamReader(SystemFilePath);
+            while (!reader.EndOfStream)
+            {
+                string line = reader.ReadLine();
+                string[] lines = line.Split('=', StringSplitOptions.RemoveEmptyEntries);
+
+                if (lines.Length != 2) { continue; }
+
+                string name = lines[0];
+                string option = lines[1];
+
+                switch (name)
+                {
+                    case ServerHelper.MainMapFilePath when option.CanUseAsFileName():
+                        MapFilePath = option;
+                        break;
+
+                    case ServerHelper.EncountRate when double.TryParse(option, out var result):
+                        EncountRate = result;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
 
         public Server()
         {
@@ -107,7 +144,7 @@ namespace DeadlyOnline.Server
             {
                 var formatter = new BinaryFormatter();
 
-                Log.Write("マップファイルのロード開始");
+                Log.Write("マップファイルのロード開始", "Path: " + MapFilePath);
                 _mapPieces = (MapPiece[,])formatter.Deserialize(stream);
                 Log.Write("マップファイルのロード終了");
             }
@@ -181,9 +218,9 @@ namespace DeadlyOnline.Server
                 ClientData client;
                 Forwarder forwarder;
 
-                int id = GetArrayEmptyTerritory(_clients);
+                int id = GetArrayEmptyTerritory(Clients);
 
-                if (id >= _clients.Length)
+                if (id >= Clients.Length)
                 {
                     await Task.Delay(1);
                     continue;
@@ -208,10 +245,11 @@ namespace DeadlyOnline.Server
                 Log.Write("初期データ送信開始", $"ID: {id}");
                 UploadInitData(client, forwarder, id.ToString());
                 Log.Write("初期データ送信終了", $"ID: {id}");
-                _clients[id] = client;
+                Clients[id] = client;
                 _forwarders[id] = forwarder;
 
                 OnLoggedIn(new LoggedInEventArgs(client, id));
+                forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EncountRateChanged_s, data: EncountRate);
 
                 Log.Write("データ送受信開始", $"ID: {id}");
                 _acceptDataTasks[id] = Task.Run(() => AcceptActionData(id));
@@ -269,7 +307,7 @@ namespace DeadlyOnline.Server
                 {
                     var receivedData = forwarder.ReceiveCommand();
                     var args = receivedData.Arguments;
-                    Log.Write(
+                    Log.Debug.Write(
                         "データ受信", 
                         $"{receivedData.Command} " +
                         $"ArgsCount: {args?.Count() ?? 0} " +
@@ -285,7 +323,7 @@ namespace DeadlyOnline.Server
             }
             catch (IOException ex)
             {
-                if (_clients[id] != null)
+                if (Clients[id] != null)
                 {
                     Log.Write("通信エラー", $"ホストに強制的に切断された ID: {id}", ex.Message);
                     Disconnect(id);
@@ -299,7 +337,7 @@ namespace DeadlyOnline.Server
 
         private void ExecuteReceivedCommand(int id, ActionData ad)
         {
-            ClientData client = _clients[id];
+            ClientData client = Clients[id];
             Forwarder forwarder = _forwarders[id];
 
             ActionData res = _serverProcesser.Execute(InvokeActionCommand(ad), client, this);
@@ -316,10 +354,10 @@ namespace DeadlyOnline.Server
         /// <param name="clientNo">切断したいクライアントの番号</param>
         public bool Disconnect(int clientNo)
         {
-            var client = _clients[clientNo];
+            var client = Clients[clientNo];
             if (client != null)
             {
-                _clients[clientNo] = null;
+                Clients[clientNo] = null;
                 _forwarders[clientNo] = null;
                 client.Close();
                 OnDisconnected(new DisconnectedEventArgs(client, clientNo));
@@ -333,7 +371,7 @@ namespace DeadlyOnline.Server
         /// </summary>
         public void DisconnectAll()
         {
-            for (int i = 0; i < _clients.Length; i++)
+            for (int i = 0; i < Clients.Length; i++)
             {
                 Disconnect(i);
             }
@@ -382,7 +420,7 @@ namespace DeadlyOnline.Server
                 $"Is Loopback: {IPAddress.IsLoopback(client.LocalIPAddress)}");
 
             var forwarder = _forwarders[e.ID];
-            foreach (var player in _clients.Where(c => c != null && c != client).Select(c => c.PlayerData))
+            foreach (var player in Clients.Where(c => c != null && c != client).Select(c => c.PlayerData))
             {
                 forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EnteredPlayerInMap_s, data: player);   
             }
@@ -398,7 +436,7 @@ namespace DeadlyOnline.Server
 
         internal void OnPlayerMoved(PlayerMovedEventArgs e)
         {
-            _clients
+            Clients
                 .Where(c => c != null && c.PlayerID != e.Player.ID)
                 .Select(c => _forwarders[c.ID])
                 .SendCommandAll(

@@ -13,36 +13,82 @@ namespace DeadlyOnline.Server
     {
         private delegate void Executer(string[] options, int optionCount, Server server);
 
-        // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file に基づく正規表現
-        private static readonly Regex _incorrectNaming = new Regex(
-            "[\\x00-\\x1f<>:\"/\\\\|?*]|^(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9]|CLOCK\\$)(\\.|$)|[\\. ]$",
-            RegexOptions.IgnoreCase);
+        private static IReadOnlyCollection<string>? commandsKeys;
 
-        public static IEnumerable<string> CommandCollection => CommandDictionary.Keys;
+        public static IReadOnlyCollection<string> CommandCollection => commandsKeys ??= ((SortedDictionary<string, Executer>)CommandDictionary).Keys;
 
         private static readonly IReadOnlyDictionary<string, Executer> CommandDictionary = new SortedDictionary<string, Executer>()
         {
-            { "*"          , WriteCommandList  },
-            { "commandlist", WriteCommandList  },
-            { "clst"       , WriteCommandList  },
-            { "cl"         , WriteCommandList  },
-            { "serverstate", WriteState        },
-            { "disconnect" , ExecuteDisconnect },
-            { "discon"     , ExecuteDisconnect },
-            { "dc"         , ExecuteDisconnect },
-            { "createmap"  , ExecuteCreateMap  },
-            { "cm"         , ExecuteCreateMap  },
-            { "exit"       , ExitServer        },
-            { "quit"       , ExitServer        },
-            { "clear"      , ExecuteClear      },
-            { "create"     , ExecuteCreate     },
+            { "*"             , WriteCommandList  },
+            { "commandlist"   , WriteCommandList  },
+            { "clst"          , WriteCommandList  },
+            { "cl"            , WriteCommandList  },
+            { "serverstate"   , WriteState        },
+            { "disconnect"    , ExecuteDisconnect },
+            { "discon"        , ExecuteDisconnect },
+            { "dc"            , ExecuteDisconnect },
+            { "createmap"     , ExecuteCreateMap  },
+            { "cm"            , ExecuteCreateMap  },
+            { "exit"          , ExitServer        },
+            { "quit"          , ExitServer        },
+            { "clear"         , ExecuteClear      },
+            { "create"        , ExecuteCreate     },
+            { "setencountrate", SetEncountRate    },
+            { "seter"         , SetEncountRate    },
         };
 
-        private static readonly IReadOnlyDictionary<string, Func<Server, string>> ServerStateDictionary = new Dictionary<string, Func<Server, string>>()
+        private static void SetEncountRate(string[] options, int optionCount, Server server)
         {
-            { "clients", s => string.Join(Log.NewLine, s._clients.Select((c,i) => c == null ? $"No. {i}  Empty" : $"No. {i}  ID: {c.ID}, Player ID: {c.PlayerID}")) },
-            { "mapsize", s => $"Map Size: ({s._mapPieces.GetLength(0)}, {s._mapPieces.GetLength(1)})"},
+            if (optionCount==1)
+            {
+                var firstOption = options.First();
+
+                if (IsHelpOption(firstOption))
+                {
+                    Log.WriteHelp(
+                        "サーバの状態を表示します。",
+                        "構文:  setencountrate {value} ",
+                        "    {value}: 設定するエンカウント率 (0.0 ～ 100.0)");
+
+                }
+                else if (double.TryParse(firstOption, out double result))
+                {
+                    result = Calc.FitInRange(result, 100.0, 0);
+                   
+                    Server.EncountRate = result;
+
+                    server.Clients
+                        .Where(c => c != null)
+                        .Select(c => c.GetForwarder())
+                        .SendCommandAll(
+                            /*inParallel:*/true, 
+                            ReceiveMode.Nomal, 
+                            CommandFormat.EncountRateChanged_s, 
+                            data: result);
+
+                    ServerHelper.WriteToSystemFile(ServerHelper.EncountRate, result);
+
+                    Log.Write("更新完了", $"エンカウント率を {result}% に設定しました。");
+                }
+            }
+            else
+            {
+                WriteSyntaxErrorMessage();
+            }
+        }
+
+        private static readonly IReadOnlyDictionary<string, Func<Server, string>> ServerStateDictionary = new SortedDictionary<string, Func<Server, string>>()
+        {
+            { "clients"    , s => string.Join(Log.NewLine, s.Clients.Select((c,i) => c == null ? $"No. {i}\tEmpty" : $"No. {i}\tID: {c.ID}, Player ID: {c.PlayerID}")) },
+            { "mapsize"    , s => $"Map Size: ({s._mapPieces.GetLength(0)}, {s._mapPieces.GetLength(1)})"},
+            { "statelist"  , GetStateList },
+            { "*"          , GetStateList },
+            { "encountrate", s => $"Encount Rate: {Server.EncountRate}%" }
         };
+
+        private static string? _stateList;
+
+        private static string GetStateList(Server server) => _stateList ??= string.Join(Log.NewLine, ServerStateDictionary.Keys);
 
         private static void WriteState(string[] options, int optionCount, Server server)
         {
@@ -55,7 +101,7 @@ namespace DeadlyOnline.Server
                 {
                     Log.WriteHelp(
                         "サーバの状態を表示します。",
-                        "構文:  serverstate [{name}|-?] " ,
+                        "構文:  serverstate [{name}|-?] ",
                         "    {name}: 表示するパラメータ名");
                 }
                 else if (ServerStateDictionary.ContainsKey(option))
@@ -83,6 +129,7 @@ namespace DeadlyOnline.Server
         {
             if (optionCount == 0)
             {
+                // TODO: キャッシュを作らせる。
                 foreach (var command in CommandCollection.OrderBy(str => str))
                 {
                     Log.WriteHelp(command);
@@ -143,7 +190,7 @@ namespace DeadlyOnline.Server
             int optionCount = options.Length;
 
             #region 改行のみの処理
-            if (string.IsNullOrEmpty( command))
+            if (string.IsNullOrEmpty(command))
             {
                 Console.Write(Log.LineRead);
                 return;
@@ -184,7 +231,7 @@ namespace DeadlyOnline.Server
             if (optionCount >= 1)
             {
                 string firstOption = options.First();
-                
+
                 if (optionCount == 1 && IsHelpOption(firstOption))
                 {
                     Log.WriteHelp(
@@ -198,7 +245,7 @@ namespace DeadlyOnline.Server
                 }
 
                 string command = "create" + firstOption;
-                
+
                 if (CommandDictionary.TryGetValue(command, out var executer))
                 {
                     options = options.Skip(1).ToArray();
@@ -303,7 +350,7 @@ namespace DeadlyOnline.Server
                     case "/out" when outFile == null:
                     case "-outfile" when outFile == null:
                     case "/outfile" when outFile == null:
-                        if (CanUseAsFileName(arg))
+                        if (arg.CanUseAsFileName())
                         {
                             outFile = arg == "default" ? Server.MapFilePath : arg;
                         }
@@ -344,21 +391,25 @@ namespace DeadlyOnline.Server
                     Log.Write("マップ作成失敗", $"{maxSquare}以上の面積を持ったマップは作成できません!");
                     return;
                 }
-                
+
                 var mapPieces = server._mapPieces;
 
                 if (Monitor.TryEnter(mapPieces))
                 {
                     try
                     {
-                        if (server._clients.Any(c => c != null))
+                        if (server.Clients.Any(c => c != null))
                         {
                             Log.Write("マップ作成失敗", "接続されています。disconnect -a を用いて全ての接続を切断してください。");
                         }
                         else
                         {
-                            using FileStream stream = new FileStream(outFile, FileMode.OpenOrCreate);
-                            server._mapPieces = Server.CreateNewRandomMapFile(stream, width, height);
+                            using (FileStream stream = new FileStream(outFile, FileMode.OpenOrCreate))
+                            {
+                                server._mapPieces = Server.CreateNewRandomMapFile(stream, width, height);
+                            }
+                            ServerHelper.WriteToSystemFile(ServerHelper.MainMapFilePath, outFile);
+                            Server.MapFilePath = outFile;
                         }
                     }
                     finally
@@ -417,7 +468,7 @@ namespace DeadlyOnline.Server
                             "    -i {id}  ID が {id} の通信を切断する。",
                             "    -?       ヘルプを表示する。           ");
                         break;
-                    
+
                     default:
                         incorrectSyntax = true;
                         break;
@@ -452,7 +503,6 @@ namespace DeadlyOnline.Server
             return true;
         }
 
-        private static bool CanUseAsFileName(string name) => !_incorrectNaming.IsMatch(name);
 
         private static void WriteSyntaxErrorMessage() => Log.Write("構文エラー", "構文を確認してください!  ヘルプは -?");
 

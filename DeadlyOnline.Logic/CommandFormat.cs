@@ -22,6 +22,8 @@
         EnemyDataRequest_c = 51,
         EnemyDataTransfer_s = 52,
 
+        EncountRateChanged_s = 61,
+
         Result = 100000,
         Debug = 9999999,
     }

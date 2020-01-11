@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DeadlyOnline.Logic
 {
-    class EmptyEnumerator : IEnumerator
+    public class EmptyEnumerator : IEnumerator
     {
         public static IEnumerator Instance => _instance ??= new EmptyEnumerator();
 
@@ -15,5 +15,21 @@ namespace DeadlyOnline.Logic
 
         public bool MoveNext() => false;
         public void Reset() { }
+    }
+
+    public class EmptyEnumerator<T> : IEnumerator<T>
+    {
+        public static IEnumerator<T> Instance => _instance ??= new EmptyEnumerator<T>();
+
+        private static EmptyEnumerator<T> _instance;
+
+        public T Current => throw new InvalidOperationException();
+
+        object IEnumerator.Current => Current;
+
+        public bool MoveNext() => false;
+        public void Reset() { }
+
+        public void Dispose() { }
     }
 }

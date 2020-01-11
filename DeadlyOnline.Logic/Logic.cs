@@ -36,6 +36,7 @@ namespace DeadlyOnline.Logic
 
             { CommandFormat.EnemyDataRequest_c,EnemyDataRequest  },
             { CommandFormat.EnemyDataTransfer_s, EnemyDataTransfer },
+            { CommandFormat.EncountRateChanged_s, EncountRateChanged },
 
             { CommandFormat.Result, EmptyMethod },
 
@@ -43,6 +44,11 @@ namespace DeadlyOnline.Logic
             { CommandFormat.Debug, Debug },
         };
 
+        private static ActionData EncountRateChanged(in ActionData actionData)
+        {
+            Client.ClientWindow.EncountRate = (double)actionData.Data;
+            return default;
+        }
 
         private static ActionData LeftPlayerInMap(in ActionData actionData)
         {

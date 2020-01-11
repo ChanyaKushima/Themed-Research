@@ -40,12 +40,15 @@ namespace DeadlyOnline.Server
         {
             SendCommand(mode, new ActionData(cmd, CreateNewID(), args, data));
         }
+
         public void SendCommand(ReceiveMode mode, ActionData sendData)
         {
-            Log.Write("データ送信", 
+            Log.Debug.Write("データ送信",
                 $"{sendData.Command} " +
                 $"ArgsCount: {sendData.Arguments?.Count() ?? 0} " +
-                $"Args: { string.Join('|', sendData.Arguments ?? Enumerable.Empty<object>())} ");
+                $"Args: {string.Join('|', sendData.Arguments ?? Enumerable.Empty<object>())} " +
+                $"Data: {sendData.Data}");
+
             _stream.WriteByte((byte)mode);
             sendData.Send(_stream);
         }
@@ -62,7 +65,7 @@ namespace DeadlyOnline.Server
         public async Task SendCommandAsync(ReceiveMode mode, ActionData sendData,
                                             CancellationToken cancellationToken = default)
         {
-            Log.Write("データ送信", $"{sendData.Command} ArgsCount:{sendData.Arguments?.Count() ?? 0}");
+            Log.Debug.Write("データ送信", $"{sendData.Command} ArgsCount:{sendData.Arguments?.Count() ?? 0}");
             await _stream.WriteAsync(new byte[1] { (byte)mode }, cancellationToken);
             await sendData.SendAsync(_stream, cancellationToken);
         }

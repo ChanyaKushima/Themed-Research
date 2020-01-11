@@ -41,6 +41,8 @@ namespace DeadlyOnline.Client
     /// </summary>
     public partial class ClientWindow : Window
     {
+        internal static double EncountRate = 30;
+
         internal TcpClient Client;
         internal Task CommandAcceptTask;
         internal readonly Dictionary<long, CommandAction> CommandDictionary = new Dictionary<long, CommandAction>();
@@ -118,7 +120,7 @@ namespace DeadlyOnline.Client
         {
             e.Cancel = !_canMoveOnMap;
 
-            if (_canMoveOnMap && MainRandom.Next(30) == 0)
+            if (_canMoveOnMap && MainRandom.NextDouble() * 100 < EncountRate)
             {
                 _canMoveOnMap = false;
 
