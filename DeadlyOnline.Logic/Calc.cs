@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DeadlyOnline.Logic
 {
 	public static class Calc
 	{
+        private static Regex _correctPlayerID = new Regex("[A-Z|a-z|0-9]+");
+        public static bool CanUseAsPlayerID(this string playerID) => _correctPlayerID.IsMatch(playerID);
+
 		public static int GetArrayEmptyTerritory<T>(T[] arr) where T : class
 		{
 			int i;

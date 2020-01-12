@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using System.IO;
 using DeadlyOnline.Logic;
 using System.Threading;
+using System.Diagnostics;
+using System.ComponentModel;
 #nullable enable
 
 namespace DeadlyOnline.Server
@@ -35,41 +37,31 @@ namespace DeadlyOnline.Server
             { "create"        , ExecuteCreate     },
             { "setencountrate", SetEncountRate    },
             { "seter"         , SetEncountRate    },
+            { "issues"        , OpenIssuesUrl     },
+            { "systemfile"    , WriteSystemConfig }
         };
 
-        private static void SetEncountRate(string[] options, int optionCount, Server server)
+        private static void WriteSystemConfig(string[] options, int optionCount, Server server)
         {
-            if (optionCount==1)
+            if (optionCount == 0)
             {
-                var firstOption = options.First();
+                using StreamReader reader = new StreamReader(Server.SystemFilePath);
 
-                if (IsHelpOption(firstOption))
+                if (reader.EndOfStream)
                 {
-                    Log.WriteHelp(
-                        "サーバの状態を表示します。",
-                        "構文:  setencountrate {value} ",
-                        "    {value}: 設定するエンカウント率 (0.0 ～ 100.0)");
-
+                    Log.WriteHelp("Empty");
                 }
-                else if (double.TryParse(firstOption, out double result))
+                else
                 {
-                    result = Calc.FitInRange(result, 100.0, 0);
-                   
-                    Server.EncountRate = result;
-
-                    server.Clients
-                        .Where(c => c != null)
-                        .Select(c => c.GetForwarder())
-                        .SendCommandAll(
-                            /*inParallel:*/true, 
-                            ReceiveMode.Nomal, 
-                            CommandFormat.EncountRateChanged_s, 
-                            data: result);
-
-                    ServerHelper.WriteToSystemFile(ServerHelper.EncountRate, result);
-
-                    Log.Write("更新完了", $"エンカウント率を {result}% に設定しました。");
+                    while (!reader.EndOfStream)
+                    {
+                        Log.WriteHelp(reader.ReadLine());
+                    }
                 }
+            }
+            else if (optionCount == 1 && IsHelpOption(options.First()))
+            {
+                Log.WriteHelp("システムファイルの内容を出力します");
             }
             else
             {
@@ -88,7 +80,121 @@ namespace DeadlyOnline.Server
 
         private static string? _stateList;
 
-        private static string GetStateList(Server server) => _stateList ??= string.Join(Log.NewLine, ServerStateDictionary.Keys);
+        private static string GetStateList(Server server = null!) => _stateList ??= string.Join(Log.NewLine, ServerStateDictionary.Keys);
+
+        public void Execute(string? command, string[] options, Server server)
+        {
+            int optionCount = options.Length;
+
+            #region 改行のみの処理
+            if (string.IsNullOrEmpty(command))
+            {
+                Console.Write(Log.LineRead);
+                return;
+            }
+            #endregion
+
+            #region 解析用に小文字に
+            command = command.ToLower();
+
+            for (int i = 0; i < optionCount; i++)
+            {
+                options[i] = options[i].ToLower();
+            }
+            #endregion
+
+            Log.Debug.Write("入力確認", $"command: {command}, options: {string.Join('|', options)}, options count: {optionCount}"); ;
+
+            Log.WriteNewLogLine();
+
+            if (CommandDictionary.ContainsKey(command))
+            {
+                CommandDictionary[command].Invoke(options, optionCount, server);
+            }
+            else
+            {
+                Log.Write("コマンドエラー", "コマンド: " + command + " は存在しません!");
+            }
+
+            if (command != "clear")
+            {
+                Log.WriteNewReadLine();
+            }
+        }
+
+        private static void OpenIssuesUrl(string[] options, int optionCount, Server server)
+        {
+
+            if (optionCount == 0)
+            {
+                try
+                {
+                    var processStartInfo = new ProcessStartInfo(ServerHelper.IssuesPageUrl)
+                    {
+                        UseShellExecute = true
+                    };
+                    Process.Start(processStartInfo);
+
+                    Log.Write("ウェブブラウザを開いています", "URL: " + ServerHelper.IssuesPageUrl);
+                }
+                catch (Win32Exception)
+                {
+                    Log.Write(
+                        "ブラウザが開けませんでした",
+                        "ブラウザで直接 " + ServerHelper.IssuesPageUrl + " にアクセスしてください。");
+                }
+            }
+            else if (optionCount == 1 && IsHelpOption(options.First()))
+            {
+                Log.WriteHelp(
+                    "ブラウザでこのアプリケーションの issues のページを開きます。",
+                    "構文:  issues");
+            }
+            else
+            {
+                WriteSyntaxErrorMessage();
+            }
+        }
+
+        private static void SetEncountRate(string[] options, int optionCount, Server server)
+        {
+            if (optionCount == 1)
+            {
+                var firstOption = options.First();
+
+                if (IsHelpOption(firstOption))
+                {
+                    Log.WriteHelp(
+                        "サーバの状態を表示します。",
+                        "構文:  setencountrate {value} ",
+                        "    {value}: 設定するエンカウント率 (0.0 ～ 100.0)");
+
+                }
+                else if (double.TryParse(firstOption, out double result))
+                {
+                    result = Calc.FitInRange(result, 100.0, 0);
+
+                    Server.EncountRate = result;
+
+                    server.Clients
+                        .Where(c => c != null)
+                        .Select(c => c.GetForwarder())
+                        .SendCommandAll(
+                            /*inParallel:*/true,
+                            ReceiveMode.Nomal,
+                            CommandFormat.EncountRateChanged_s,
+                            data: result);
+
+                    ServerHelper.WriteToSystemFile(ServerHelper.EncountRate, result);
+
+                    Log.Write("更新完了", $"エンカウント率を {result}% に設定しました。");
+                }
+            }
+            else
+            {
+                WriteSyntaxErrorMessage();
+            }
+        }
 
         private static void WriteState(string[] options, int optionCount, Server server)
         {
@@ -179,49 +285,6 @@ namespace DeadlyOnline.Server
             else
             {
                 WriteSyntaxErrorMessage();
-            }
-        }
-
-        private static bool IsHelpOption(string firstOption) =>
-            firstOption == "-?" || firstOption == "/?" || firstOption == "-help" || firstOption == "/help";
-
-        public void Execute(string? command, string[] options, Server server)
-        {
-            int optionCount = options.Length;
-
-            #region 改行のみの処理
-            if (string.IsNullOrEmpty(command))
-            {
-                Console.Write(Log.LineRead);
-                return;
-            }
-            #endregion
-
-            #region 解析用に小文字に
-            command = command.ToLower();
-
-            for (int i = 0; i < optionCount; i++)
-            {
-                options[i] = options[i].ToLower();
-            }
-            #endregion
-
-            Log.Debug.Write("入力確認", $"command: {command}, options: {string.Join('|', options)}, options count: {optionCount}"); ;
-
-            Log.WriteNewLogLine();
-
-            if (CommandDictionary.ContainsKey(command))
-            {
-                CommandDictionary[command].Invoke(options, optionCount, server);
-            }
-            else
-            {
-                Log.Write("コマンドエラー", "コマンド: " + command + " は存在しません!");
-            }
-
-            if (command != "clear")
-            {
-                Log.WriteNewReadLine();
             }
         }
 
@@ -503,8 +566,9 @@ namespace DeadlyOnline.Server
             return true;
         }
 
+        private static bool IsHelpOption(string firstOption) =>
+            firstOption == "-?" || firstOption == "/?" || firstOption == "-help" || firstOption == "/help";
 
         private static void WriteSyntaxErrorMessage() => Log.Write("構文エラー", "構文を確認してください!  ヘルプは -?");
-
     }
 }

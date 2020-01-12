@@ -193,7 +193,8 @@ namespace DeadlyOnline.Server
                 {
                     throw;
                 }
-                var tmpSplitedTexts = commandLineText.Split(' ').Where(s => s != "");
+
+                var tmpSplitedTexts = commandLineText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 string command = tmpSplitedTexts.FirstOrDefault();
                 string[] options = tmpSplitedTexts.Skip(1).ToArray();
 
@@ -232,7 +233,7 @@ namespace DeadlyOnline.Server
                     var tcpClient = await _listener.AcceptTcpClientAsync();
                     OnConnected(new ConnectedEventArgs(tcpClient, id));
                     client = new ClientData(tcpClient, id);
-                    forwarder = new Forwarder(client.Stream);
+                    forwarder = client.GetForwarder();
                 }
                 catch (SocketException e)
                 {
@@ -242,38 +243,35 @@ namespace DeadlyOnline.Server
 
                 Log.Write("接続完了", $"ID: {id}");
 
-                Log.Write("初期データ送信開始", $"ID: {id}");
-                UploadInitData(client, forwarder, id.ToString());
-                Log.Write("初期データ送信終了", $"ID: {id}");
-                Clients[id] = client;
-                _forwarders[id] = forwarder;
-
-                OnLoggedIn(new LoggedInEventArgs(client, id));
-                forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EncountRateChanged_s, data: EncountRate);
 
                 Log.Write("データ送受信開始", $"ID: {id}");
-                _acceptDataTasks[id] = Task.Run(() => AcceptActionData(id));
+                _acceptDataTasks[id] = Task.Run(() => AcceptActionData(client,id));
             }
         }
 
-        private void UploadInitData(ClientData client,Forwarder forwarder,string id)
+        private void AcceptLogin(ClientData client, Forwarder forwarder)
         {
-            PlayerData player = GameObjectGenerator.CreatePlayer(
-                "Mr.Miyabi" + id,
-                maxHp: 10,
-                atk: 1,
-                def: 2,
-                spd: 10,
-                @"maid_charachip.png",
-                @"tvx_actor02B.png");
-
-            player.SelectedBehavior = new BehaviorInfo(behaviorID: 0);
-            player.ID = id;
-
             try
             {
-                Log.Write("プレイヤーデータ送信開始");
+                var loginInfo = forwarder.ReceiveCommand();
+                loginInfo.CheckCommand(CommandFormat.Login_c);
 
+                var args = loginInfo.Arguments.ToArray();
+                var playerID = (string)args[0];
+                var password = (string)args[1];
+
+                PlayerData player = ServerHelper.ExistsPlayerData(playerID)
+                    ? ServerHelper.LoadPlayer(playerID, password)
+                    : ServerHelper.CreateNewPlayer(playerID, password, playerID);
+
+                if (player == null)
+                {
+                    Log.Write("プレイヤーデータ取得失敗", "切断します");
+                    client.Close();
+                    throw new LoginFailedException();
+                }
+
+                Log.Write("プレイヤーデータ送信開始");
                 forwarder.SendCommand(ReceiveMode.Local,
                                       CommandFormat.MainPlayerDataTransfer_s,
                                       data: player);
@@ -292,23 +290,31 @@ namespace DeadlyOnline.Server
 
                 Log.Write("マップデータ送信終了");
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex.GetType() != typeof(LoginFailedException))
             {
                 Log.Write("例外発生", ex.GetType().ToString(), exceptionMessage: ex.Message);
             }
         }
 
-        private void AcceptActionData(int id)
+        private void AcceptActionData(ClientData client,int id)
         {
-            Forwarder forwarder = _forwarders[id];
+            Forwarder forwarder = client.GetForwarder();
             try
             {
+                AcceptLogin(client, forwarder);
+
+                Clients[id] = client;
+                _forwarders[id] = forwarder;
+
+                OnLoggedIn(new LoggedInEventArgs(client, id));
+                forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EncountRateChanged_s, data: EncountRate);
+
                 while (true)
                 {
                     var receivedData = forwarder.ReceiveCommand();
                     var args = receivedData.Arguments;
                     Log.Debug.Write(
-                        "データ受信", 
+                        "データ受信",
                         $"{receivedData.Command} " +
                         $"ArgsCount: {args?.Count() ?? 0} " +
                         $"Args: {string.Join('|', args ?? Enumerable.Empty<object>())}");
@@ -328,6 +334,10 @@ namespace DeadlyOnline.Server
                     Log.Write("通信エラー", $"ホストに強制的に切断された ID: {id}", ex.Message);
                     Disconnect(id);
                 }
+            }
+            catch (LoginFailedException ex)
+            {
+                Log.Write("ログイン失敗", $"クライアントがログインに失敗しました ID: {id}", ex.Message);
             }
             catch (Exception ex)
             {
@@ -447,5 +457,17 @@ namespace DeadlyOnline.Server
         }
 
         #endregion
+    }
+
+
+    [Serializable]
+    public class LoginFailedException : Exception
+    {
+        public LoginFailedException() { }
+        public LoginFailedException(string message) : base(message) { }
+        public LoginFailedException(string message, Exception inner) : base(message, inner) { }
+        protected LoginFailedException(
+          SerializationInfo info,
+          StreamingContext context) : base(info, context) { }
     }
 }

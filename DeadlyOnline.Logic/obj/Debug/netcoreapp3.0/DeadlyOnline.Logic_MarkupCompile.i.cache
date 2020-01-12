@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_0
 
-5-1356400311
+6-470165367
 
-471177419832
+48-1088754159
 200-471084621
-ClientWindow.xaml;FightingCharacter.xaml;FightingField.xaml;MapField.xaml;MiniCharacter.xaml;
+ClientWindow.xaml;FightingCharacter.xaml;FightingField.xaml;LoginWindow.xaml;MapField.xaml;MiniCharacter.xaml;
 
 False
 

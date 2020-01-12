@@ -52,8 +52,18 @@ namespace DeadlyOnline.Server
             Console.Write($"Welcome to the 'Deadly Online Server', whose version name is '{VersionName}.'\n" +
                           $"This server can be played 'Deadly Online' up to {Logic.Constants.ClientNumberMax} peoples.\n" +
                           $"This server will start soon. \n" +
-                          "\n" +
-                          "--------------------------------------------------------------------------------------------\n");
+                          $"If you found some issues where are in server or client, I want you to submit to ");
+
+            
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.Write(ServerHelper.IssuesPageUrl);
+            Console.ResetColor();
+
+            Console.Write($".\n" +
+                          $"You can open the URL by 'issues' command.\n" +
+                          $"                                                                           Thank you.\n" +
+                          $"\n" +
+                          $"--------------------------------------------------------------------------------------------\n");
         }
     }
 }

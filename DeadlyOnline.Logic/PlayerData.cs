@@ -18,14 +18,22 @@ namespace DeadlyOnline.Logic
         private ImageSource _fightingImage;
         [NonSerialized]
         private Dictionary<CharacterDirection, ImageSource> _walkingImages = null;
+
         private readonly string _fightingImagePath;
         private readonly string _walkingImagesPath;
 
         private string _id;
 
+        [NonSerialized]
+        private bool _isFighting;
+
         #region 戦闘に関するデータ
 
-        public bool IsFighting { get; }
+        public bool IsFighting
+        {
+            get => _isFighting;
+            set => _isFighting = value;
+        }
 
         #endregion
 

@@ -81,13 +81,41 @@ namespace DeadlyOnline.Client
 
         private async void LoadGame()
         {
+            var loginWindow = new LoginWindow();
+            string playerID = null;
+            string password = null;
+
+            if (loginWindow.ShowDialog() ?? false)
+            {
+                playerID = loginWindow.PlayerID;
+                password = loginWindow.Password;   
+            }
+            else
+            {
+                Close();
+                return;
+            }
+
+            // 絶対に動作させる
             if (!await ConnectServer())
             {
                 Close();
                 return;
             }
 
-            var (mainPlayer, mapPieces) = await DownloadInitDataAsync(Client);
+            PlayerData mainPlayer;
+            MapPiece[,] mapPieces;
+
+            try
+            {
+                (mainPlayer, mapPieces) = await DownloadInitDataAsync(Client, playerID, password);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ログインに失敗しました", "ログイン失敗", MessageBoxButton.OK, MessageBoxImage.Error);
+                Close();
+                return;
+            }
 
             MainPlayer = mainPlayer;
 
@@ -190,11 +218,12 @@ namespace DeadlyOnline.Client
 
             return Client != null;
         }
-        private (PlayerData, MapPiece[,]) DownloadInitData(TcpClient client)
+        private (PlayerData, MapPiece[,]) DownloadInitData(TcpClient client, string playerID, string password)
         {
             var stream = client.GetStream();
+            var loginInfo = new ActionData(CommandFormat.Login_c, 1, new[] { playerID, password });
 
-            var mainPlayerData = ReceiveCommand(stream, ReceiveMode.Local);
+            var mainPlayerData = TransferCommand(stream, loginInfo, ReceiveMode.Local);
             mainPlayerData.CheckCommand(CommandFormat.MainPlayerDataTransfer_s);
 
             var mapData = ReceiveCommand(stream, ReceiveMode.Local);
@@ -204,13 +233,14 @@ namespace DeadlyOnline.Client
         }
 
         private async Task<(PlayerData, MapPiece[,])> DownloadInitDataAsync(
-            TcpClient client, CancellationToken cancellationToken = default)
+            TcpClient client,string playerID,string password, CancellationToken cancellationToken = default)
         {
             var stream = client.GetStream();
-            
+            var loginInfo = new ActionData(CommandFormat.Login_c, 1, new[] { playerID, password });
+
             ResumeAcceptingCommand();
 
-            var mainPlayerData = await ReceiveCommandAsync(stream, ReceiveMode.Local, cancellationToken);
+            var mainPlayerData = await TransferCommandAsync(stream, loginInfo, ReceiveMode.Local, cancellationToken);
             var mapData = await ReceiveCommandAsync(stream, ReceiveMode.Local, cancellationToken);
 
             PauseAcceptingCommand();
