@@ -243,68 +243,63 @@ namespace DeadlyOnline.Server
 
                 Log.Write("接続完了", $"ID: {id}");
 
+                Clients[id] = client;
 
                 Log.Write("データ送受信開始", $"ID: {id}");
-                _acceptDataTasks[id] = Task.Run(() => AcceptActionData(client,id));
+                _acceptDataTasks[id] = Task.Run(() => AcceptActionData(id));
             }
         }
 
         private void AcceptLogin(ClientData client, Forwarder forwarder)
         {
-            try
+            var loginInfo = forwarder.ReceiveCommand();
+            loginInfo.CheckCommand(CommandFormat.Login_c);
+
+            var args = loginInfo.Arguments.ToArray();
+            var playerID = (string)args[0];
+            var password = (string)args[1];
+
+            PlayerData player = ServerHelper.ExistsPlayerData(playerID)
+                ? ServerHelper.LoadPlayer(playerID, password)
+                : ServerHelper.CreateNewPlayer(playerID, password, playerID);
+
+            if (player == null)
             {
-                var loginInfo = forwarder.ReceiveCommand();
-                loginInfo.CheckCommand(CommandFormat.Login_c);
+                Log.Write("プレイヤーデータ取得失敗", "切断します");
+                client.Close();
+                throw new LoginFailedException();
+            }
 
-                var args = loginInfo.Arguments.ToArray();
-                var playerID = (string)args[0];
-                var password = (string)args[1];
+            Log.Write("プレイヤーデータ送信開始");
+            forwarder.SendCommand(ReceiveMode.Local,
+                                  CommandFormat.MainPlayerDataTransfer_s,
+                                  data: player);
+            client.PlayerData = player;
 
-                PlayerData player = ServerHelper.ExistsPlayerData(playerID)
-                    ? ServerHelper.LoadPlayer(playerID, password)
-                    : ServerHelper.CreateNewPlayer(playerID, password, playerID);
+            Log.Write("プレイヤーデータ送信終了");
 
-                if (player == null)
-                {
-                    Log.Write("プレイヤーデータ取得失敗", "切断します");
-                    client.Close();
-                    throw new LoginFailedException();
-                }
+            Log.Write("マップデータ送信開始");
 
-                Log.Write("プレイヤーデータ送信開始");
+            lock (_mapPieces)
+            {
                 forwarder.SendCommand(ReceiveMode.Local,
-                                      CommandFormat.MainPlayerDataTransfer_s,
-                                      data: player);
-                client.PlayerData = player;
-
-                Log.Write("プレイヤーデータ送信終了");
-
-                Log.Write("マップデータ送信開始");
-
-                lock (_mapPieces)
-                {
-                    forwarder.SendCommand(ReceiveMode.Local,
-                                          CommandFormat.MapTransfer_s,
-                                          data: _mapPieces);
-                }
-
-                Log.Write("マップデータ送信終了");
+                                      CommandFormat.MapTransfer_s,
+                                      data: _mapPieces);
             }
-            catch (Exception ex) when (ex.GetType() != typeof(LoginFailedException))
-            {
-                Log.Write("例外発生", ex.GetType().ToString(), exceptionMessage: ex.Message);
-            }
+
+            Log.Write("マップデータ送信終了");
         }
 
-        private void AcceptActionData(ClientData client,int id)
+        private void AcceptActionData(int id)
         {
+            ClientData client = Clients[id];
             Forwarder forwarder = client.GetForwarder();
             try
             {
                 AcceptLogin(client, forwarder);
 
-                Clients[id] = client;
                 _forwarders[id] = forwarder;
+                client.IsLoggedIn = true;
 
                 OnLoggedIn(new LoggedInEventArgs(client, id));
                 forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EncountRateChanged_s, data: EncountRate);
@@ -325,14 +320,12 @@ namespace DeadlyOnline.Server
             catch (SerializationException ex)
             {
                 Log.Write("通信エラー", $"シリアル化, または逆シリアル化中に例外が発生 ID: {id}", ex.Message);
-                Disconnect(id);
             }
             catch (IOException ex)
             {
                 if (Clients[id] != null)
                 {
                     Log.Write("通信エラー", $"ホストに強制的に切断された ID: {id}", ex.Message);
-                    Disconnect(id);
                 }
             }
             catch (LoginFailedException ex)
@@ -343,6 +336,8 @@ namespace DeadlyOnline.Server
             {
                 Log.Write("通信エラー", $"原因不明 ID: {id}", ex.Message);
             }
+
+            Disconnect(id);
         }
 
         private void ExecuteReceivedCommand(int id, ActionData ad)
@@ -430,11 +425,10 @@ namespace DeadlyOnline.Server
                 $"Is Loopback: {IPAddress.IsLoopback(client.LocalIPAddress)}");
 
             var forwarder = _forwarders[e.ID];
-            foreach (var player in Clients.Where(c => c != null && c != client).Select(c => c.PlayerData))
+            foreach (var player in Clients.Where(c => c != null && c != client && c.IsLoggedIn).Select(c => c.PlayerData))
             {
-                forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EnteredPlayerInMap_s, data: player);   
+                forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EnteredPlayerInMap_s, data: player);
             }
-
             _forwarders
                 .Where(f => f != null && f != forwarder)
                 .SendCommandAll(
@@ -447,7 +441,7 @@ namespace DeadlyOnline.Server
         internal void OnPlayerMoved(PlayerMovedEventArgs e)
         {
             Clients
-                .Where(c => c != null && c.PlayerID != e.Player.ID)
+                .Where(c => c != null && c.PlayerID != e.Player.ID && c.IsLoggedIn)
                 .Select(c => _forwarders[c.ID])
                 .SendCommandAll(
                     /*inParallel:*/ true,
@@ -457,17 +451,5 @@ namespace DeadlyOnline.Server
         }
 
         #endregion
-    }
-
-
-    [Serializable]
-    public class LoginFailedException : Exception
-    {
-        public LoginFailedException() { }
-        public LoginFailedException(string message) : base(message) { }
-        public LoginFailedException(string message, Exception inner) : base(message, inner) { }
-        protected LoginFailedException(
-          SerializationInfo info,
-          StreamingContext context) : base(info, context) { }
     }
 }

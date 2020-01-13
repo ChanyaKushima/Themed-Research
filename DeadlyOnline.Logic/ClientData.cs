@@ -27,6 +27,8 @@ namespace DeadlyOnline.Logic
 		public string PlayerID => PlayerData?.ID;
 		public int ID { get; }
 
+		public bool IsLoggedIn { get; set; }
+
 		public IPAddress LocalIPAddress
 			=> _localIPAddress ?? (_localIPAddress = ((IPEndPoint)Client.Client.LocalEndPoint).Address);
 		public IPAddress RemoteIPAddress
