@@ -31,7 +31,6 @@ namespace DeadlyOnline.Client
 {
     using DeadlyOnline.Logic;
     using static DeadlyOnline.Logic.Logic;
-    using static DeadlyOnline.Logic.Constants;
     using static DeadlyOnline.Logic.GameObjectGenerator;
 
     using CommandAction = Action<Logic.ActionData, Logic.ActionData>;
@@ -42,6 +41,12 @@ namespace DeadlyOnline.Client
     public partial class ClientWindow : Window
     {
         internal static double EncountRate = 30;
+        internal static string SystemFilePath = "sys.deo";
+
+        private static readonly IPAddress ServerIP = Constants.ServerIPAddress;
+        private static readonly int ServerPort = 54321;
+
+        private static readonly BinaryFormatter _formatter = new BinaryFormatter();
 
         internal TcpClient Client;
         internal Task CommandAcceptTask;
@@ -64,7 +69,6 @@ namespace DeadlyOnline.Client
             set => MainMapField.CurrentMap = value;
         }
 
-        private readonly BinaryFormatter _formatter = new BinaryFormatter();
 
         internal ReceiveMode _receiveMode = ReceiveMode.Nomal;
 
@@ -73,6 +77,44 @@ namespace DeadlyOnline.Client
 
         private bool _isMovingAcceptingCommand = false;
         private bool _initialized = false;
+
+        static ClientWindow()
+        {
+            if (!File.Exists(SystemFilePath))
+            {
+                using var sysFile = new StreamWriter(SystemFilePath);
+                sysFile.WriteLine($"{ClientHelper.ServerIPAddress}={Constants.ServerIPAddress}");
+                sysFile.WriteLine($"{ClientHelper.ServerPort}={Constants.Port}");
+                return;
+            }
+
+            using StreamReader reader = new StreamReader(SystemFilePath);
+            while (!reader.EndOfStream)
+            {
+                string line = reader.ReadLine();
+                string[] lines = line.Split('=', StringSplitOptions.RemoveEmptyEntries);
+
+                if (lines.Length != 2) { continue; }
+
+                string name = lines[0];
+                string option = lines[1];
+
+                switch (name)
+                {
+                    case ClientHelper.ServerIPAddress when IPAddress.TryParse(option, out var ipAdderss):
+                        ServerIP = ipAdderss;
+                        break;
+
+                    case ClientHelper.ServerPort when int.TryParse(option, out var result) && (result >= 0 && result <= 65535):
+                        ServerPort = result;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+        }
 
         public ClientWindow()
         {
@@ -208,7 +250,7 @@ namespace DeadlyOnline.Client
                 try
                 {
                     var client = new TcpClient();
-                    await client.ConnectAsync(ServerIPAddress, Port);
+                    await client.ConnectAsync(ServerIP, ServerPort);
                     tryToConnect = false;
                     Client = client;
                 }
@@ -245,7 +287,7 @@ namespace DeadlyOnline.Client
                 try
                 {
                     var client = new TcpClient();
-                    client.Connect(ServerIPAddress, Port);
+                    client.Connect(ServerIP, ServerPort);
                     tryToConnect = false;
                     Client = client;
                 }

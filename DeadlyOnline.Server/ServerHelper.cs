@@ -27,43 +27,7 @@ namespace DeadlyOnline.Server
             => File.Exists(CharactersDirectory + @"\" + GetFormattedCharacterFile(playerID));
 
         public static void WriteToSystemFile(string name, object option)
-        {
-            bool isNotfound = true;
-            string formattedText = $"{name}={option}";
-            string systemFilePath = Server.SystemFilePath;
-            string tmpFilePath = Path.GetTempFileName();
-
-            {
-                using StreamReader reader = new StreamReader(systemFilePath);
-                using StreamWriter writer = new StreamWriter(tmpFilePath, false);
-
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    if (line.StartsWith(name + '='))
-                    {
-                        if (isNotfound)
-                        {
-                            writer.WriteLine(formattedText);
-                            isNotfound = false;
-                        }
-                    }
-                    else
-                    {
-                        writer.WriteLine(line);
-                    }
-                }
-
-                if (isNotfound)
-                {
-                    writer.WriteLine(formattedText);
-                }
-            }
-
-            File.Copy(tmpFilePath, systemFilePath, /*overwrite:*/ true);
-
-            File.Delete(tmpFilePath);
-        }
+            => SaveHelper.WriteToSystemFile(name, option, Server.SystemFilePath);
 
         public static PlayerData CreateNewPlayer(string playerID, string password, string name = "")
         {
