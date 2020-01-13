@@ -20,13 +20,17 @@ namespace DeadlyOnline.Logic
 		public readonly object Data { get; }
         public readonly long ID { get; }
 
+        public readonly bool IsError { get; }
 
-        public ActionData(CommandFormat cmd, long id, IEnumerable<object> args = null, object data = null)
+
+        public ActionData(CommandFormat cmd, long id, IEnumerable<object> args = null, 
+                          object data = null, bool isError = false)
         {
             Command = cmd;
             Arguments = args;
             Data = data;
             ID = id;
+            IsError = isError;
         }
 
         public void Send(Stream stream)

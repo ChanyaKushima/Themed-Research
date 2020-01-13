@@ -23,3 +23,5 @@ C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\ob
 C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Release\netcoreapp3.0\DeadlyOnline.Logic.csproj.CopyComplete
 C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Release\netcoreapp3.0\DeadlyOnline.Logic.dll
 C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Release\netcoreapp3.0\DeadlyOnline.Logic.pdb
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Release\netcoreapp3.0\LoginWindow.g.cs
+C:\Users\alice\OneDrive\ドキュメント\Themed-Research\DeadlyOnline.Logic\obj\Release\netcoreapp3.0\LoginWindow.baml

@@ -47,10 +47,17 @@ namespace DeadlyOnline.Server
                 $"{sendData.Command} " +
                 $"ArgsCount: {sendData.Arguments?.Count() ?? 0} " +
                 $"Args: {string.Join('|', sendData.Arguments ?? Enumerable.Empty<object>())} " +
-                $"Data: {sendData.Data}");
+                $"Data: {sendData.Data} " +
+                $"IsError: {sendData.IsError}");
 
             _stream.WriteByte((byte)mode);
             sendData.Send(_stream);
+        }
+
+        public void SendError(ReceiveMode mode, CommandFormat cmd, string reason)
+        {
+            var sendData = new ActionData(cmd, -1, data: reason, isError: true);
+            SendCommand(mode, sendData);
         }
 
         public async Task SendCommandAsync(ReceiveMode mode, CommandFormat cmd, IEnumerable<object> args = null,

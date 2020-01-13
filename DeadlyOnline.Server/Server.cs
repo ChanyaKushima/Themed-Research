@@ -257,23 +257,44 @@ namespace DeadlyOnline.Server
 
             var args = loginInfo.Arguments.ToArray();
             var playerID = (string)args[0];
-            var password = (string)args[1];
+            var password = (byte[])args[1];
 
-            PlayerData player = ServerHelper.ExistsPlayerData(playerID)
-                ? ServerHelper.LoadPlayer(playerID, password)
-                : ServerHelper.CreateNewPlayer(playerID, password, playerID);
-
-            if (player == null)
+            if (Clients.Any(c => c?.PlayerID == playerID))
             {
-                Log.Write("プレイヤーデータ取得失敗", "切断します");
+                const string errorMessage = "不正なIDでログインを試みられました。";
+
+                Log.Write("不正なIDを確認", "切断します");
+
+                forwarder.SendError(ReceiveMode.Local, CommandFormat.Login_c, errorMessage);
+
                 client.Close();
-                throw new LoginFailedException();
+                throw new LoginFailedException(errorMessage);
             }
 
+            PlayerData player;
+
+            if (ServerHelper.ExistsPlayerData(playerID))
+            {
+                player = ServerHelper.LoadPlayer(playerID, password);
+                if (player == null)
+                {
+                    Log.Write("データ取得失敗", "パスワードが認証できませんでした 切断します");
+                    forwarder.SendError(ReceiveMode.Local, CommandFormat.Login_c, "ID、もしくはパスワードが違います。");
+                    client.Close();
+                    throw new LoginFailedException("不正なパスワードでログインを試みられました。");
+                }
+            }
+            else
+            {
+                player = ServerHelper.CreateNewPlayer(playerID, password, playerID);
+            }
+
+
             Log.Write("プレイヤーデータ送信開始");
-            forwarder.SendCommand(ReceiveMode.Local,
-                                  CommandFormat.MainPlayerDataTransfer_s,
-                                  data: player);
+            forwarder.SendCommand(
+                ReceiveMode.Local,
+                CommandFormat.MainPlayerDataTransfer_s,
+                data: player);
             client.PlayerData = player;
 
             Log.Write("プレイヤーデータ送信終了");
@@ -282,9 +303,10 @@ namespace DeadlyOnline.Server
 
             lock (_mapPieces)
             {
-                forwarder.SendCommand(ReceiveMode.Local,
-                                      CommandFormat.MapTransfer_s,
-                                      data: _mapPieces);
+                forwarder.SendCommand(
+                    ReceiveMode.Local,
+                    CommandFormat.MapTransfer_s,
+                    data: _mapPieces);
             }
 
             Log.Write("マップデータ送信終了");

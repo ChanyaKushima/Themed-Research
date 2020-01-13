@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace DeadlyOnline.Logic
 {
@@ -37,7 +38,7 @@ namespace DeadlyOnline.Logic
         /// <returns>
         /// <paramref name="min"/>~<paramref name="max"/>の範囲内に丸められた<paramref name="value"/>
         /// </returns>
-        public static T FitInRange<T>(T value, in T max, in T min) where T : IComparable, IComparable<T>
+        public static T FitInRange<T>(T value, T max, T min) where T : IComparable, IComparable<T>
         {
             if (max.CompareTo(min) < 0)
             {
@@ -81,6 +82,47 @@ namespace DeadlyOnline.Logic
                 }
             }
             return result;
+        }
+
+        public static byte[] HashPassword(string password)
+        {
+            var bytePassword = Encoding.UTF8.GetBytes(password);
+            
+            byte[] hashedPassword1;
+            byte[] hashedPassword2;
+
+            using (var hmac = new HMACSHA512(bytePassword))
+            {
+                hashedPassword1 = hmac.ComputeHash(bytePassword);
+            }
+            using (var hmac = new HMACSHA384(hashedPassword1))
+            {
+                hashedPassword2 = hmac.ComputeHash(bytePassword);
+            }
+
+            byte[] result = new byte[hashedPassword1.Length + hashedPassword2.Length];
+            Array.Copy(hashedPassword1, 0, result, 0, hashedPassword1.Length);
+            Array.Copy(hashedPassword2, 0, result, hashedPassword1.Length, hashedPassword2.Length);
+
+            return result;
+        }
+
+        public static bool EqualsAsArray(this byte[] left, byte[] right)
+        {
+            int leftLen = left.Length;
+            if (leftLen != right.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < leftLen; i++)
+            {
+                if (left[i] != right[i])
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
     }

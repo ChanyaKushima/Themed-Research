@@ -29,7 +29,7 @@ namespace DeadlyOnline.Server
         public static void WriteToSystemFile(string name, object option)
             => SaveHelper.WriteToSystemFile(name, option, Server.SystemFilePath);
 
-        public static PlayerData CreateNewPlayer(string playerID, string password, string name = "")
+        public static PlayerData CreateNewPlayer(string playerID, byte[] password, string name = "")
         {
             var fileName = GetFormattedCharacterFile(playerID);
 
@@ -52,13 +52,13 @@ namespace DeadlyOnline.Server
             return player;
         }
 
-        public static PlayerData LoadPlayer(string playerID, string password)
+        public static PlayerData LoadPlayer(string playerID, byte[] password)
         {
             var filePath = CharactersDirectory + @"\" + GetFormattedCharacterFile(playerID);
 
             using var file = File.OpenRead(filePath);
-            var (player, pass) = ((PlayerData, string))_formatter.Deserialize(file);
-            if (pass == password)
+            var (player, pass) = ((PlayerData, byte[]))_formatter.Deserialize(file);
+            if (pass.EqualsAsArray(password))
             {
                 return player;
             }

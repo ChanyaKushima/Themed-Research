@@ -156,10 +156,23 @@ namespace DeadlyOnline.Client
             {
                 (mainPlayer, mapPieces) = await DownloadInitDataAsync(Client, playerID, password);
             }
+            catch (BadResponseException ex)
+            {
+                var message = $"ログインに失敗しました\nもう一度ログインしますか?\n\n原因: {ex.Message}";
+                var result = MessageBox.Show(
+                    message,
+                    "ログイン失敗",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Error);
+                if (result == MessageBoxResult.Yes)
+                {
+                    goto LoginStart;
+                }
+                Close();
+                return;
+            }
             catch (Exception ex)
             {
-                CommandAcceptCancellationTokenSource.Cancel();
-
                 var result = MessageBox.Show(
                     "ログインに失敗しました\nもう一度ログインしますか?",
                     "ログイン失敗",
@@ -262,7 +275,7 @@ namespace DeadlyOnline.Client
                     var res = MessageBox.Show(
                         "接続に失敗しました。\nもう一度接続を試みますか？",
                         "接続失敗",
-                        MessageBoxButton.YesNo) ;
+                        MessageBoxButton.YesNo);
 
                     tryToConnect = res == MessageBoxResult.Yes;
                 }
@@ -321,28 +334,29 @@ namespace DeadlyOnline.Client
             var loginInfo = new ActionData(CommandFormat.Login_c, 1, new[] { playerID, password });
 
             ResumeAcceptingCommand();
-            
-            var mainPlayerData = TransferCommand(stream, loginInfo, ReceiveMode.Local);
-            mainPlayerData.CheckCommand(CommandFormat.MainPlayerDataTransfer_s);
 
+            var mainPlayerData = TransferCommand(stream, loginInfo, ReceiveMode.Local);
             var mapData = ReceiveCommand(stream, ReceiveMode.Local);
-            mapData.CheckCommand(CommandFormat.MapTransfer_s);
-            
+
             PauseAcceptingCommand();
+
+            mainPlayerData.CheckCommand(CommandFormat.MainPlayerDataTransfer_s);
+            mapData.CheckCommand(CommandFormat.MapTransfer_s);
 
             return ((PlayerData)mainPlayerData.Data, (MapPiece[,])mapData.Data);
         }
 
         private async Task<(PlayerData, MapPiece[,])> DownloadInitDataAsync(
-            TcpClient client,string playerID,string password, CancellationToken cancellationToken = default)
+            TcpClient client, string playerID, string password, CancellationToken cancellationToken = default)
         {
             var stream = client.GetStream();
-            var loginInfo = new ActionData(CommandFormat.Login_c, 1, new[] { playerID, password });
+            var args = new object[] { playerID, Calc.HashPassword(password) };
+            var loginInfo = new ActionData(CommandFormat.Login_c, 1, args);
 
             ResumeAcceptingCommand();
 
-            var mainPlayerData = TransferCommand(stream, loginInfo, ReceiveMode.Local);
-            var mapData = await ReceiveCommandAsync(stream, ReceiveMode.Local, cancellationToken);
+            ActionData mainPlayerData = TransferCommand(stream, loginInfo, ReceiveMode.Local);
+            ActionData mapData = await ReceiveCommandAsync(stream, ReceiveMode.Local, cancellationToken);
 
             PauseAcceptingCommand();
 
@@ -390,12 +404,18 @@ namespace DeadlyOnline.Client
             
             if (!_isMovingAcceptingCommand)
             {
-                ThrowHelper.ThrowInvalidOperationException();
+                ThrowHelper.ThrowObjectDisposedException();
             }
             lock (_formatter)
             {
                 var res = (ActionData)_formatter.Deserialize(stream);
                 _receiveMode = ReceiveMode.Nomal;
+
+                if (res.IsError)
+                {
+                    throw new BadResponseException(res.Data as string);
+                }
+
                 return res;
             }
         }
@@ -411,7 +431,7 @@ namespace DeadlyOnline.Client
 
             if (!_isMovingAcceptingCommand)
             {
-                ThrowHelper.ThrowInvalidOperationException();
+                ThrowHelper.ThrowObjectDisposedException();
             }
 
             var res = await Task.Run(() =>
@@ -423,6 +443,11 @@ namespace DeadlyOnline.Client
             }, cancellationToken);
 
             _receiveMode = ReceiveMode.Nomal;
+
+            if (res.IsError)
+            {
+                throw new BadResponseException(res.Data as string);
+            }
 
             return res;
         }
