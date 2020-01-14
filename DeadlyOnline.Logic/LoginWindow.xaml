@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:DeadlyOnline.Logic"
         mc:Ignorable="d"
         Title="Login - Deadly Online" Height="230" Width="350" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
         Closed="Window_Closed">
     <Grid>
         <Grid.RowDefinitions>
