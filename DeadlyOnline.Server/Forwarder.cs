@@ -10,6 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace DeadlyOnline.Server
 {
     using DeadlyOnline.Logic;
+    using System.IO;
 
     internal class Forwarder
     {
@@ -52,10 +53,19 @@ namespace DeadlyOnline.Server
                 $"Data: {sendData.Data} " +
                 $"IsError: {sendData.IsError}");
 
+
+            byte[] byteData;
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                _formatter.Serialize(memoryStream, sendData);
+                byteData = memoryStream.ToArray();
+            }
+
             lock (_syncObject)
             {
                 _stream.WriteByte((byte)mode);
-                sendData.Send(_stream);
+                _stream.Write(byteData);
             }
         }
 
@@ -69,8 +79,8 @@ namespace DeadlyOnline.Server
                                             object data = null, CancellationToken cancellationToken = default)
         {
             await SendCommandAsync(
-                mode, 
-                new ActionData(cmd, CreateNewID(), args, data), 
+                mode,
+                new ActionData(cmd, CreateNewID(), args, data),
                 cancellationToken);
         }
 
@@ -78,12 +88,21 @@ namespace DeadlyOnline.Server
                                             CancellationToken cancellationToken = default)
         {
             Log.Debug.Write("データ送信", $"{sendData.Command} ArgsCount:{sendData.Arguments?.Count() ?? 0}");
+            
+            byte[] byteData;
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                _formatter.Serialize(memoryStream, sendData);
+                byteData = memoryStream.ToArray();
+            }
+
             await Task.Run(() =>
             {
                 lock (_syncObject)
                 {
                     _stream.WriteByte((byte)mode);
-                    sendData.Send(_stream);
+                    _stream.Write(byteData);
                 }
             }, cancellationToken);
         }

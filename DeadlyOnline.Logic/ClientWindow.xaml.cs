@@ -370,18 +370,22 @@ namespace DeadlyOnline.Client
 
         private void SendCommand(NetworkStream stream, ActionData sendData)
         {
-            lock (_formatter)
+            byte[] array;
+
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                _formatter.Serialize(stream, sendData);
+                _formatter.Serialize(memoryStream, sendData);
+                array = memoryStream.ToArray();
+            }
+            lock (stream)
+            {
+                stream.Write(array);
             }
         }
         private void SendCommand(NetworkStream stream, CommandFormat format, long id,
                                  IEnumerable<object> args = null, object data = null)
         {
-            lock (_formatter)
-            {
-                _formatter.Serialize(stream, new ActionData(format, id, args, data));
-            }
+            SendCommand(stream, new ActionData(format, id, args, data));
         }
 
         private async Task SendCommandAsync(NetworkStream stream, CommandFormat format, long id,
@@ -475,7 +479,7 @@ namespace DeadlyOnline.Client
             try
             {
 #pragma warning disable CS4014 // この呼び出しは待機されなかったため、現在のメソッドの実行は呼び出しの完了を待たずに続行されます
-                Task.Run(async () => await SendNop(stream), token);
+                var task=Task.Run(async () => await SendNop(stream), token);
 #pragma warning restore CS4014 // この呼び出しは待機されなかったため、現在のメソッドの実行は呼び出しの完了を待たずに続行されます
 
                 while (true)
@@ -499,13 +503,19 @@ namespace DeadlyOnline.Client
         private async Task SendNop(NetworkStream stream)
         {
             ActionData nop = new ActionData(CommandFormat.None, 0);
+            byte[] array;
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                _formatter.Serialize(memoryStream, nop);
+                array = memoryStream.ToArray();
+            }
+
+
             while (true)
             {
                 await Task.Delay(1000);
-                lock (_formatter)
-                {
-                    _formatter.Serialize(stream, nop);
-                }
+                await stream.WriteAsync(array);
             }
         }
 
