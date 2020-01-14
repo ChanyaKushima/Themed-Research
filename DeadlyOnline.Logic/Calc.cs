@@ -10,7 +10,7 @@ namespace DeadlyOnline.Logic
 {
 	public static class Calc
 	{
-        private static Regex _correctPlayerID = new Regex("^\\w+$");
+        private static Regex _correctPlayerID = new Regex(@"^[^\W\s\x00-\x1f<>:""/\\|?*]+$");
         public static bool CanUseAsPlayerID(this string playerID) => _correctPlayerID.IsMatch(playerID);
 
 		public static int GetArrayEmptyTerritory<T>(T[] arr) where T : class
