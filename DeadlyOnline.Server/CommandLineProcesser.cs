@@ -347,7 +347,7 @@ namespace DeadlyOnline.Server
         {
             const int defaultWidth = 100;
             const int defaultHeight = 100;
-            const int maxSquare = 300 * 300;
+            const int maxSquare = 500 * 500;
 
             int width = 0;
             int height = 0;

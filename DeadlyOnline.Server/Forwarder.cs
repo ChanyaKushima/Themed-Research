@@ -10,6 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace DeadlyOnline.Server
 {
     using DeadlyOnline.Logic;
+    using System.IO;
 
     internal class Forwarder
     {
@@ -17,6 +18,8 @@ namespace DeadlyOnline.Server
         private static readonly BinaryFormatter _formatter = new BinaryFormatter();
 
         private readonly NetworkStream _stream;
+
+        private readonly object _syncObject = new object();
 
         public static long CreateNewID() => Interlocked.Increment(ref _id);
 
@@ -50,8 +53,20 @@ namespace DeadlyOnline.Server
                 $"Data: {sendData.Data} " +
                 $"IsError: {sendData.IsError}");
 
-            _stream.WriteByte((byte)mode);
-            sendData.Send(_stream);
+
+            byte[] byteData;
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                _formatter.Serialize(memoryStream, sendData);
+                byteData = memoryStream.ToArray();
+            }
+
+            lock (_syncObject)
+            {
+                _stream.WriteByte((byte)mode);
+                _stream.Write(byteData);
+            }
         }
 
         public void SendError(ReceiveMode mode, CommandFormat cmd, string reason)
@@ -64,8 +79,8 @@ namespace DeadlyOnline.Server
                                             object data = null, CancellationToken cancellationToken = default)
         {
             await SendCommandAsync(
-                mode, 
-                new ActionData(cmd, CreateNewID(), args, data), 
+                mode,
+                new ActionData(cmd, CreateNewID(), args, data),
                 cancellationToken);
         }
 
@@ -73,8 +88,23 @@ namespace DeadlyOnline.Server
                                             CancellationToken cancellationToken = default)
         {
             Log.Debug.Write("データ送信", $"{sendData.Command} ArgsCount:{sendData.Arguments?.Count() ?? 0}");
-            await _stream.WriteAsync(new byte[1] { (byte)mode }, cancellationToken);
-            await sendData.SendAsync(_stream, cancellationToken);
+            
+            byte[] byteData;
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                _formatter.Serialize(memoryStream, sendData);
+                byteData = memoryStream.ToArray();
+            }
+
+            await Task.Run(() =>
+            {
+                lock (_syncObject)
+                {
+                    _stream.WriteByte((byte)mode);
+                    _stream.Write(byteData);
+                }
+            }, cancellationToken);
         }
     }
 }

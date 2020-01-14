@@ -316,6 +316,10 @@ namespace DeadlyOnline.Server
         {
             ClientData client = Clients[id];
             Forwarder forwarder = client.GetForwarder();
+
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
+
             try
             {
                 AcceptLogin(client, forwarder);
@@ -325,6 +329,8 @@ namespace DeadlyOnline.Server
 
                 OnLoggedIn(new LoggedInEventArgs(client, id));
                 forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.EncountRateChanged_s, data: EncountRate);
+
+                Task.Run(async () => await SendNop(forwarder), token);
 
                 while (true)
                 {
@@ -359,7 +365,17 @@ namespace DeadlyOnline.Server
                 Log.Write("通信エラー", $"原因不明 ID: {id}", ex.Message);
             }
 
+            source.Cancel();
             Disconnect(id);
+        }
+
+        private async Task SendNop(Forwarder forwarder)
+        {
+            while (true)
+            {
+                await Task.Delay(1000);
+                forwarder.SendCommand(ReceiveMode.Nomal, CommandFormat.None);
+            }
         }
 
         private void ExecuteReceivedCommand(int id, ActionData ad)
