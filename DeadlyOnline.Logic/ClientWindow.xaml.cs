@@ -469,22 +469,42 @@ namespace DeadlyOnline.Client
         {
             NetworkStream stream = Client.GetStream();
 
-            while (true)
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
+
+            try
             {
-                try
+#pragma warning disable CS4014 // この呼び出しは待機されなかったため、現在のメソッドの実行は呼び出しの完了を待たずに続行されます
+                Task.Run(async () => await SendNop(stream), token);
+#pragma warning restore CS4014 // この呼び出しは待機されなかったため、現在のメソッドの実行は呼び出しの完了を待たずに続行されます
+
+                while (true)
                 {
                     await ProcessOrderAsync(stream);
                 }
-                catch (Exception ex)
-                {
-                    _isMovingAcceptingCommand = false;
+            }
+            catch (Exception ex)
+            {
+                _isMovingAcceptingCommand = false;
 
-                    Console.WriteLine($"例外発生 {ex.GetType()}: {ex.Message} ");
-                    if (_initialized)
-                    {
-                        Environment.Exit(-1);
-                    }
-                    return;
+                Console.WriteLine($"例外発生 {ex.GetType()}: {ex.Message} ");
+                if (_initialized)
+                {
+                    Environment.Exit(-1);
+                }
+                return;
+            }
+        }
+
+        private async Task SendNop(NetworkStream stream)
+        {
+            ActionData nop = new ActionData(CommandFormat.None, 0);
+            while (true)
+            {
+                await Task.Delay(1000);
+                lock (_formatter)
+                {
+                    _formatter.Serialize(stream, nop);
                 }
             }
         }

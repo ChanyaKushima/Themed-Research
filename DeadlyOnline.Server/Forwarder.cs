@@ -18,6 +18,8 @@ namespace DeadlyOnline.Server
 
         private readonly NetworkStream _stream;
 
+        private readonly object _syncObject = new object();
+
         public static long CreateNewID() => Interlocked.Increment(ref _id);
 
         public Forwarder(NetworkStream networkStream)
@@ -50,8 +52,11 @@ namespace DeadlyOnline.Server
                 $"Data: {sendData.Data} " +
                 $"IsError: {sendData.IsError}");
 
-            _stream.WriteByte((byte)mode);
-            sendData.Send(_stream);
+            lock (_syncObject)
+            {
+                _stream.WriteByte((byte)mode);
+                sendData.Send(_stream);
+            }
         }
 
         public void SendError(ReceiveMode mode, CommandFormat cmd, string reason)
@@ -73,8 +78,14 @@ namespace DeadlyOnline.Server
                                             CancellationToken cancellationToken = default)
         {
             Log.Debug.Write("データ送信", $"{sendData.Command} ArgsCount:{sendData.Arguments?.Count() ?? 0}");
-            await _stream.WriteAsync(new byte[1] { (byte)mode }, cancellationToken);
-            await sendData.SendAsync(_stream, cancellationToken);
+            await Task.Run(() =>
+            {
+                lock (_syncObject)
+                {
+                    _stream.WriteByte((byte)mode);
+                    sendData.Send(_stream);
+                }
+            }, cancellationToken);
         }
     }
 }
