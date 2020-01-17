@@ -66,6 +66,7 @@ namespace DeadlyOnline.Server
             {
                 _stream.WriteByte((byte)mode);
                 _stream.Write(byteData);
+                //_formatter.Serialize(_stream, sendData);
             }
         }
 

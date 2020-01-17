@@ -28,8 +28,8 @@ namespace DeadlyOnline.Server
         internal static double EncountRate = 1.0/*[%]*/;
         internal static readonly string SystemFilePath = @"sys.deo";
         private static readonly IPEndPoint IPEndPoint = new IPEndPoint(IPAddress.Any, Port);
-        private static readonly ServerProcesser _serverProcesser = new ServerProcesser();
-        private static readonly CommandLineProcesser _commandLineProcesser = new CommandLineProcesser();
+        private static readonly ServerProcessor _serverProcessor = new ServerProcessor();
+        private static readonly CommandLineProcessor _commandLineProcessor = new CommandLineProcessor();
         #endregion
 
         #region Game Objects
@@ -201,7 +201,7 @@ namespace DeadlyOnline.Server
                 Log.Debug.Write("コマンド入力", "\"" + commandLineText + "\"");
                 try
                 {
-                    _commandLineProcesser.Execute(command, options, this);
+                    _commandLineProcessor.Execute(command, options, this);
                 }
                 catch (Exception ex)
                 {
@@ -383,7 +383,7 @@ namespace DeadlyOnline.Server
             ClientData client = Clients[id];
             Forwarder forwarder = _forwarders[id];
 
-            ActionData res = _serverProcesser.Execute(InvokeActionCommand(ad), client, this);
+            ActionData res = _serverProcessor.Execute(InvokeActionCommand(ad), client, this);
 
             if (res.Command != CommandFormat.None)
             {

@@ -34,7 +34,7 @@ namespace DeadlyOnline.Server
                 {
                     var currentInput = builder.ToString();
                     var matches =
-                        CommandLineProcesser.CommandCollection
+                        CommandLineProcessor.CommandCollection
                             .Where(str => str.StartsWith(currentInput, true, CultureInfo.InvariantCulture));
                     int matchesCount = matches.Count();
 
